@@ -3,39 +3,66 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>最強 Physics by Jacky</title>
+<title>最強 Physics by Jacky · DSE Physics Interactive Simulation Lab</title>
+<meta name="description" content="DSE Physics 互動模擬實驗室：模擬、試題庫、公式速記表與溫書筆記。">
 <style>
-  :root{
-    --gold:#b8860b; --gold-bright:#c9a227; --gold-deep:#8b6914;
-    --ink:#3c3c43; --ink-soft:#6b6b73; --line:#d4d4d8; --card:#ffffff;
-  }
   *{box-sizing:border-box}
-  body{
-    margin:0; color:var(--ink); font-size:15px; line-height:1.7;
-    font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Helvetica Neue",sans-serif;
+  :root{--gold:#b8860b;--gold-bright:#c9a227;--gold-deep:#8b6914;
+        --ink:#3c3c43;--ink-soft:#6b6b73;--line:#d4d4d8;--card:#fff}
+  body{margin:0;color:var(--ink);font-size:15px;line-height:1.7;
+    font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",sans-serif;
     background:
-      radial-gradient(1100px 620px at 50% -140px, rgba(255,255,255,.96), rgba(255,255,255,0) 70%),
-      radial-gradient(760px 460px at 12% 108%, rgba(201,162,39,.09), rgba(201,162,39,0) 72%),
-      radial-gradient(760px 460px at 92% 4%, rgba(184,134,11,.07), rgba(184,134,11,0) 70%),
+      radial-gradient(1100px 620px at 50% -140px,rgba(255,255,255,.96),rgba(255,255,255,0) 70%),
+      radial-gradient(760px 460px at 12% 108%,rgba(201,162,39,.09),rgba(201,162,39,0) 72%),
+      radial-gradient(760px 460px at 92% 4%,rgba(184,134,11,.07),rgba(184,134,11,0) 70%),
       linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
-    background-attachment:fixed;
-    -webkit-font-smoothing:antialiased;
-  }
+    background-attachment:fixed;-webkit-font-smoothing:antialiased}
   .wrap{max-width:1130px;margin:0 auto;padding:0 22px}
-  .hero{text-align:center;padding:80px 0 44px}
+  .topnav{position:sticky;top:0;z-index:60;backdrop-filter:saturate(180%) blur(14px);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+    background:rgba(250,250,252,.86);border-bottom:1px solid rgba(212,212,216,.9)}
+  .topnav .bar{max-width:1180px;margin:0 auto;padding:9px 18px;display:flex;align-items:center;gap:16px}
+  .brand{display:flex;align-items:baseline;gap:8px;text-decoration:none;margin-right:auto;white-space:nowrap}
+  .brand b{font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-size:16.5px;font-weight:650;
+    letter-spacing:.04em;color:var(--gold-deep)}
+  .brand i{font-style:normal;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2}
+  .navlinks{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+  .navlinks a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:13.2px;
+    font-weight:550;color:#55555c;padding:7px 11px;border-radius:8px;border:1px solid transparent;
+    transition:.18s;white-space:nowrap}
+  .navlinks a:hover{color:var(--gold-deep);background:rgba(201,162,39,.10);border-color:rgba(184,134,11,.28)}
+  .navlinks a.on{color:var(--gold-deep);background:rgba(201,162,39,.15);border-color:rgba(184,134,11,.42);font-weight:650}
+  .navlinks a em{font-style:normal;font-size:14px;line-height:1}
+  .navtoggle{display:none;background:#fff;border:1px solid var(--line);border-radius:8px;
+    font-size:18px;line-height:1;color:var(--gold-deep);padding:6px 11px;cursor:pointer}
+  @media(max-width:900px){
+    .topnav .bar{padding:8px 14px}.navtoggle{display:block}
+    .navlinks{display:none;position:absolute;left:12px;right:12px;top:calc(100% + 6px);
+      background:rgba(252,252,254,.98);border:1px solid var(--line);border-radius:12px;
+      box-shadow:0 10px 30px rgba(60,60,67,.14);padding:8px;flex-direction:column;align-items:stretch}
+    .navlinks.open{display:flex}.navlinks a{padding:10px 12px;font-size:14px}}
+  .hero{text-align:center;padding:76px 0 40px}
   .eyebrow{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:20px}
-  h1{
-    margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
-    font-size:clamp(34px,6vw,60px);letter-spacing:.07em;
+  h1{margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
+    font-size:clamp(34px,6vw,58px);letter-spacing:.07em;
     background:linear-gradient(180deg,#a97c0f 0%,#c9a227 62%,#8b6914 100%);
-    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  }
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
   .subtitle{margin:16px 0 0;font-size:clamp(12.5px,2.2vw,15px);letter-spacing:.2em;color:var(--ink-soft)}
   .divider{width:132px;height:1px;margin:28px auto 0;border:0;
     background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
   .hero-note{margin:22px auto 0;max-width:640px;font-size:13.5px;color:var(--ink-soft)}
+  .quick{display:grid;gap:14px;grid-template-columns:repeat(2,1fr);margin:34px 0 10px}
+  @media(min-width:820px){.quick{grid-template-columns:repeat(4,1fr)}}
+  .qcard{display:block;text-decoration:none;background:#fff;border:1px solid var(--line);
+    border-radius:12px;padding:18px;text-align:center;transition:.2s;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 20px rgba(60,60,67,.05)}
+  .qcard:hover{transform:translateY(-3px);border-color:var(--gold-bright);
+    box-shadow:0 2px 6px rgba(184,134,11,.14),0 14px 30px rgba(184,134,11,.16)}
+  .qcard em{display:block;font-style:normal;font-size:22px;margin-bottom:8px}
+  .qcard b{display:block;font-size:14.5px;color:#2b2b30}
+  .qcard span{display:block;font-size:12px;color:var(--ink-soft);margin-top:3px}
   main{padding-bottom:24px}
-  .category{margin-bottom:54px}
+  .category{margin-bottom:50px}
   .cat-head{display:flex;align-items:baseline;gap:14px;padding-left:15px;position:relative;margin-bottom:5px}
   .cat-head::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:3px;border-radius:2px;
     background:var(--acc,var(--gold));opacity:.85}
@@ -47,40 +74,51 @@
   .grid{display:grid;gap:18px;grid-template-columns:1fr}
   @media(min-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
   @media(min-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}
-  .card{
-    position:relative;background:var(--card);border:1px solid var(--line);border-radius:12px;
-    padding:22px 22px 20px;display:flex;flex-direction:column;min-height:198px;
+  .card{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:22px 22px 20px;display:flex;flex-direction:column;min-height:196px;
     box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05);
-    transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
-  }
-  .card::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;
-    border-radius:12px 12px 0 0;opacity:.9;
-    background:linear-gradient(90deg,var(--acc,var(--gold)),transparent 90%)}
+    transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+  .card::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;border-radius:12px 12px 0 0;
+    opacity:.9;background:linear-gradient(90deg,var(--acc,var(--gold)),transparent 90%)}
   .card.live:hover{transform:translateY(-4px);border-color:var(--gold-bright);
     box-shadow:0 2px 6px rgba(184,134,11,.14),0 16px 34px rgba(184,134,11,.17)}
-  .card-name{margin:10px 0 4px;font-size:16px;font-weight:650;color:#2b2b30;letter-spacing:.01em}
-  .card-name span{display:block;font-size:12.5px;font-weight:400;color:var(--ink-soft);margin-top:3px;letter-spacing:.04em}
+  .card-name{margin:10px 0 4px;font-size:16px;font-weight:650;color:#2b2b30}
+  .card-name span{display:block;font-size:12.5px;font-weight:400;color:var(--ink-soft);margin-top:3px}
   .card-desc{margin:8px 0 18px;font-size:13px;line-height:1.65;color:var(--ink-soft);flex:1}
   .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
   .tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
     padding:3px 10px;border-radius:20px;border:1px solid}
   .tag.live{color:var(--gold-deep);border-color:rgba(184,134,11,.45);background:rgba(201,162,39,.10)}
   .tag.soon{color:#8c8c93;border-color:#dcdce0;background:#f4f4f6}
-  .btn{display:inline-block;font-size:13px;font-weight:650;letter-spacing:.04em;
-    padding:8px 17px;border-radius:7px;text-decoration:none;border:1px solid transparent;
-    transition:background .2s ease,box-shadow .2s ease}
+  .btn{display:inline-block;font-size:13px;font-weight:650;letter-spacing:.04em;padding:8px 17px;
+    border-radius:7px;text-decoration:none;border:1px solid transparent;transition:.2s}
   .btn.live{background:var(--gold);color:#fff;box-shadow:0 3px 10px rgba(184,134,11,.26)}
-  .btn.live:hover{background:#a3760a;box-shadow:0 5px 16px rgba(184,134,11,.34)}
+  .btn.live:hover{background:#a3760a}
   .btn.soon{background:#f0f0f2;color:#a0a0a7;border-color:#e0e0e3;cursor:not-allowed}
-  .card.soon{opacity:.78;background:#fcfcfd}
-  .card.soon .card-name{color:#55555c}
-  footer{margin-top:24px;padding:34px 0 46px;text-align:center;border-top:1px solid var(--line)}
+  .card.soon{opacity:.78;background:#fcfcfd}.card.soon .card-name{color:#55555c}
+  footer{margin-top:20px;padding:34px 0 46px;text-align:center;border-top:1px solid var(--line)}
   footer .mark{display:inline-block;margin-bottom:12px;font-size:11px;letter-spacing:.3em;
     text-transform:uppercase;color:var(--gold-deep)}
-  footer p{margin:0 auto;max-width:760px;font-size:12.5px;line-height:1.85;color:#7d7d85;letter-spacing:.02em}
+  footer p{margin:0 auto;max-width:760px;font-size:12.5px;line-height:1.85;color:#7d7d85}
 </style>
 </head>
-<body>
+<body data-nav="home">
+
+<nav class="topnav">
+  <div class="bar">
+    <a class="brand" href="index.html"><b>最強 Physics by Jacky</b><i>DSE Lab</i></a>
+    <button class="navtoggle" id="navToggle" aria-label="開啟導覽選單" aria-expanded="false">☰</button>
+    <div class="navlinks" id="navLinks">
+      <a href="index.html" data-nav="home"><em>🏠</em>Home 主頁</a>
+      <a href="simulations.html" data-nav="sim"><em>🧪</em>Simulations 互動模擬</a>
+      <a href="exam-bank.html" data-nav="exam"><em>📝</em>Exam Bank 試題庫</a>
+      <a href="formula-sheet.html" data-nav="formula"><em>📖</em>Formula Sheet 公式速記表</a>
+      <a href="revision-notes.html" data-nav="notes"><em>📚</em>Revision Notes 溫書筆記</a>
+      <a href="about.html" data-nav="about"><em>ℹ️</em>About</a>
+    </div>
+  </div>
+</nav>
+
 <div class="wrap">
 
   <header class="hero">
@@ -88,8 +126,15 @@
     <h1>最強 Physics by Jacky</h1>
     <p class="subtitle">DSE Physics Interactive Simulation Lab</p>
     <hr class="divider">
-    <p class="hero-note">按香港中學文憑試物理科課程編排：必修五個範疇，加天文學與原子世界選修。每個模擬以可調參數的動態模型呈現，配合 DSE 考試重點與公式速查。</p>
+    <p class="hero-note">按香港中學文憑試物理科課程編排：互動模擬、概念小測、試題拆解、公式速記與溫書筆記。所有模擬均以可調參數的動態模型呈現，對應 DSE 考試重點。</p>
   </header>
+
+  <section class="quick">
+    <a class="qcard" href="simulations.html"><em>🧪</em><b>互動模擬</b><span>Simulations</span></a>
+    <a class="qcard" href="exam-bank.html"><em>📝</em><b>試題庫</b><span>Exam Bank</span></a>
+    <a class="qcard" href="formula-sheet.html"><em>📖</em><b>公式速記表</b><span>Formula Sheet</span></a>
+    <a class="qcard" href="revision-notes.html"><em>📚</em><b>溫書筆記</b><span>Revision Notes</span></a>
+  </section>
 
   <main>
 
@@ -99,11 +144,9 @@
       <div class="grid">
         <article class="card live" style="--acc:#b8860b">
           <h3 class="card-name">Circular Motion<span>圓周運動</span></h3>
-          <p class="card-desc">向心加速度與向心力：水平圓周、conical pendulum、banked track、鉛垂圓周，含實時向量與拖尾。</p>
-          <div class="row">
-            <span class="tag live">Live</span>
-            <a class="btn live" href="dse-physics-lab.html" target="_blank" rel="noopener">打開 →</a>
-          </div>
+          <p class="card-desc">向心加速度與向心力：水平圓周、conical pendulum、banked track、鉛垂圓周，含實時向量、拖尾與頁底概念小測。</p>
+          <div class="row"><span class="tag live">Live</span>
+            <a class="btn live" href="dse-physics-lab.html" target="_blank" rel="noopener">打開 →</a></div>
         </article>
         <article class="card soon" style="--acc:#b8860b">
           <h3 class="card-name">Projectile Motion<span>拋體運動</span></h3>
@@ -277,9 +320,28 @@
 
   <footer>
     <span class="mark">最強 Physics by Jacky</span>
-    <p>新增模擬：複製卡片HTML結構，改連結與名稱即可</p>
+    <p>DSE Physics Interactive Simulation Lab｜新增模擬：複製卡片結構，改連結與名稱即可</p>
   </footer>
-
 </div>
+
+<script>
+  (function () {
+    var key = document.body.dataset.nav || '';
+    document.querySelectorAll('#navLinks a').forEach(function (a) {
+      if (a.dataset.nav === key) a.classList.add('on');
+    });
+    var t = document.getElementById('navToggle'), l = document.getElementById('navLinks');
+    t.addEventListener('click', function () {
+      var open = l.classList.toggle('open');
+      t.setAttribute('aria-expanded', open ? 'true' : 'false');
+      t.textContent = open ? '✕' : '☰';
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.topnav') && l.classList.contains('open')) {
+        l.classList.remove('open'); t.textContent = '☰';
+      }
+    });
+  })();
+</script>
 </body>
 </html>
