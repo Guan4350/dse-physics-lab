@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Formula Sheet 公式速記表 · 最強 Physics by Jacky</title>
+<style>
+  *{box-sizing:border-box}
+  :root{--gold:#b8860b;--gold-bright:#c9a227;--gold-deep:#8b6914;
+        --ink:#3c3c43;--ink-soft:#6b6b73;--line:#d4d4d8}
+  body{margin:0;color:var(--ink);font-size:15px;line-height:1.7;
+    font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",sans-serif;
+    background:
+      radial-gradient(1100px 620px at 50% -140px,rgba(255,255,255,.96),rgba(255,255,255,0) 70%),
+      radial-gradient(760px 460px at 12% 108%,rgba(201,162,39,.09),rgba(201,162,39,0) 72%),
+      linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
+    background-attachment:fixed;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 22px}
+  .topnav{position:sticky;top:0;z-index:60;backdrop-filter:saturate(180%) blur(14px);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+    background:rgba(250,250,252,.86);border-bottom:1px solid rgba(212,212,216,.9)}
+  .topnav .bar{max-width:1180px;margin:0 auto;padding:9px 18px;display:flex;align-items:center;gap:16px}
+  .brand{display:flex;align-items:baseline;gap:8px;text-decoration:none;margin-right:auto;white-space:nowrap}
+  .brand b{font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-size:16.5px;font-weight:650;
+    letter-spacing:.04em;color:var(--gold-deep)}
+  .brand i{font-style:normal;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2}
+  .navlinks{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+  .navlinks a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:13.2px;
+    font-weight:550;color:#55555c;padding:7px 11px;border-radius:8px;border:1px solid transparent;
+    transition:.18s;white-space:nowrap}
+  .navlinks a:hover{color:var(--gold-deep);background:rgba(201,162,39,.10);border-color:rgba(184,134,11,.28)}
+  .navlinks a.on{color:var(--gold-deep);background:rgba(201,162,39,.15);border-color:rgba(184,134,11,.42);font-weight:650}
+  .navlinks a em{font-style:normal;font-size:14px;line-height:1}
+  .navtoggle{display:none;background:#fff;border:1px solid var(--line);border-radius:8px;
+    font-size:18px;line-height:1;color:var(--gold-deep);padding:6px 11px;cursor:pointer}
+  @media(max-width:900px){
+    .topnav .bar{padding:8px 14px}.navtoggle{display:block}
+    .navlinks{display:none;position:absolute;left:12px;right:12px;top:calc(100% + 6px);
+      background:rgba(252,252,254,.98);border:1px solid var(--line);border-radius:12px;
+      box-shadow:0 10px 30px rgba(60,60,67,.14);padding:8px;flex-direction:column;align-items:stretch}
+    .navlinks.open{display:flex}.navlinks a{padding:10px 12px;font-size:14px}}
+  .page-head{padding:54px 0 26px;text-align:center}
+  .eyebrow{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:16px}
+  h1.title{margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
+    font-size:clamp(30px,5vw,46px);letter-spacing:.06em;
+    background:linear-gradient(180deg,#a97c0f 0%,#c9a227 62%,#8b6914 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .lede{margin:16px auto 0;max-width:680px;font-size:14px;color:var(--ink-soft)}
+  .divider{width:132px;height:1px;margin:26px auto 0;border:0;
+    background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
+  .toc{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:26px 0 30px}
+  .toc a{text-decoration:none;font-size:12.5px;font-weight:600;color:#55555c;background:#fff;
+    border:1px solid var(--line);border-radius:20px;padding:6px 14px;transition:.18s}
+  .toc a:hover{border-color:var(--gold-bright);color:var(--gold-deep)}
+  .topic{margin-bottom:36px}
+  .topic-head{display:flex;align-items:baseline;gap:13px;padding-left:15px;position:relative;margin-bottom:14px}
+  .topic-head::before{content:"";position:absolute;left:0;top:3px;bottom:3px;width:3px;border-radius:2px;
+    background:var(--gold);opacity:.85}
+  .topic-head h2{margin:0;font-size:17.5px;font-weight:650;color:var(--gold-deep);
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif;letter-spacing:.04em}
+  .topic-head span{font-size:12.5px;color:var(--ink-soft)}
+  .fcard{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05)}
+  .frow{display:grid;grid-template-columns:1fr;gap:0;border-bottom:1px solid #ececf0}
+  .frow:last-child{border-bottom:0}
+  @media(min-width:840px){.frow{grid-template-columns:280px 1fr}}
+  .fcol{padding:14px 18px}
+  .fcol+.fcol{border-top:1px solid #f1f1f4}
+  @media(min-width:840px){.fcol+.fcol{border-top:0;border-left:1px solid #f1f1f4}}
+  .fname{font-family:ui-monospace,Menlo,monospace;font-size:14px;font-weight:600;color:#7a5c10}
+  .fname em{display:block;font-style:normal;font-family:inherit;font-size:11.5px;color:#9a9aa2;
+    font-weight:400;margin-top:3px}
+  .fcond{font-size:13px;line-height:1.75;color:#4a4a52}
+  .fcond b{color:#8b6914}
+  .ftrap{font-size:12.5px;line-height:1.7;color:#a8443a;margin-top:6px}
+  .ftrap::before{content:"陷阱：";font-weight:700}
+  footer{margin-top:24px;padding:34px 0 46px;text-align:center;border-top:1px solid var(--line)}
+  footer .mark{display:inline-block;margin-bottom:12px;font-size:11px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--gold-deep)}
+  footer p{margin:0;font-size:12.5px;color:#7d7d85}
+</style>
+</head>
+<body data-nav="formula">
+
+<nav class="topnav">
+  <div class="bar">
+    <a class="brand" href="index.html"><b>最強 Physics by Jacky</b><i>DSE Lab</i></a>
+    <button class="navtoggle" id="navToggle" aria-label="開啟導覽選單" aria-expanded="false">☰</button>
+    <div class="navlinks" id="navLinks">
+      <a href="index.html" data-nav="home"><em>🏠</em>Home 主頁</a>
+      <a href="simulations.html" data-nav="sim"><em>🧪</em>Simulations 互動模擬</a>
+      <a href="exam-bank.html" data-nav="exam"><em>📝</em>Exam Bank 試題庫</a>
+      <a href="formula-sheet.html" data-nav="formula"><em>📖</em>Formula Sheet 公式速記表</a>
+      <a href="revision-notes.html" data-nav="notes"><em>📚</em>Revision Notes 溫書筆記</a>
+      <a href="about.html" data-nav="about"><em>ℹ️</em>About</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header class="page-head">
+    <div class="eyebrow">Formula Sheet</div>
+    <h1 class="title">DSE 公式速記表</h1>
+    <p class="lede">每個公式附「適用條件」與「DSE 常見陷阱」。記公式之餘，更重要係記住幾時用得、幾時唔用得。</p>
+    <hr class="divider">
+  </header>
+
+  <nav class="toc">
+    <a href="#mechanics">Mechanics 力學</a>
+    <a href="#waves">Waves 波動</a>
+    <a href="#em">Electricity and Magnetism 電磁</a>
+    <a href="#thermal">Heat and Gases 熱學</a>
+    <a href="#nuclear">Radioactivity 放射性</a>
+  </nav>
+
+  <main>
+
+    <section class="topic" id="mechanics">
+      <div class="topic-head"><h2>Mechanics</h2><span>力學</span></div>
+      <div class="fcard">
+        <div class="frow">
+          <div class="fcol"><div class="fname">v = u + at<em>等加速直線運動</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>加速度 a 為常數（uniform acceleration）。五條運動方程必須同一方向取正負。</div>
+            <div class="ftrap">方向符號混用；把勻速公式用在自由落體以外的變加速情況。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">s = ut + ½at²<em>位移方程</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>同上；求時間與位移關係時最快。</div>
+            <div class="ftrap">忘記 a 的正負號（上拋時 a = −g）。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">v² = u² + 2as<em>不含時間</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>題目無提及時間、亦不需要求時間時首選。</div>
+            <div class="ftrap">誤以為可以處理變加速；實際上 a 必須固定。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">F = ma<em>Newton's second law</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>淨力與加速度同方向；F 必須係該方向的合力。</div>
+            <div class="ftrap">把某一個力當成合力；斜坡上漏掉重力分量 mg sinθ。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">W = mg<em>重力</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>地表附近；g = 9.81 m s⁻²（DSE 一般取 9.8 或 9.81，依題目）。</div>
+            <div class="ftrap">把質量（kg）與重量（N）混用；在電梯或衛星問題中 W ≠ mg。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">F_c = mv²/r = mω²r<em>centripetal force</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>圓周運動的徑向方程；合力必須沿徑向指向圓心。已知 ω 時用 mω²r 較快。</div>
+            <div class="ftrap">只寫 "centripetal force" 而唔指出實際力來源；用離心力（centrifugal）解釋 — DSE 不接受。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">a_c = v²/r = ω²r<em>向心加速度</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>圓周運動即時值；v 固定時 a_c ∝ 1/r，ω 固定時 a_c ∝ r。</div>
+            <div class="ftrap">未分辨固定邊個變量就套公式，正比／反比方向搞反。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">v = rω，ω = 2π/T = 2πn/60<em>角速度</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>弧度制；n 為 rpm（每分鐘圈數）。</div>
+            <div class="ftrap">rpm 換算漏 ÷60，之後全題連鎖錯；角度制（degree）直接代入 sin/cos 以外的公式。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">v_min = √(gr)<em>鉛垂圓周臨界</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>鉛垂圓周最高點（或軌道內側）張力／法向力剛好為零時。</div>
+            <div class="ftrap">未說明「T = 0 或 N = 0」就引用；最高點寫成 T − mg 而方向搞反。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">mv₁ + ... = mv₁' + ...<em>動量守恆</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>系統所受淨外力為零（碰撞、爆炸短時間內近似成立）；動量係向量。</div>
+            <div class="ftrap">當成一維純量相加，方向用錯正負；動能唔守恆時仍然錯用能量守恆。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">PE = mgh，KE = ½mv²<em>能量</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>無摩擦或摩擦已計入；重力勢能需自選參考水平面。</div>
+            <div class="ftrap">高度差取錯（鉛垂圓周用 r 而非 2r）；漏掉摩擦生熱。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">F = Gm₁m₂/r²，g = GM/r²<em>萬有引力</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>點質量或均勻球體外；r 為球心之間距離。</div>
+            <div class="ftrap">用表面半徑當軌道半徑；衛星問題忘記 r 應量至地心。</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="waves">
+      <div class="topic-head"><h2>Waves</h2><span>波動</span></div>
+      <div class="fcard">
+        <div class="frow">
+          <div class="fcol"><div class="fname">v = fλ<em>波速</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>所有波動。折射時 f 不變、v 與 λ 一起變。</div>
+            <div class="ftrap">以為折射會改變頻率；用波形圖的斜率當波速。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">n₁ sin θ₁ = n₂ sin θ₂<em>Snell's law</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>光由介質 1 進入介質 2；角度由法線量度。</div>
+            <div class="ftrap">角度由界面量度；n 大反而以為光會偏離法線。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">sin C = 1/n<em>全內反射臨界角</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>光由光密介質（n 較大）射向光疏介質（n = 1，如空氣）。</div>
+            <div class="ftrap">反向代入（由空氣射入玻璃）；未檢查入射角是否大於 C。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">Δx = mλ（加強）／(m+½)λ（抵消）<em>雙縫干涉</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>path difference 與 wavelength 比較；m = 0, 1, 2...</div>
+            <div class="ftrap">光程差用錯單位（cm 與 m）；中央亮紋對應 m = 0（Δx = 0）。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">1/f = 1/u + 1/v<em>透鏡公式</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>薄透鏡、近軸光線；實像 v 為正、虛像 v 為負（依課程約定）。</div>
+            <div class="ftrap">凸透鏡成虛像時符號搞錯；放大率 m = v/u 的正負意義混淆。</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="em">
+      <div class="topic-head"><h2>Electricity and Magnetism</h2><span>電學與磁學</span></div>
+      <div class="fcard">
+        <div class="frow">
+          <div class="fcol"><div class="fname">V = IR，P = VI = I²R = V²/R<em>電路</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>歐姆元件；發熱功率用 I²R，接固定電壓時用 V²/R。</div>
+            <div class="ftrap">串聯電路誤用相同電壓；並聯誤用相同電流。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">V = ε − Ir<em>內電阻</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>電池有內電阻；V 為 terminal voltage，ε 為 e.m.f.。</div>
+            <div class="ftrap">把 ε 當成 terminal voltage；電流越大 terminal voltage 越低。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">F = BIL sinθ，F = qvB sinθ<em>磁力</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>θ 為電流／速度與磁場方向的夾角；方向用 Fleming's left-hand rule。</div>
+            <div class="ftrap">漏 sinθ；粒子平行磁場運動時不受力（θ = 0）。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">r = mv/(qB)<em>帶電粒子的圓周運動</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>電荷速度垂直於均勻磁場；磁力提供向心力 qvB = mv²/r。</div>
+            <div class="ftrap">用重力解釋；未指出「magnetic force 提供 centripetal force」。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">ε = −N ΔΦ/Δt<em>Faraday's law</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>線圈有 N 匝、磁通量 Φ 在 Δt 內改變；負號表示 Lenz's law。</div>
+            <div class="ftrap">漏 N；Lenz's law 方向答錯（感應電流反抗磁通量變化，唔係「同向」）。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">V_s/V_p = N_s/N_p，I_p/I_s = N_s/N_p<em>變壓器</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>理想變壓器（100% 效率）；功率守恆為前提。</div>
+            <div class="ftrap">電流比與電壓比方向搞反；忘記高壓輸電可減 I²R 損耗。</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="thermal">
+      <div class="topic-head"><h2>Heat and Gases</h2><span>熱與氣體</span></div>
+      <div class="fcard">
+        <div class="frow">
+          <div class="fcol"><div class="fname">Q = mcΔT<em>比熱容量</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>物體無物態變化；ΔT 可用 °C 或 K（差值相同）。</div>
+            <div class="ftrap">把 °C 直接當 K 做氣體計算；混淆 heat capacity C 與 specific heat capacity c。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">Q = mℓ<em>潛熱</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>物態變化期間溫度不變（熔化／沸騰平台）。</div>
+            <div class="ftrap">物態變化期間仍用 mcΔT；漏掉「升溫 + 熔解」兩段能量相加。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">pV = nRT<em>理想氣體方程</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>理想氣體；T 必須用 Kelvin（K = °C + 273）。</div>
+            <div class="ftrap">用 °C 代入 T；把 pV = nRT 與 p₁V₁/T₁ = p₂V₂/T₂ 混用時漏換單位。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">p₁V₁/T₁ = p₂V₂/T₂<em>聯合氣體定律</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>固定質量氣體，由一狀態到另一狀態；T 用 K。</div>
+            <div class="ftrap">Boyle's law 只在等溫成立、Charles' law 只在等壓成立，題目未講明就亂用。</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="nuclear">
+      <div class="topic-head"><h2>Radioactivity and Nuclear Energy</h2><span>放射性與核能</span></div>
+      <div class="fcard">
+        <div class="frow">
+          <div class="fcol"><div class="fname">A = λN，N = N₀e^(−λt)<em>衰變定律</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>放射性衰變為隨機過程；λ 為 decay constant。</div>
+            <div class="ftrap">以為可以用公式預測個別原子何時衰變（只能講機率）。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">t½ = ln2 / λ<em>半衰期</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>經過 n 個半衰期，剩餘量為原來的 (½)ⁿ。</div>
+            <div class="ftrap">線性處理衰減（例如以為 2 個半衰期剩 0）；忘記扣 background count。</div></div>
+        </div>
+        <div class="frow">
+          <div class="fcol"><div class="fname">E = mc²，ΔE = Δm c²<em>核能</em></div></div>
+          <div class="fcol"><div class="fcond"><b>適用：</b>mass defect 轉換為能量；Δm 用 kg、c = 3.00 × 10⁸ m s⁻¹。</div>
+            <div class="ftrap">用 u（atomic mass unit）直接代入而無換算；漏寫單位 J 或 MeV 換算錯誤。</div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span class="mark">最強 Physics by Jacky</span>
+    <p>Formula Sheet · 公式附適用條件與常見陷阱，持續更新</p>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var key = document.body.dataset.nav || '';
+    document.querySelectorAll('#navLinks a').forEach(function (a) {
+      if (a.dataset.nav === key) a.classList.add('on');
+    });
+    var t = document.getElementById('navToggle'), l = document.getElementById('navLinks');
+    t.addEventListener('click', function () {
+      var open = l.classList.toggle('open');
+      t.setAttribute('aria-expanded', open ? 'true' : 'false');
+      t.textContent = open ? '✕' : '☰';
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.topnav') && l.classList.contains('open')) {
+        l.classList.remove('open'); t.textContent = '☰';
+      }
+    });
+  })();
+</script>
+</body>
+</html>

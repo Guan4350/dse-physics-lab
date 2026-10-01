@@ -1,581 +1,110 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DSE Physics Lab 01 — Circular Motion Workbench</title>
+<!-- ══ 概念小測：樣式 ══ -->
 <style>
-  *{box-sizing:border-box}
-  body{margin:0;background:#0f1117;color:#e8edf5;
-       font-family:-apple-system,"PingFang TC","Microsoft JhengHei",Segoe UI,sans-serif}
-  .layout{display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:16px;padding:0 18px 26px;align-items:start}
-  @media (max-width:1080px){.layout{grid-template-columns:minmax(0,1fr)}
-    .panel{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
-    .card:last-child{grid-column:1/-1}}
-  @media (max-width:760px){.panel{grid-template-columns:1fr}}
-  header{padding:16px 18px 10px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-  h1{margin:0;font-size:19px;font-weight:650;letter-spacing:.01em}
-  h1 em{font-style:normal;color:#00d4ff}
-  .sub{color:#5c6475;font-size:12.5px}
-  nav.tabs{display:flex;gap:8px;padding:0 18px 14px;flex-wrap:wrap}
-  .tab{background:#151925;border:1px solid #232838;color:#9aa5b8;border-radius:7px;
-       padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
-  .tab:hover{color:#e8edf5;border-color:#33405a}
-  .tab.on{background:#0d2733;border-color:#00d4ff;color:#00d4ff}
-  .panel{display:flex;flex-direction:column;gap:12px}
-  .card{background:#151925;border:1px solid #232838;border-radius:9px;padding:13px}
-  .card h2{margin:0 0 10px;font-size:11px;letter-spacing:.1em;color:#7a8698;text-transform:uppercase;font-weight:650}
-  .out{display:flex;justify-content:space-between;font-size:13px;margin:6px 0}
-  .out k{color:#9aa5b8}
-  .out b{font-weight:650;font-variant-numeric:tabular-nums}
-  .cy{color:#00d4ff}.rd{color:#ff4466}.am{color:#ffb300}.gn{color:#00e0a0}
-  label.ctl{display:flex;justify-content:space-between;align-items:center;gap:9px;margin:9px 0;font-size:13px}
-  label.ctl span{color:#9aa5b8}
-  input[type=number]{width:94px;background:#0f1117;border:1px solid #2a3245;color:#e8edf5;
-       border-radius:5px;padding:5px 7px;font-size:13px;font-variant-numeric:tabular-nums}
-  input[type=number]:focus{outline:1px solid #00d4ff}
-  input[type=range]{width:100%;accent-color:#00d4ff;background:none;cursor:pointer}
-  .btns{display:flex;gap:8px;flex-wrap:wrap}
-  button{background:#00d4ff;color:#06121a;border:0;border-radius:6px;padding:9px 15px;
-         font-size:13.5px;font-weight:700;cursor:pointer}
-  button.alt{background:#2a3245;color:#e8edf5}
-  button.ghost{background:#151925;border:1px solid #2a3245;color:#9aa5b8;font-weight:600}
-  .note{font-size:12.3px;line-height:1.55;color:#ffd07a;background:#1b1608;
-        border:1px solid #3d2f10;border-radius:7px;padding:9px 11px}
-  .note b{color:#ffb300}
-  .kb{max-height:340px;overflow:auto}
-  .kbi{border-left:3px solid #00d4ff;padding:6px 0 7px 10px;margin-bottom:9px}
-  .kbi b{display:block;font-size:12.5px;margin-bottom:3px}
-  .kbi p{margin:0 0 3px;font-size:12px;color:#9aa5b8;line-height:1.5}
-  .kbi em{font-style:normal;font-size:11.5px;color:#ff9fb1;display:block}
-  canvas{background:#0a0c11;border:1px solid #232838;border-radius:9px;width:100%;height:auto;display:block}
-  .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
-  .chip{background:#0f1117;border:1px solid #2a3245;border-radius:20px;padding:4px 11px;
-        font-size:11.5px;color:#9aa5b8;cursor:pointer}
-  .chip:hover{border-color:#00d4ff;color:#00d4ff}
-  .lgd{font-size:12px;color:#9aa5b8;line-height:1.9}
-  .pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;
-        background:#2a3245;color:#e8edf5;margin-left:6px}
-  .pill.ok{background:#0b3a2c;color:#00e0a0}
-  .pill.bad{background:#3a1220;color:#ff4466}
+  #quiz{margin-top:14px}
+  #quiz .qhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+  #quiz h2{margin:0;font-size:17px;font-weight:650;color:#8b6914;
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif;letter-spacing:.04em}
+  #quiz .qsub{font-size:12px;color:#6b6b73}
+  #score{font-size:13px;font-weight:700;color:#8b6914;background:rgba(201,162,39,.14);
+    border:1px solid rgba(184,134,11,.35);border-radius:20px;padding:4px 13px}
+  .qitem{background:#fff;border:1px solid #d4d4d8;border-radius:11px;padding:18px 20px;margin-top:14px;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 6px 18px rgba(60,60,67,.05)}
+  .qitem .qno{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#9a9aa2}
+  .qitem .qtext{font-size:14.5px;line-height:1.8;color:#2b2b30;margin:7px 0 13px}
+  .qopts{display:flex;flex-direction:column;gap:8px}
+  .qopt{display:flex;gap:11px;align-items:flex-start;text-align:left;cursor:pointer;
+    background:#fbfbfd;border:1px solid #e2e2e6;border-radius:9px;padding:11px 14px;
+    font-size:14px;line-height:1.65;color:#3c3c43;font-family:inherit;transition:.16s}
+  .qopt:hover{border-color:#c9a227;background:rgba(201,162,39,.07)}
+  .qopt .key{flex:0 0 22px;height:22px;border-radius:50%;border:1.5px solid #c9c9d0;color:#77777f;
+    font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .qopt.right{border-color:#2f9e6f;background:rgba(47,158,111,.09)}
+  .qopt.right .key{border-color:#2f9e6f;background:#2f9e6f;color:#fff}
+  .qopt.wrong{border-color:#c0455f;background:rgba(192,69,95,.08)}
+  .qopt.wrong .key{border-color:#c0455f;background:#c0455f;color:#fff}
+  .qopt[disabled]{cursor:default}
+  .qexp{margin-top:12px;font-size:13.4px;line-height:1.85;color:#4a4a52;
+    background:#fbf8ef;border-left:3px solid #c9a227;border-radius:0 8px 8px 0;padding:12px 15px;display:none}
+  .qexp.show{display:block}
+  .qexp b{color:#8b6914}
+  .qexp .verdict{font-weight:700;display:block;margin-bottom:5px}
+  .qexp .verdict.ok{color:#2f9e6f}.qexp .verdict.no{color:#c0455f}
+  .qreset{margin-top:16px;background:#fff;border:1px solid #d4d4d8;border-radius:8px;
+    color:#8b6914;font-size:13px;font-weight:650;padding:8px 16px;cursor:pointer}
+  .qreset:hover{border-color:#c9a227;background:rgba(201,162,39,.08)}
 </style>
-</head>
-<body>
-<header>
-  <h1>DSE Physics Lab 01 · <em>Circular Motion</em> Workbench</h1>
-  <span class="sub">力學 Mechanics｜T sinθ = F_c、T cosθ = mg｜全部參數可鍵入，即時更新</span>
-</header>
-<nav class="tabs" id="tabs"></nav>
 
-<div class="layout">
-  <div>
-    <canvas id="cv" width="1000" height="640"></canvas>
-    <div class="card" style="margin-top:12px">
-      <h2>快捷情境</h2>
-      <div class="chips" id="chips"></div>
-    </div>
+<!-- ══ 概念小測：結構（放在 canvas 與「快捷情境」卡之間） ══ -->
+<section class="card" id="quiz" style="margin-top:14px">
+  <div class="qhead">
+    <h2>DSE 概念小測 · Circular Motion</h2>
+    <span class="qsub">點選答案即時對答，附完整拆解</span>
+    <span id="score">得分 0 / 6</span>
   </div>
-
-  <div class="panel">
-    <div class="card">
-      <h2>實時數值</h2>
-      <div id="outs"></div>
-      <div id="badge" style="margin-top:8px"></div>
-    </div>
-    <div class="card">
-      <h2>參數（鍵入即時更新）</h2>
-      <div id="ctls"></div>
-    </div>
-    <div class="card">
-      <h2>控制</h2>
-      <div class="btns">
-        <button id="pp">暫停</button>
-        <button class="alt" id="rs">重置</button>
-        <button class="ghost" id="lbl">隱藏標籤</button>
-      </div>
-    </div>
-    <div class="card"><h2>DSE Exam Note</h2><div class="note" id="note">–</div></div>
-    <div class="card"><h2>DSE 技巧戰略庫（累積）</h2><div class="kb" id="kb"></div></div>
-    <div class="card"><h2>圖例</h2><div class="lgd" id="lgd">
-      <code class="cy">■</code> v velocity　<code class="rd">■</code> a centripetal acceleration　
-      <code class="am">■</code> force (T / N / friction)　<code class="gn">■</code> 綠色＝對照基準值（比較用）
-    </div></div>
-  </div>
-</div>
+  <div id="qlist"></div>
+  <button class="qreset" id="qreset">重做全部</button>
+</section>
 
 <script>
-const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
-const W = cv.width, H = cv.height, TAU = Math.PI * 2, D2R = Math.PI / 180, G = 9.81;
-const money = id => document.getElementById(id);
+/* ══ 概念小測引擎：題目同本頁模擬場景一一對應 ══ */
+(function () {
+  var QUESTIONS = [
+    { q: '質量 m 的物件以繩繫住，在光滑水平面上作等速率圓周運動。若速率加倍而半徑不變，繩的張力變為原來的多少倍？',
+      o: ['1/2 倍', '2 倍', '4 倍', '不變'], a: 2,
+      e: '<b>F_c = mv²/r。</b>m、r 固定時 F_c ∝ v²。v → 2v 即 F_c → 4F_c。<br>對應模擬 ①：把速率由 6 m/s 改成 12 m/s，面板 F_c 由 45 N 跳到 180 N。<br><b>陷阱：</b>答「2 倍」係把平方關係誤當線性；DSE 幾乎每年都考 ∝v² 或 ∝1/r。' },
+    { q: '物件作等速率圓周運動期間，下列敘述何者正確？',
+      o: ['速度向量不變', '加速度恆指向圓心，大小不變', '加速度沿切線方向，使速率改變', '合外力為零，因為速率不變'], a: 1,
+      e: '<b>方向不斷改變 ⇒ 必有加速度。</b>加速度恆指向圓心（centripetal），大小 a_c = v²/r，只改方向不改速率。<br><b>陷阱：</b>「速率不變 ⇒ 合外力為零」係最典型迷思；只要方向變，合力就唔係零。' },
+    { q: '圓錐擺（conical pendulum）中，小球在水平面作等速率圓周運動，繩與鉛垂線成角 θ。若把小球的質量加倍（r、ω 不變），下列何者<b>不變</b>？',
+      o: ['繩張力 T', 'θ 角', '向心力 F_c', '繩的豎直分量 T cosθ'], a: 1,
+      e: '<b>豎直 T cosθ = mg、水平 T sinθ = mω²r。</b>兩式相除消去 m 得 tanθ = ω²r/g ⇒ θ 只由 ω、r 決定，與 m 無關。<br>m 加倍時：T = mg/cosθ 加倍、F_c = mω²r 加倍、T cosθ 加倍。<br><b>陷阱：</b>以為「重啲會擺得低啲」；實驗上 θ 完全唔變，只有繩更緊。' },
+    { q: '小球以繩在鉛垂面內作圓周運動。若小球在最高點的速率剛好等於 √(gr)，則最高點時繩的張力為？',
+      o: ['mg', '2mg', 'mg/2', '零'], a: 3,
+      e: '<b>最高點：T + mg = mv²/r。</b>代入 v² = gr ⇒ T + mg = mg ⇒ T = 0，即臨界狀態（繩剛鬆）。<br><b>陷阱：</b>寫成 T − mg 會得出 T = 2mg；方向搞反係最常失分位。鉛垂圓周最高點重力已向下（指向圓心），重力已提供部分 F_c。' },
+    { q: '汽車以設計速率（design speed）通過斜坡彎道，不倚賴摩擦力。此時提供向心力的力是？',
+      o: ['路面對車的摩擦力', '法向力 N 的水平分量', '車重 mg 的水平分量', '離心力'], a: 1,
+      e: '<b>設計速率時：N cosθ = mg、N sinθ = mv²/r</b>（θ 為路面傾角），相除得 v = √(rg tanθ)。向心力全部來自 N 的水平分量。<br><b>陷阱：</b>「車重水平分量」錯——mg 係鉛垂向下，冇水平分量；寫「離心力」直接扣分，DSE 不接受 centrifugal force。' },
+    { q: '唱片以 33⅓ rpm 轉動。2.0 分鐘內，唱片共轉了多少圈？',
+      o: ['33 圈', '50 圈', '67 圈', '100 圈'], a: 2,
+      e: '<b>33⅓ rpm = 每分鐘 33⅓ 圈</b>⇒ 2 分鐘 = 66⅔ ≈ 67 圈。<br>若要用角速度：ω = 2πn/60 = 2π(33.33)/60 = 3.49 rad s⁻¹，θ = ωt = 3.49 × 120 = 419 rad，圈數 = 419/2π = 66.7。<br><b>陷阱：</b>漏 ÷60 或把 rpm 當 rad/s；單位換算錯會令全題連鎖出錯。' }
+  ];
 
-/* ============ 累積技巧庫（只加不刪） ============ */
-const KH = [
- ['向心力的來源：先問「邊個力」', '見 smooth turntable / string / car turning / satellite：先寫出提供向心力的實際力（張力、摩擦力、法向力、重力分量），再令它等於 mv²/r。', '扣分位：只寫 “the centripetal force” 而不指出實際力來源 — 該分不給。'],
- ['離心力 centrifugal force 不可用', 'DSE 只接受向心力。乘客轉彎外傾要用 inertia（慣性）解釋。', '扣分位：答案出現 “centrifugal force acts on the object” → 直接扣分。'],
- ['固定變量比值題：先問「邊個固定」', 'v 固定 → F_c ∝ 1/r；ω 固定 → F_c ∝ r（用 mω²r 更快）；m 固定而 v、r 同步變 → 用比值法。', '扣分位：未判斷固定量就亂代 mv²/r，平方／反比關係搞反。'],
- ['單位換算：rpm → rad s⁻¹', 'ω = 2πn / 60。', '扣分位：漏 ÷60，之後所有答案連鎖錯。'],
- ['臨界條件：張力／法向力歸零', '見 “just loses contact / minimum speed / string just slack”：設 T = 0 或 N = 0，只用重力提供 F_c，得 v_min = √(gr)。', '扣分位：臨界時仍代住 T 或 N，方程多一個未知數。'],
- ['鉛垂圓周：最高點 vs 最低點', '最高點：T_top + mg = mv²/r；最低點：T_bot − mg = mv²/r；兩點速率差由能量守恆決定，T_bot 必最大。', '扣分位：兩點方向搞反、漏重力項、忘記能量方程。'],
- ['圓錐擺 conical pendulum：分解法', '見 “string makes angle θ with the vertical”：分解張力 → 豎直 T cosθ = mg、水平 T sinθ = mω²r；兩式相除消 T 得 tanθ = ω²r/g，與 m 無關。', '扣分位：忘記豎直平衡式而無法消 T；誤以為 T = mg。'],
- ['賽道斜率 banking：斜面題先定坐標', '把坐標取在斜面內、沿徑向與垂直斜面分解：N cosθ = mg + 摩擦修正項；設計速率 v = √(rg tanθ) 時不需摩擦力，此時 N = mg / cosθ。', '扣分位：分不清「無摩擦設計速率」與「有摩擦極限速率」，令 ν 與 f 混在一起。'],
- ['比值驗證用「對照值」思考', '任何 a_c ∝ v²、F_c ∝ 1/r 的結論，用「加倍／減半」心算一次，比死記方向可靠。', '扣分位：把 ∝ 寫成「成正比」但方向講反（例：r 加倍 F_c 加倍）。']
-];
-money('kb').innerHTML = KH.map(([t, s, p]) =>
-  '<div class="kbi"><b>' + t + '</b><p>' + s + '</p><em>⚠ ' + p + '</em></div>').join('');
-
-/* ============ 工具 ============ */
-function fmt(x, d) {
-  if (!isFinite(x)) return '∞';
-  const n = d === undefined ? (Math.abs(x) >= 100 ? 1 : Math.abs(x) >= 1 ? 2 : 3) : d;
-  return x.toFixed(n);
-}
-function drawArrow(x1, y1, x2, y2, color, w, dashed) {
-  const a = Math.atan2(y2 - y1, x2 - x1), len = Math.hypot(x2 - x1, y2 - y1);
-  if (len < 1.5) return;
-  const h = Math.min(13, len * 0.45);
-  ctx.save();
-  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = w || 3; ctx.lineCap = 'round';
-  if (dashed) ctx.setLineDash([7, 5]);
-  ctx.beginPath(); ctx.moveTo(x1, y1);
-  ctx.lineTo(x2 - h * 0.7 * Math.cos(a), y2 - h * 0.7 * Math.sin(a)); ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.beginPath(); ctx.moveTo(x2, y2);
-  ctx.lineTo(x2 - h * Math.cos(a - 0.42), y2 - h * Math.sin(a - 0.42));
-  ctx.lineTo(x2 - h * Math.cos(a + 0.42), y2 - h * Math.sin(a + 0.42));
-  ctx.closePath(); ctx.fill(); ctx.restore();
-}
-function tag(t, x, y, c) {
-  if (!S.labels) return;
-  ctx.fillStyle = c; ctx.font = '600 12.5px ui-monospace,Menlo,monospace';
-  ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y);
-}
-function grid() {
-  ctx.strokeStyle = '#141926'; ctx.lineWidth = 1;
-  for (let x = 0; x <= W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
-  for (let y = 0; y <= H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
-}
-/* 3D 透視投影：世界座標 -> 畫面（用於圓周運動的橢圓錯覺） */
-let VS = 1;
-function computeScale() {
-  const rect = cv.getBoundingClientRect();
-  VS = rect.width > 10 ? rect.width / W : 1;
-}
-function p3(x, y, z, cx, cy, yk, ky) {
-  return [cx + x * yk, cy - y * ky + z * yk];
-}
-function resize() {
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
-  const rect = cv.getBoundingClientRect();
-  const cw = Math.max(300, Math.round(rect.width)), ch = Math.round(cw * H / W);
-  cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
-  cv.style.height = ch + 'px';
-  ctx.setTransform(cv.width / W, 0, 0, cv.height / H, 0, 0);
-  computeScale();
-}
-window.addEventListener('resize', resize);
-/* 平面圓周的「正圓」座標（θ 量度：0 = 正右方，逆時針為正） */
-function cpt(R, ang, cx, cy) {
-  return [cx + R * VS * Math.cos(ang), cy - R * VS * Math.sin(ang)];
-}
-function heading(t, s) {
-  ctx.fillStyle = '#7a8698'; ctx.font = '600 12px ui-monospace,Menlo,monospace';
-  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-  ctx.fillText(t, 22, 18);
-  ctx.fillStyle = '#4a5468'; ctx.fillText(s, 22, 36);
-}
-/* ============ 場景定義 ============ */
-const SCN = {
-  /* ---------- 1. 水平圓周（繩張力） ---------- */
-  basic: {
-    name: '① 水平圓周（繩）', tip: 'T = mv²/r 提供全部 F_c',
-    params: { m: 1.5, r: 1.2, v: 6 },
-    ctl: [
-      { k: 'm', t: '質量 mass m (kg)', min: .1, max: 20, step: .1 },
-      { k: 'r', t: '半徑 radius r (m)', min: .2, max: 4, step: .05 },
-      { k: 'v', t: '速率 speed v (m/s)', min: .2, max: 20, step: .1 }
-    ],
-    chips: [['輕球慢轉', { m: 1, r: 1.5, v: 4 }], ['重球快轉', { m: 5, r: 1.5, v: 8 }],
-            ['短半徑快轉', { m: 1.5, r: .6, v: 8 }], ['標準', { m: 1.5, r: 1.2, v: 6 }]],
-    derive: p => ({ w: p.v / p.r, a: p.v * p.v / p.r, F: p.m * p.v * p.v / p.r, T: TAU * p.r / p.v, f: p.v / (TAU * p.r) }),
-    out: d => [['a_c = v²/r', fmt(d.a) + ' m s⁻²', 'rd'], ['F_c = m v²/r', fmt(d.F) + ' N', 'am'],
-               ['ω = v/r', fmt(d.w) + ' rad s⁻¹', ''], ['T = 2πr/v', fmt(d.T) + ' s', '']],
-    base: d => [['a_c 對照', fmt(d.a) + ' m s⁻²'], ['F_c 對照', fmt(d.F) + ' N']],
-    note: () => 'F_c 由繩張力提供：v 加倍 → F_c 變 4 倍；r 加倍（v 固定）→ F_c 減半。拖尾顯示切線速度方向恆變、大小不變。',
-    draw(p, d) {
-      const R = Math.max(48, Math.min(178, p.r * 92)), CX = W / 2 - 80, CY = H / 2 + 20;
-      ctx.setLineDash([6, 7]); ctx.strokeStyle = '#2a3245'; ctx.lineWidth = 1.4;
-      ctx.beginPath(); ctx.arc(CX, CY, R * VS, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
-      ctx.strokeStyle = '#3a4457'; ctx.beginPath();
-      ctx.moveTo(CX - 9 * VS, CY); ctx.lineTo(CX + 9 * VS, CY);
-      ctx.moveTo(CX, CY - 9 * VS); ctx.lineTo(CX, CY + 9 * VS); ctx.stroke();
-      ctx.fillStyle = '#5c6475'; ctx.font = '12px ui-monospace,monospace'; ctx.textAlign = 'left';
-      ctx.fillText('O', CX + 12 * VS, CY + 16 * VS);
-      const [x, y] = cpt(R, S.sw, CX, CY);
-      for (let i = 0; i < S.trail.length; i++) {
-        const a = i / S.trail.length, [px, py] = cpt(R, S.trail[i], CX, CY);
-        ctx.globalAlpha = .05 + .55 * a; ctx.fillStyle = '#00d4ff';
-        ctx.beginPath(); ctx.arc(px, py, (1.6 + 2.6 * a) * VS, 0, TAU); ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = '#2a3245'; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(x, y); ctx.stroke();
-      ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 15 * VS; ctx.fillStyle = '#e8edf5';
-      ctx.beginPath(); ctx.arc(x, y, 9 * VS, 0, TAU); ctx.fill(); ctx.shadowBlur = 0;
-      const ux = Math.cos(S.sw), uy = Math.sin(S.sw);
-      const Lv = (36 + Math.min(70, p.v * 4)) * VS, La = (44 + Math.min(90, d.a * 3.5)) * VS;
-      const Lf = (44 + Math.min(90, d.F * 1.6)) * VS;
-      drawArrow(x, y, x - uy * Lv, y - ux * Lv, '#00d4ff', 3.2 * VS);
-      tag('v = ' + fmt(p.v, 1), x - uy * Lv + 6 * VS, y - ux * Lv - 10 * VS, '#00d4ff');
-      drawArrow(x + 8 * VS, y + 12 * VS, x - ux * La + 8 * VS, y + uy * La + 12 * VS, '#ff4466', 3.2 * VS);
-      tag('a_c = ' + fmt(d.a, 1), x - ux * La + 12 * VS, y + uy * La + 22 * VS, '#ff4466');
-      drawArrow(x - 8 * VS, y - 12 * VS, x - ux * Lf - 8 * VS, y + uy * Lf - 12 * VS, '#ffb300', 3.2 * VS);
-      tag('F_c = ' + fmt(d.F, 1) + ' N', x - ux * Lf - 6 * VS, y + uy * Lf - 22 * VS, '#ffb300');
-      heading('① 水平圓周運動（string tension）', 'v 恆切線；T 與 a_c 恆指向圓心 O');
-    }
-  },
-  /* ---------- 2. 圓錐擺 ---------- */
-  cone: {
-    name: '② 圓錐擺 conical', tip: 'T cosθ = mg、T sinθ = mω²r',
-    params: { m: 1.5, r: 1.2, g: 9.81, th: 35 },
-    ctl: [
-      { k: 'm', t: '質量 mass m (kg)', min: .1, max: 20, step: .1 },
-      { k: 'r', t: '圓周半徑 r (m)', min: .2, max: 3, step: .05 },
-      { k: 'th', t: '夾角 θ (degree)', min: 3, max: 82, step: .5 },
-      { k: 'g', t: '重力 g (m s⁻²)', min: 1, max: 20, step: .01 }
-    ],
-    chips: [['慢轉 θ=20°', { th: 20, m: 1.5, r: 1.2, g: 9.81 }], ['中速 θ=45°', { th: 45, m: 1.5, r: 1.2, g: 9.81 }],
-            ['高速 θ=70°', { th: 70, m: 1.5, r: 1.2, g: 9.81 }], ['重球（T 上升）', { th: 35, m: 6, r: 1.2, g: 9.81 }]],
-    derive: p => {
-      const th = p.th * D2R, w = Math.sqrt(p.g * Math.tan(th) / p.r);
-      return { th: th, w: w, a: p.g * Math.tan(th), F: p.m * p.g * Math.tan(th),
-               T: p.m * p.g / Math.cos(th), Tp: TAU / w, f: 1 / (TAU / w) };
-    },
-    out: d => [['θ', fmt(P.th, 1) + '°', ''], ['a_c = g tanθ', fmt(d.a) + ' m s⁻²', 'rd'],
-               ['F_c = T sinθ', fmt(d.F) + ' N', 'am'], ['T = mg/cosθ', fmt(d.T) + ' N', 'am'],
-               ['ω = √(g tanθ/r)', fmt(d.w) + ' rad s⁻¹', ''], ['T_p = 2π/ω', fmt(d.Tp) + ' s', '']],
-    base: d => [['a_c 對照', fmt(d.a) + ' m s⁻²'], ['T 對照', fmt(d.T) + ' N']],
-    note: () => P.th > 68
-      ? '<b>θ 過大：</b>cosθ → 0 使 T = mg/cosθ 急升，繩會斷。DSE 常問「可否水平轉（θ=90°）」：不可，因 Tcosθ = mg 需無限大。'
-      : '分解法：豎直 T cosθ = mg（無加速度）、水平 T sinθ = mω²r；兩式相除消 T 得 tanθ = ω²r/g，與 m 無關。',
-    draw(p, d) {
-      const kc = Math.min(H, W) / (4.7 * Math.max(0.5, p.r)), camK = H / 620;
-      const AX = W / 2 - 60, CAPY = 80 * camK, th = d.th, L = 90 * camK / Math.cos(th);
-      const pxr = (x0, y0, z0) => { const den = 9.6 + z0 * kc; return [AX + x0 * kc * 9.6 / den, CAPY + (y0 * 9.6 + z0 * kc) * camK / den]; };
-      const [tx, ty] = pxr(p.r * Math.sin(S.sw), -L, p.r * Math.cos(S.sw));
-      ctx.strokeStyle = '#2a3245'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(AX, CAPY - 42 * camK); ctx.lineTo(AX, CAPY); ctx.stroke();
-      ctx.fillStyle = '#3a4457'; ctx.fillRect(AX - 36 * camK, CAPY - 48 * camK, 72 * camK, 8 * camK);
-      ctx.save(); ctx.globalAlpha = .5; ctx.strokeStyle = '#1d2331';
-      for (let i = 0; i < 26; i++) {
-        const a = i / 26 * TAU, [gx, gy] = pxr(p.r * Math.sin(a), -L, p.r * Math.cos(a));
-        ctx.beginPath(); ctx.moveTo(AX, CAPY); ctx.lineTo(gx, gy); ctx.stroke();
-      }
-      ctx.restore();
-      ctx.setLineDash([5, 6]); ctx.strokeStyle = '#3a4457'; ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      for (let i = 0; i <= 48; i++) {
-        const [gx, gy] = pxr(p.r * Math.sin(i / 48 * TAU), -L, p.r * Math.cos(i / 48 * TAU));
-        i ? ctx.lineTo(gx, gy) : ctx.moveTo(gx, gy);
-      }
-      ctx.stroke(); ctx.setLineDash([]);
-      for (let i = 0; i < S.trail.length; i++) {
-        const a = i / S.trail.length, [qx, qy] = pxr(p.r * Math.sin(S.trail[i]), -L, p.r * Math.cos(S.trail[i]));
-        ctx.globalAlpha = .05 + .6 * a; ctx.fillStyle = '#00d4ff';
-        ctx.beginPath(); ctx.arc(qx, qy, (1.6 + 2.6 * a) * camK, 0, TAU); ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = '#4a5468'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(AX, CAPY); ctx.lineTo(tx, ty); ctx.stroke();
-      const ar = Math.min(120, L * .34) * camK;
-      ctx.strokeStyle = '#ffb300'; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.arc(AX, CAPY, ar, Math.PI / 2 - th, Math.PI / 2); ctx.stroke();
-      ctx.fillStyle = '#ffb300'; ctx.font = '600 13px ui-monospace,monospace'; ctx.textAlign = 'left';
-      ctx.fillText('θ = ' + fmt(p.th, 1) + '°', AX + 14 * camK, CAPY + ar + 6 * camK);
-      ctx.fillStyle = '#5c6475'; ctx.font = '12px ui-monospace,monospace'; ctx.textAlign = 'center';
-      ctx.fillText('鉛垂線', AX, CAPY - 54 * camK); ctx.textAlign = 'left';
-      ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 16 * camK; ctx.fillStyle = '#e8edf5';
-      ctx.beginPath(); ctx.arc(tx, ty, 9 * camK, 0, TAU); ctx.fill(); ctx.shadowBlur = 0;
-      const n3 = (x, y, z) => { const m = Math.hypot(x, y, z); return [x / m, y / m, z / m]; };
-      const vs = [[0, -Math.cos(th), -Math.sin(th)], [-Math.sin(S.sw), 0, -Math.cos(S.sw)], [0, 1, 0]];
-      const cols = ['#ffb300', '#ffb300', '#ff4466'];
-      const mags = [d.T, d.F, p.m * p.g];
-      const scale = Math.min(26 * camK, 300 / Math.max(1, Math.max(d.T, d.F)));
-      let lo = ty;
-      vs.forEach((u3, i) => {
-        const u = n3(u3[0], u3[1], u3[2]);
-        const ex = tx + u[0] * mags[i] * scale, ey = ty + u[1] * mags[i] * scale + u[2] * mags[i] * scale * .30 * camK;
-        drawArrow(tx, ty, ex, ey, cols[i], 3.4 * camK, i === 2);
-        tag((i === 0 ? 'T = ' + fmt(mags[0], 1) + ' N' : i === 1 ? 'F_c = ' + fmt(mags[1], 1) + ' N' : 'mg = ' + fmt(mags[2], 1) + ' N'),
-            ex + (i === 1 ? 10 * camK : 6 * camK), ey - 10 * camK, cols[i]);
-        lo = Math.min(lo, ey);
-      });
-      const vl = (34 + Math.min(60, d.w * p.r * 9)) * camK;
-      drawArrow(tx, ty, tx - Math.sin(S.sw) * vl, ty - Math.cos(S.sw) * vl * .30, '#00d4ff', 3 * camK);
-      tag('v', tx - Math.sin(S.sw) * vl + 6 * camK, ty - Math.cos(S.sw) * vl * .30 - 10 * camK, '#00d4ff');
-      heading('② 圓錐擺（conical pendulum）', 'T 分解為豎直 mg 與水平 F_c；θ 由 ω 決定');
-    }
-  },
-  /* ---------- 3. 斜路／banking ---------- */
-  bank: {
-    name: '③ 斜路 banking', tip: '設計速率 v = √(rg tanθ)',
-    params: { m: 1200, r: 60, th: 15, v: 12.5, mu: 0.7 },
-    ctl: [
-      { k: 'm', t: '質量 mass m (kg)', min: 50, max: 5000, step: 10 },
-      { k: 'r', t: '彎道半徑 r (m)', min: 10, max: 300, step: 1 },
-      { k: 'th', t: '路面傾角 θ (degree)', min: 0, max: 40, step: .5 },
-      { k: 'v', t: '車速 v (m/s)', min: 2, max: 80, step: .5 },
-      { k: 'mu', t: '摩擦係數 μ', min: 0, max: 1.2, step: .01 }
-    ],
-    chips: [['設計速率', { m: 1200, r: 60, th: 15, v: 12.5, mu: .7 }],
-            ['車速 1.5 倍', { m: 1200, r: 60, th: 15, v: 19, mu: .7 }],
-            ['無摩擦設計', { m: 1200, r: 60, th: 25, v: 16.6, mu: 0 }],
-            ['平面彎道 μ=0.7', { m: 1200, r: 60, th: 0, v: 19, mu: .7 }]],
-    derive: p => {
-      const th = p.th * D2R, F = p.m * p.v * p.v / p.r, Wt = p.m * G;
-      const N = Wt * Math.cos(th) + F * Math.sin(th);
-      const fr0 = F * Math.cos(th) - Wt * Math.sin(th);
-      const fr = Math.abs(fr0) < 1e-6 ? 0 : fr0;   // 設計速率時不需摩擦
-      const fmax = p.mu * N, fneed = Math.min(Math.abs(fr), fmax);
-      return { th: th, F: F, W: Wt, N: N, fr: fr, fmax: fmax, need: fneed,
-               ok: Math.abs(fr) <= fmax + 1e-6, vd: Math.sqrt(p.r * G * Math.tan(th)),
-               muMin: Math.abs(fr) > 0 ? Math.abs(fr) / N : 0, f: p.v / (TAU * p.r), T: TAU * p.r / p.v };
-    },
-    out: d => [['所需 F_c = mv²/r', fmt(d.F, 0) + ' N', 'rd'],
-               ['設計速率 √(rg tanθ)', fmt(d.vd, 1) + ' m/s', ''],
-               ['法向力 N', fmt(d.N, 0) + ' N', 'am'],
-               ['需要摩擦 f', fmt(d.fr, 0) + ' N', 'am'],
-               ['最大摩擦 μN', fmt(d.fmax, 0) + ' N', 'am'],
-               ['最低 μ = ' + fmt(d.muMin, 2), d.ok ? '✅ 可過彎' : '❌ 打滑', d.ok ? 'gn' : 'rd']],
-    base: d => [['F_c 對照', fmt(d.F, 0) + ' N'], ['N 對照', fmt(d.N, 0) + ' N']],
-    note: () => {
-      const d = SCN.bank.derive(P);
-      return d.ok
-        ? '<b>可安全過彎：</b>所需徑向力 ' + fmt(d.F, 0) + ' N ≤ 摩擦極限 ' + fmt(d.fmax, 0) + ' N。注意 N ≠ mg（有斜面時 N = mg cosθ + (mv²/r) sinθ）。'
-        : '<b>打滑：</b>所需 ' + fmt(d.F, 0) + ' N 超過 μN = ' + fmt(d.fmax, 0) + ' N。DSE 問法：「求不滑出彎道的最低 μ」→ μ_min = ' + fmt(d.muMin, 2) + '。';
-    },
-    draw(p, d) {
-      const CX = W / 2 - 60, CY = H / 2 + 30, R = 205, YK = 88, DZ = 0.6;
-      const depth = 1 + DZ * Math.cos(S.sw);
-      const tx = x => CX + x * VS, ty = y => CY + y * VS;
-      const pxr = (x0, y0, z0) => [CX + x0 * VS, CY + (y0 + z0 * DZ) * VS];
-      const th = d.th;
-      ctx.strokeStyle = '#1d2331'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.ellipse(CX, CY, R * VS, YK * VS, 0, 0, TAU); ctx.stroke();
-      ctx.setLineDash([5, 6]); ctx.strokeStyle = '#2a3245'; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.ellipse(CX, CY, R * VS, YK * VS, 0, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
-      for (let i = 0; i < S.trail.length; i++) {
-        const a = i / S.trail.length, ang = S.trail[i];
-        ctx.globalAlpha = .05 + .5 * a; ctx.fillStyle = '#00d4ff';
-        ctx.beginPath(); ctx.arc(CX + R * VS * Math.sin(ang), CY + YK * VS * Math.cos(ang), (1.4 + 2.4 * a) * VS, 0, TAU); ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = '#3a4457'; ctx.beginPath(); ctx.arc(CX, CY, 15 * VS, 0, TAU); ctx.fill();
-      ctx.strokeStyle = '#2a3245'; ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(CX + R * VS * Math.sin(S.sw), CY + YK * VS * Math.cos(S.sw)); ctx.stroke();
-      ctx.fillStyle = '#5c6475'; ctx.font = '12px ui-monospace,monospace';
-      ctx.fillText('r = ' + fmt(p.r, 0) + ' m', CX + 20 * VS, CY - 8 * VS);
-      const cx = CX + R * VS * Math.sin(S.sw), cy = CY + YK * VS * Math.cos(S.sw), s = depth * VS;
-      ctx.save(); ctx.translate(cx, cy); ctx.rotate(-th); ctx.scale(1, .8);
-      ctx.fillStyle = '#0f1117'; ctx.strokeStyle = '#ffb300'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.ellipse(0, 0, 34 * s, 13 * s, 0, 0, TAU); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#1a1f2c'; ctx.strokeStyle = '#ffb300';
-      ctx.beginPath(); ctx.moveTo(24 * s, 12 * s); ctx.lineTo(34 * s, 22 * s); ctx.lineTo(0, 22 * s); ctx.lineTo(-16 * s, 12 * s);
-      ctx.closePath(); ctx.fill(); ctx.stroke();
-      ctx.restore();
-      ctx.fillStyle = '#e8edf5'; ctx.font = '600 13px ui-monospace,monospace';
-      ctx.fillText('m = ' + fmt(p.m, 0) + ' kg · ' + fmt(p.v, 1) + ' m/s', cx + 44 * VS, cy + 6 * VS);
-      const c = p.r * VS, C = 17 * VS, off = (qx, qy) => [cx + qx * c - qy * C, cy + qx * C + qy * c];
-      const Lfc = (72 + Math.min(80, d.F / 160)) * VS;
-      const [ex1, ey1] = off(-Math.sin(S.sw), -Math.max(.4, Math.abs(Math.cos(S.sw))));
-      drawArrow(cx, cy, cx + ex1 * Lfc, cy + ey1 * Lfc, '#ff4466', 3.4 * VS);
-      tag('F_c = ' + fmt(d.F, 0) + ' N', cx + ex1 * Lfc + 8 * VS, cy + ey1 * Lfc, '#ff4466');
-      const [ex2, ey2] = off(0, -1);
-      drawArrow(cx, cy, cx + ex2 * 100 * VS, cy + ey2 * 100 * VS, '#ffb300', 3.2 * VS);
-      tag('N = ' + fmt(d.N, 0) + ' N', cx + ex2 * 100 * VS + 8 * VS, cy + ey2 * 100 * VS, '#ffb300');
-      drawArrow(cx, cy, cx, cy + 78 * VS, '#ff4466', 2.6 * VS, true);
-      tag('mg = ' + fmt(d.W, 0) + ' N', cx + 10 * VS, cy + 78 * VS, '#ff4466');
-      const [ex3, ey3] = off(-Math.sign(d.fr) * Math.sin(S.sw) || -1, -Math.sign(d.fr) * Math.max(.4, Math.abs(Math.cos(S.sw))) || 0);
-      const Lfr = (34 + Math.min(60, Math.abs(d.fr) / 160)) * VS;
-      drawArrow(cx, cy, cx + ex3 * Lfr, cy + ey3 * Lfr, d.ok ? '#ffb300' : '#ff4466', 3 * VS);
-      tag('f = ' + fmt(Math.abs(d.fr), 0) + ' N', cx + ex3 * Lfr + 8 * VS, cy + ey3 * Lfr, d.ok ? '#ffb300' : '#ff4466');
-      ctx.setLineDash([4, 4]); ctx.strokeStyle = '#3a4457'; ctx.lineWidth = 1.2;
-      const gh = 150 * VS;
-      ctx.beginPath(); ctx.moveTo(cx + 110 * VS, cy + gh); ctx.lineTo(cx + 110 * VS, cy - gh); ctx.stroke();
-      ctx.setLineDash([]); ctx.fillStyle = '#4a5468'; ctx.font = '11px ui-monospace,monospace';
-      ctx.fillText('水平', cx + 118 * VS, cy + gh);
-      ctx.beginPath(); ctx.moveTo(cx - 80 * VS, cy); ctx.lineTo(cx - 80 * VS, cy - Math.tan(th) * 80 * VS); ctx.strokeStyle = '#ffb300';
-      ctx.beginPath(); ctx.moveTo(cx - 80 * VS, cy); ctx.lineTo(cx + 80 * VS, cy); ctx.stroke();
-      heading('③ 斜坡彎道（banked track）· θ = ' + fmt(p.th, 1) + '°', '向心方向水平指圓心；N 與摩擦 f 共同提供 F_c');
-    }
-  },
-  /* ---------- 4. 鉛垂圓周（臨界速度） ---------- */
-  vert: {
-    name: '④ 鉛垂圓周', tip: '最高點 T + mg = mv²/r，臨界 v_top = √(gr)',
-    params: { m: 1, r: 1.2, vtop: 4, g: 9.81 },
-    ctl: [
-      { k: 'm', t: '質量 mass m (kg)', min: .1, max: 20, step: .1 },
-      { k: 'r', t: '半徑 radius r (m)', min: .3, max: 3, step: .05 },
-      { k: 'vtop', t: '最高點速率 v_top (m/s)', min: .5, max: 14, step: .1 },
-      { k: 'g', t: '重力 g (m s⁻²)', min: 1, max: 20, step: .01 }
-    ],
-    chips: [['臨界（繩剛鬆）', { m: 1, r: 1.2, vtop: 3.43, g: 9.81 }],
-            ['低於臨界（脫軌）', { m: 1, r: 1.2, vtop: 2.4, g: 9.81 }],
-            ['高速', { m: 1, r: 1.2, vtop: 8, g: 9.81 }],
-            ['長繩 r=2.5', { m: 2, r: 2.5, vtop: 6, g: 9.81 }]],
-    derive: p => {
-      const vc = Math.sqrt(p.g * p.r);
-      const vbot = Math.sqrt(p.vtop * p.vtop + 4 * p.g * p.r);   // 能量守恆：ΔPE = 2mgr
-      const Ttop = p.m * p.vtop * p.vtop / p.r - p.m * p.g;
-      const Tbot = p.m * vbot * vbot / p.r + p.m * p.g;
-      return { vc: vc, ok: p.vtop >= vc - 1e-6, vbot: vbot, Ttop: Ttop, Tbot: Tbot,
-               Ftop: p.m * p.vtop * p.vtop / p.r, Fbot: p.m * vbot * vbot / p.r,
-               w: p.vtop / p.r, T: TAU * p.r / p.vtop };
-    },
-    out: d => [['臨界 v_c = √(gr)', fmt(d.vc) + ' m/s', 'gn'],
-               ['最高點 F_c = mv²/r', fmt(d.Ftop) + ' N', 'rd'],
-               ['最高點張力 T_top', (d.ok ? fmt(d.Ttop) : '0（繩鬆）') + ' N', 'am'],
-               ['最低點速率 v_bot', fmt(d.vbot) + ' m/s', ''],
-               ['最低點張力 T_bot', fmt(d.Tbot) + ' N', 'am'],
-               ['狀態', d.ok ? '✅ 可完成整圈' : '❌ 未到頂就脫離', d.ok ? 'gn' : 'rd']],
-    base: d => [['臨界 v_c 對照', fmt(d.vc) + ' m/s'], ['T_bot 對照', fmt(d.Tbot) + ' N']],
-    note: () => {
-      const d = SCN.vert.derive(P);
-      return d.ok
-        ? '<b>可完成整圈：</b>T_top = mv²/r − mg = ' + fmt(d.Ttop) + ' N ≥ 0。最高點重力已向下（已提供部分 F_c），故 T_top < T_bot。'
-        : '<b>脫軌：</b>v_top < √(gr) = ' + fmt(d.vc) + ' m/s，重力超過所需 F_c，繩鬆。DSE 標準求法：臨界條件 T_top = 0 → mv²/r = mg。';
-    },
-    draw(p, d) {
-      const CX = W / 2 - 70, CY = H / 2 + 6, R = Math.max(80, Math.min(182, p.r * 95));
-      ctx.setLineDash([6, 6]); ctx.strokeStyle = '#2a3245'; ctx.lineWidth = 1.4;
-      ctx.beginPath(); ctx.arc(CX, CY, R * VS, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
-      ctx.strokeStyle = '#3a4457'; ctx.beginPath();
-      ctx.moveTo(CX - 9 * VS, CY); ctx.lineTo(CX + 9 * VS, CY);
-      ctx.moveTo(CX, CY - 9 * VS); ctx.lineTo(CX, CY + 9 * VS); ctx.stroke();
-      ctx.fillStyle = '#5c6475'; ctx.font = '12px ui-monospace,monospace';
-      ctx.fillText('O', CX + 12 * VS, CY + 16 * VS);
-      ctx.fillText('最高點 top', CX - 34 * VS, CY - R * VS - 20 * VS);
-      ctx.fillText('最低點 bottom', CX - 44 * VS, CY + R * VS + 32 * VS);
-      ctx.strokeStyle = '#2a3245'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(CX, CY - R * VS); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(CX, CY + R * VS); ctx.stroke();
-      for (let i = 0; i < S.trail.length; i++) {
-        const a = i / S.trail.length, [qx, qy] = cpt(R, S.trail[i], CX, CY);
-        ctx.globalAlpha = .05 + .55 * a; ctx.fillStyle = '#00d4ff';
-        ctx.beginPath(); ctx.arc(qx, qy, (1.6 + 2.6 * a) * VS, 0, TAU); ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      const ang = S.sw, [x, y] = cpt(R, ang, CX, CY);
-      const s = Math.sin(ang), v2 = Math.max(0.01, p.vtop * p.vtop + 2 * p.g * p.r * (1 + s));
-      const v = Math.sqrt(v2), ac = v2 / p.r;
-      ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 15 * VS; ctx.fillStyle = '#e8edf5';
-      ctx.beginPath(); ctx.arc(x, y, 9 * VS, 0, TAU); ctx.fill(); ctx.shadowBlur = 0;
-      const ux = Math.cos(ang), uy = Math.sin(ang);
-      const Lv = (34 + Math.min(70, v * 5)) * VS, La = (44 + Math.min(90, ac * 3)) * VS;
-      drawArrow(x, y, x - uy * Lv, y - ux * Lv, '#00d4ff', 3.2 * VS);
-      tag('v = ' + fmt(v, 1), x - uy * Lv + 6 * VS, y - ux * Lv - 10 * VS, '#00d4ff');
-      drawArrow(x + 10 * VS, y + 12 * VS, x - ux * La + 10 * VS, y + uy * La + 12 * VS, '#ff4466', 3.2 * VS);
-      tag('a_c = ' + fmt(ac, 1), x - ux * La + 14 * VS, y + uy * La + 22 * VS, '#ff4466');
-      drawArrow(x - 12 * VS, y, x - 12 * VS, y + 70 * VS, '#ff4466', 2.8 * VS, true);
-      tag('mg = ' + fmt(p.m * p.g, 1) + ' N', x - 8 * VS, y + 70 * VS, '#ff4466');
-      const Tr = p.m * v2 / p.r - p.m * p.g * s;
-      const Lf = Math.max(30, Math.min(150, Math.abs(Tr) * 10)) * VS;
-      if (Tr > 0.001) {
-        drawArrow(x + 14 * VS, y - 14 * VS, x + 14 * VS - ux * Lf, y - 14 * VS + uy * Lf, '#ffb300', 3.2 * VS);
-        tag('T = ' + fmt(Tr, 1) + ' N', x + 18 * VS - ux * Lf, y - 24 * VS + uy * Lf, '#ffb300');
-      } else {
-        tag('T = 0（繩鬆 · slack）', x + 18 * VS, y - 30 * VS, '#ff9876');
-      }
-      heading('④ 鉛垂圓周運動（vertical circle）', '速率處處不同：能量守恆 + 徑向 F_c = mv²/r');
-    }
+  var listEl = document.getElementById('qlist'), scoreEl = document.getElementById('score');
+  function build() {
+    scoreEl.textContent = '得分 0 / ' + QUESTIONS.length;
+    listEl.innerHTML = QUESTIONS.map(function (item, qi) {
+      var opts = item.o.map(function (text, oi) {
+        return '<button class="qopt" data-q="' + qi + '" data-o="' + oi + '">' +
+               '<span class="key">' + 'ABCD'[oi] + '</span><span>' + text + '</span></button>';
+      }).join('');
+      return '<div class="qitem"><div class="qno">Question ' + (qi + 1) + '</div>' +
+             '<div class="qtext">' + item.q + '</div><div class="qopts">' + opts + '</div>' +
+             '<div class="qexp" id="exp-' + qi + '"></div></div>';
+    }).join('');
   }
-};
-
-/* ============ 狀態與 UI ============ */
-let cur = 'basic', P = {}, base = null, baseP = null;
-const S = { sw: 0, run: true, trail: [], labels: true };
-
-function loadScene(key) {
-  cur = key;
-  const sc = SCN[key];
-  P = Object.assign({}, sc.params);
-  baseP = Object.assign({}, sc.params);
-  base = sc.derive(baseP);
-  S.sw = 0; S.trail.length = 0;
-  [...money('tabs').children].forEach(b => b.classList.toggle('on', b.dataset.k === key));
-  money('ctls').innerHTML = '';
-  sc.ctl.forEach(c => {
-    const box = document.createElement('div');
-    const lab = document.createElement('label'); lab.className = 'ctl';
-    const sp = document.createElement('span'); sp.textContent = c.t;
-    lab.appendChild(sp);
-    const num = document.createElement('input');
-    num.type = 'number'; num.value = P[c.k]; num.min = c.min; num.max = c.max; num.step = c.step;
-    num.addEventListener('input', () => {
-      const x = parseFloat(num.value);
-      if (isFinite(x)) { P[c.k] = Math.max(c.min, Math.min(c.max, x)); rng.value = P[c.k]; readout(); }
+  var answered = {}, correct = 0;
+  listEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('.qopt'); if (!btn) return;
+    var qi = +btn.dataset.q, oi = +btn.dataset.o;
+    if (answered[qi] !== undefined) return;
+    answered[qi] = oi;
+    var item = QUESTIONS[qi], ok = oi === item.a;
+    if (ok) correct++;
+    scoreEl.textContent = '得分 ' + correct + ' / ' + QUESTIONS.length;
+    listEl.querySelectorAll('.qopt[data-q="' + qi + '"]').forEach(function (b) {
+      b.disabled = true;
+      var bo = +b.dataset.o;
+      if (bo === item.a) b.classList.add('right');
+      else if (bo === oi) b.classList.add('wrong');
     });
-    lab.appendChild(num); box.appendChild(lab);
-    const rng = document.createElement('input');
-    rng.type = 'range'; rng.min = c.min; rng.max = c.max; rng.step = c.step; rng.value = P[c.k];
-    rng.addEventListener('input', () => { P[c.k] = parseFloat(rng.value); num.value = P[c.k]; readout(); });
-    box.appendChild(rng); money('ctls').appendChild(box);
+    var exp = document.getElementById('exp-' + qi);
+    exp.innerHTML = '<span class="verdict ' + (ok ? 'ok' : 'no') + '">' +
+      (ok ? '正確' : '正確答案：' + 'ABCD'[item.a]) + '</span>' + item.e;
+    exp.classList.add('show');
   });
-  money('chips').innerHTML = '';
-  sc.chips.forEach(([name, vals]) => {
-    const b = document.createElement('button'); b.className = 'chip'; b.textContent = name;
-    b.addEventListener('click', () => {
-      P = Object.assign({}, P, vals); baseP = Object.assign({}, P); base = sc.derive(baseP);
-      S.trail.length = 0;
-      [...money('ctls').querySelectorAll('input[type=number]')].forEach((n, i) => n.value = P[sc.ctl[i].k]);
-      [...money('ctls').querySelectorAll('input[type=range]')].forEach((n, i) => n.value = P[sc.ctl[i].k]);
-      readout();
-    });
-    money('chips').appendChild(b);
+  document.getElementById('qreset').addEventListener('click', function () {
+    answered = {}; correct = 0; build();
   });
-  readout();
-}
-function readout() {
-  const sc = SCN[cur], d = sc.derive(P);
-  money('outs').innerHTML = sc.out(d).map(([k, v, c]) =>
-    '<div class="out"><k>' + k + '</k><b class="' + c + '">' + v + '</b></div>').join('');
-  const bd = sc.base(d).map(([k, v], i) =>
-    '<span class="pill">' + k + '：' + v + '</span>').join('');
-  const dev = sc.base(base).some(([, v], i) => v !== sc.base(d)[i][1]);
-  money('badge').innerHTML = bd + '<span class="pill ' + (dev ? 'bad' : 'ok') + '">' +
-    (dev ? '參數已改變（對照基準失效）' : '目前 = 基準 ✅') + '</span>';
-  money('note').innerHTML = sc.note(d);
-}
-function step(dt) {
-  const sc = SCN[cur], p = SCN[cur].params;
-  const w = cur === 'basic' ? p.v / p.r
-          : cur === 'cone' ? Math.sqrt(p.g * Math.tan(p.th * D2R) / p.r)
-          : cur === 'bank' ? p.v / p.r : 1.6;
-  S.sw = (S.sw + w * dt) % TAU;
-  S.trail.push(S.sw); if (S.trail.length > 96) S.trail.shift();
-}
-let last = performance.now();
-function loop(now) {
-  const dt = Math.min((now - last) / 1000, .05); last = now;
-  if (S.run) step(dt);
-  ctx.fillStyle = '#0a0c11'; ctx.fillRect(0, 0, W, H);
-  grid();
-  SCN[cur].draw(P, SCN[cur].derive(P));
-  requestAnimationFrame(loop);
-}
-Object.keys(SCN).forEach(k => {
-  const b = document.createElement('button');
-  b.className = 'tab'; b.dataset.k = k; b.textContent = SCN[k].name.slice(2);
-  b.title = SCN[k].tip;
-  b.addEventListener('click', () => loadScene(k));
-  money('tabs').appendChild(b);
-});
-money('pp').addEventListener('click', () => { S.run = !S.run; money('pp').textContent = S.run ? '暫停' : '繼續'; });
-money('rs').addEventListener('click', () => { S.sw = 0; S.trail.length = 0; });
-money('lbl').addEventListener('click', () => {
-  S.labels = !S.labels; money('lbl').textContent = S.labels ? '隱藏標籤' : '顯示標籤';
-});
-loadScene('basic');
-resize();
-requestAnimationFrame(loop);
+  build();
+})();
 </script>
-</body>
-</html>
