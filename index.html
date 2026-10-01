@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>最強 Physics by Jacky</title>
+<style>
+  :root{
+    --gold:#b8860b; --gold-bright:#c9a227; --gold-deep:#8b6914;
+    --ink:#3c3c43; --ink-soft:#6b6b73; --line:#d4d4d8; --card:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink); font-size:15px; line-height:1.7;
+    font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Helvetica Neue",sans-serif;
+    background:
+      radial-gradient(1100px 620px at 50% -140px, rgba(255,255,255,.96), rgba(255,255,255,0) 70%),
+      radial-gradient(760px 460px at 12% 108%, rgba(201,162,39,.09), rgba(201,162,39,0) 72%),
+      radial-gradient(760px 460px at 92% 4%, rgba(184,134,11,.07), rgba(184,134,11,0) 70%),
+      linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
+    background-attachment:fixed;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1130px;margin:0 auto;padding:0 22px}
+  .hero{text-align:center;padding:80px 0 44px}
+  .eyebrow{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:20px}
+  h1{
+    margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
+    font-size:clamp(34px,6vw,60px);letter-spacing:.07em;
+    background:linear-gradient(180deg,#a97c0f 0%,#c9a227 62%,#8b6914 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .subtitle{margin:16px 0 0;font-size:clamp(12.5px,2.2vw,15px);letter-spacing:.2em;color:var(--ink-soft)}
+  .divider{width:132px;height:1px;margin:28px auto 0;border:0;
+    background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
+  .hero-note{margin:22px auto 0;max-width:640px;font-size:13.5px;color:var(--ink-soft)}
+  main{padding-bottom:24px}
+  .category{margin-bottom:54px}
+  .cat-head{display:flex;align-items:baseline;gap:14px;padding-left:15px;position:relative;margin-bottom:5px}
+  .cat-head::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:3px;border-radius:2px;
+    background:var(--acc,var(--gold));opacity:.85}
+  .cat-head h2{margin:0;font-size:18px;font-weight:650;letter-spacing:.05em;color:var(--gold-deep);
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif}
+  .cat-head .zh{font-size:13px;color:var(--ink-soft);letter-spacing:.08em;font-weight:400}
+  .cat-line{height:1px;margin-bottom:20px;opacity:.5;
+    background:linear-gradient(90deg,var(--acc,var(--gold)) 0%,var(--line) 42%,transparent 100%)}
+  .grid{display:grid;gap:18px;grid-template-columns:1fr}
+  @media(min-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}
+  .card{
+    position:relative;background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:22px 22px 20px;display:flex;flex-direction:column;min-height:198px;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05);
+    transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+  }
+  .card::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;
+    border-radius:12px 12px 0 0;opacity:.9;
+    background:linear-gradient(90deg,var(--acc,var(--gold)),transparent 90%)}
+  .card.live:hover{transform:translateY(-4px);border-color:var(--gold-bright);
+    box-shadow:0 2px 6px rgba(184,134,11,.14),0 16px 34px rgba(184,134,11,.17)}
+  .card-name{margin:10px 0 4px;font-size:16px;font-weight:650;color:#2b2b30;letter-spacing:.01em}
+  .card-name span{display:block;font-size:12.5px;font-weight:400;color:var(--ink-soft);margin-top:3px;letter-spacing:.04em}
+  .card-desc{margin:8px 0 18px;font-size:13px;line-height:1.65;color:var(--ink-soft);flex:1}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:3px 10px;border-radius:20px;border:1px solid}
+  .tag.live{color:var(--gold-deep);border-color:rgba(184,134,11,.45);background:rgba(201,162,39,.10)}
+  .tag.soon{color:#8c8c93;border-color:#dcdce0;background:#f4f4f6}
+  .btn{display:inline-block;font-size:13px;font-weight:650;letter-spacing:.04em;
+    padding:8px 17px;border-radius:7px;text-decoration:none;border:1px solid transparent;
+    transition:background .2s ease,box-shadow .2s ease}
+  .btn.live{background:var(--gold);color:#fff;box-shadow:0 3px 10px rgba(184,134,11,.26)}
+  .btn.live:hover{background:#a3760a;box-shadow:0 5px 16px rgba(184,134,11,.34)}
+  .btn.soon{background:#f0f0f2;color:#a0a0a7;border-color:#e0e0e3;cursor:not-allowed}
+  .card.soon{opacity:.78;background:#fcfcfd}
+  .card.soon .card-name{color:#55555c}
+  footer{margin-top:24px;padding:34px 0 46px;text-align:center;border-top:1px solid var(--line)}
+  footer .mark{display:inline-block;margin-bottom:12px;font-size:11px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--gold-deep)}
+  footer p{margin:0 auto;max-width:760px;font-size:12.5px;line-height:1.85;color:#7d7d85;letter-spacing:.02em}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">DSE Physics</div>
+    <h1>最強 Physics by Jacky</h1>
+    <p class="subtitle">DSE Physics Interactive Simulation Lab</p>
+    <hr class="divider">
+    <p class="hero-note">按香港中學文憑試物理科課程編排：必修五個範疇，加天文學與原子世界選修。每個模擬以可調參數的動態模型呈現，配合 DSE 考試重點與公式速查。</p>
+  </header>
+
+  <main>
+
+    <section class="category" style="--acc:#b8860b">
+      <div class="cat-head"><h2>Mechanics</h2><span class="zh">力學</span></div>
+      <div class="cat-line"></div>
+      <div class="grid">
+        <article class="card live" style="--acc:#b8860b">
+          <h3 class="card-name">Circular Motion<span>圓周運動</span></h3>
+          <p class="card-desc">向心加速度與向心力：水平圓周、conical pendulum、banked track、鉛垂圓周，含實時向量與拖尾。</p>
+          <div class="row">
+            <span class="tag live">Live</span>
+            <a class="btn live" href="dse-physics-lab.html" target="_blank" rel="noopener">打開 →</a>
+          </div>
+        </article>
+        <article class="card soon" style="--acc:#b8860b">
+          <h3 class="card-name">Projectile Motion<span>拋體運動</span></h3>
+          <p class="card-desc">水平拋射與斜拋：初速度分解、飛行時間、射程與最高點。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#b8860b">
+          <h3 class="card-name">Simple Harmonic Motion<span>簡諧運動</span></h3>
+          <p class="card-desc">彈簧振子與單擺：位移、速度、加速度相位關係與週期。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#b8860b">
+          <h3 class="card-name">Force and Momentum<span>力與動量</span></h3>
+          <p class="card-desc">Newton's laws、動量守恆與碰撞、impulse 與淨力圖解。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#b8860b">
+          <h3 class="card-name">Work, Energy and Power<span>功、能量與功率</span></h3>
+          <p class="card-desc">動能與勢能互換、conservation of energy、功率計算。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#b8860b">
+          <h3 class="card-name">Gravitation<span>萬有引力</span></h3>
+          <p class="card-desc">引力場、衛星軌道與 Kepler's laws、重力勢能。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category" style="--acc:#c2a34a">
+      <div class="cat-head"><h2>Waves</h2><span class="zh">波動</span></div>
+      <div class="cat-line"></div>
+      <div class="grid">
+        <article class="card soon" style="--acc:#c2a34a">
+          <h3 class="card-name">Wave Motion<span>波動</span></h3>
+          <p class="card-desc">橫波傳播、wavelength 與 frequency、粒子振動與波形圖的分別。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#c2a34a">
+          <h3 class="card-name">Reflection and Refraction<span>反射與折射</span></h3>
+          <p class="card-desc">Snell's law、total internal reflection 與臨界角計算。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#c2a34a">
+          <h3 class="card-name">Interference and Diffraction<span>干涉與繞射</span></h3>
+          <p class="card-desc">雙縫干涉、path difference 條件、光柵與繞射圖樣。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#c2a34a">
+          <h3 class="card-name">Stationary Waves<span>駐波</span></h3>
+          <p class="card-desc">弦線與空氣柱的節點、波腹與共振頻率。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#c2a34a">
+          <h3 class="card-name">Lens Imaging<span>透鏡成像</span></h3>
+          <p class="card-desc">凸透鏡成像作圖、放大率與實像虛像判斷。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category" style="--acc:#a8821f">
+      <div class="cat-head"><h2>Electricity and Magnetism</h2><span class="zh">電學與磁學</span></div>
+      <div class="cat-line"></div>
+      <div class="grid">
+        <article class="card soon" style="--acc:#a8821f">
+          <h3 class="card-name">Electrostatics<span>靜電學</span></h3>
+          <p class="card-desc">電場強度與場線、點電荷與平行板電場、electric potential。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#a8821f">
+          <h3 class="card-name">Circuit<span>電路</span></h3>
+          <p class="card-desc">串並聯、內電阻與 terminal voltage、功率分配與電錶接法。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#a8821f">
+          <h3 class="card-name">Magnetic Field<span>磁場</span></h3>
+          <p class="card-desc">長直導線與螺線管的磁場、帶電粒子受 magnetic force 的圓周運動。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#a8821f">
+          <h3 class="card-name">EM Induction<span>電磁感應</span></h3>
+          <p class="card-desc">磁通量變化、Lenz's law 方向判斷與 induced e.m.f. 計算。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#a8821f">
+          <h3 class="card-name">AC and Transformer<span>交流電與變壓器</span></h3>
+          <p class="card-desc">r.m.s. 值、turns ratio、transmission of electricity 功率損耗。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category" style="--acc:#cbb26a">
+      <div class="cat-head"><h2>Heat and Gases</h2><span class="zh">熱與氣體</span></div>
+      <div class="cat-line"></div>
+      <div class="grid">
+        <article class="card soon" style="--acc:#cbb26a">
+          <h3 class="card-name">Temperature and Heat<span>溫度與熱</span></h3>
+          <p class="card-desc">temperature 與 internal energy、heat capacity 與 specific heat capacity。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#cbb26a">
+          <h3 class="card-name">Change of State<span>物態變化</span></h3>
+          <p class="card-desc">latent heat of fusion 與 vaporisation、加熱曲線與潛熱平台。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#cbb26a">
+          <h3 class="card-name">Transfer Processes<span>傳熱過程</span></h3>
+          <p class="card-desc">conduction、convection 與 radiation 的機制與影響因素。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#cbb26a">
+          <h3 class="card-name">Gas Laws<span>氣體定律</span></h3>
+          <p class="card-desc">Boyle's law、Charles' law、pressure law 與 ideal gas equation。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category" style="--acc:#8b6914">
+      <div class="cat-head"><h2>Radioactivity and Nuclear Energy</h2><span class="zh">放射性與核能</span></div>
+      <div class="cat-line"></div>
+      <div class="grid">
+        <article class="card soon" style="--acc:#8b6914">
+          <h3 class="card-name">Nuclear Decay<span>核衰變</span></h3>
+          <p class="card-desc">alpha / beta / gamma 衰變方程、penetrating power 與電離能力。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#8b6914">
+          <h3 class="card-name">Half-life and Decay Curve<span>半衰期與衰變曲線</span></h3>
+          <p class="card-desc">half-life 計算、隨機性與 background count 扣除。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#8b6914">
+          <h3 class="card-name">Nuclear Energy<span>核能</span></h3>
+          <p class="card-desc">mass defect 與 E = mc²、fission 與 fusion 的能量釋放。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category" style="--acc:#9c7a12">
+      <div class="cat-head"><h2>Astronomy and Atomic World</h2><span class="zh">選修：天文學與原子世界</span></div>
+      <div class="cat-line"></div>
+      <div class="grid">
+        <article class="card soon" style="--acc:#9c7a12">
+          <h3 class="card-name">Gravity and Orbits<span>引力與軌道</span></h3>
+          <p class="card-desc">Kepler's laws、同步衛星、逃逸速度與軌道能量。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#9c7a12">
+          <h3 class="card-name">Stars and Universe<span>恒星與宇宙</span></h3>
+          <p class="card-desc">光度與距離、Hertzsprung-Russell diagram、redshift 與 Hubble's law。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#9c7a12">
+          <h3 class="card-name">Photoelectric Effect<span>光電效應</span></h3>
+          <p class="card-desc">photoelectric equation、work function 與 stopping potential。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#9c7a12">
+          <h3 class="card-name">Atomic Model and Spectra<span>原子模型與光譜</span></h3>
+          <p class="card-desc">Bohr model、energy level 躍遷與 line spectrum。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span class="mark">最強 Physics by Jacky</span>
+    <p>新增模擬：複製卡片HTML結構，改連結與名稱即可</p>
+  </footer>
+
+</div>
+</body>
+</html>
