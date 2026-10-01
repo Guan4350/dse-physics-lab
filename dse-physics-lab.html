@@ -1,110 +1,708 @@
-<!-- ══ 概念小測：樣式 ══ -->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Circular Motion 圓周運動 · 最強 Physics by Jacky</title>
 <style>
+  *{box-sizing:border-box}
+  :root{--gold:#b8860b;--gold-bright:#c9a227;--gold-deep:#8b6914;
+        --ink:#3c3c43;--ink-soft:#6b6b73;--line:#d4d4d8}
+  body{zoom:1.1}
+  body{margin:0;color:var(--ink);font-size:14px;line-height:1.7;
+    font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",sans-serif;
+    background:
+      radial-gradient(1100px 620px at 50% -140px,rgba(255,255,255,.96),rgba(255,255,255,0) 70%),
+      radial-gradient(760px 460px at 12% 108%,rgba(201,162,39,.08),rgba(201,162,39,0) 72%),
+      linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
+    background-attachment:fixed;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .wrap{max-width:1400px;margin:0 auto;padding:0 20px 40px}
+
+  .topnav{position:sticky;top:0;z-index:80;backdrop-filter:saturate(180%) blur(14px);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+    background:rgba(250,250,252,.90);border-bottom:1px solid rgba(212,212,216,.9)}
+  .topnav .bar{max-width:1420px;margin:0 auto;padding:9px 16px;
+    display:flex;align-items:center;gap:12px;flex-wrap:nowrap}
+  .brand{display:flex;align-items:baseline;gap:7px;text-decoration:none;white-space:nowrap;flex:0 0 auto}
+  .brand b{font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-size:16px;font-weight:650;
+    letter-spacing:.03em;color:var(--gold-deep)}
+  .brand i{font-style:normal;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#9a9aa2}
+  .navlinks{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:flex-end;
+    gap:2px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;padding:2px 0}
+  .navlinks::-webkit-scrollbar{display:none}
+  .navlinks a{display:inline-flex;align-items:center;gap:5px;text-decoration:none;flex:0 0 auto;
+    font-size:12.6px;font-weight:600;color:#55555c;padding:7px 10px;border-radius:8px;
+    border:1px solid transparent;white-space:nowrap;transition:.16s}
+  .navlinks a:hover{color:var(--gold-deep);background:rgba(201,162,39,.10);border-color:rgba(184,134,11,.28)}
+  .navlinks a.on{color:var(--gold-deep);background:rgba(201,162,39,.15);border-color:rgba(184,134,11,.45);font-weight:700}
+  .navlinks a em{font-style:normal;font-size:13.5px;line-height:1}
+  @media(max-width:1180px){.brand b{font-size:14.5px}.brand i{display:none}
+    .navlinks a{padding:7px 8px;gap:4px}.navlinks a .en{display:none}}
+  @media(max-width:760px){.brand b{font-size:13px}
+    .navlinks a{padding:6px 7px;font-size:12px}
+    .navlinks a .zh{display:none}.navlinks a em{font-size:15px}}
+
+  .page-head{padding:34px 0 22px;text-align:center}
+  .eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:12px}
+  h1.title{margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
+    font-size:clamp(24px,4vw,34px);letter-spacing:.05em;
+    background:linear-gradient(180deg,#a97c0f 0%,#c9a227 62%,#8b6914 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .lede{margin:12px auto 0;max-width:700px;font-size:13px;color:var(--ink-soft)}
+  .divider{width:120px;height:1px;margin:20px auto 0;border:0;
+    background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
+
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
+  @media(max-width:1100px){.layout{grid-template-columns:minmax(0,1fr)}}
+  .stage{zoom:0.9}
+  .panel{display:flex;flex-direction:column;gap:11px;zoom:0.82}
+  .card{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 20px rgba(60,60,67,.05)}
+  .card h2{margin:0 0 9px;font-size:11px;letter-spacing:.12em;color:#8b6914;
+    text-transform:uppercase;font-weight:700;
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif}
+  .out{display:flex;justify-content:space-between;font-size:12.6px;margin:5px 0}
+  .out k{color:var(--ink-soft)}.out b{font-weight:650;font-variant-numeric:tabular-nums}
+  .cy{color:#0b7fa8}.rd{color:#c0455f}.am{color:#a3760a}.gn{color:#1f6b4a}
+  canvas{background:#0a0c11;border:1px solid #232838;border-radius:11px;width:100%;height:auto;display:block}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+  .tab{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 12px;
+    font-size:12.4px;font-weight:650;color:#55555c;cursor:pointer;font-family:inherit;transition:.16s}
+  .tab:hover{border-color:var(--gold-bright);color:var(--gold-deep)}
+  .tab.on{background:rgba(201,162,39,.16);border-color:rgba(184,134,11,.5);color:var(--gold-deep)}
+  .ctl{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0;font-size:12.6px}
+  .ctl span{color:var(--ink-soft)}
+  input[type=number]{width:92px;background:#fbfbfd;border:1px solid var(--line);color:var(--ink);
+    border-radius:6px;padding:5px 8px;font-size:12.6px;font-family:inherit}
+  input[type=number]:focus{outline:1px solid var(--gold-bright);border-color:var(--gold-bright)}
+  input[type=range]{width:100%;accent-color:#b8860b;background:none;cursor:pointer}
+  .btns{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{background:var(--gold);color:#fff;border:0;border-radius:7px;padding:8px 15px;
+    font-size:12.6px;font-weight:700;cursor:pointer;font-family:inherit}
+  .btn.alt{background:#fff;border:1px solid var(--line);color:#55555c}
+  .btn.alt:hover{border-color:var(--gold-bright);color:var(--gold-deep)}
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{background:#fbfbfd;border:1px solid var(--line);border-radius:20px;padding:4px 12px;
+    font-size:11.6px;color:#55555c;cursor:pointer;font-family:inherit}
+  .chip:hover{border-color:var(--gold-bright);color:var(--gold-deep)}
+  .note{font-size:12.2px;line-height:1.65;color:#6b5a1a;background:rgba(201,162,39,.10);
+    border:1px solid rgba(184,134,11,.30);border-radius:8px;padding:10px 12px}
+  .kb{max-height:310px;overflow:auto}
+  .kbi{border-left:3px solid var(--gold-bright);padding:5px 0 6px 9px;margin-bottom:9px}
+  .kbi b{display:block;font-size:12.2px;color:#2b2b30;margin-bottom:2px}
+  .kbi p{margin:0 0 3px;font-size:11.6px;color:var(--ink-soft);line-height:1.6}
+  .kbi em{font-style:normal;font-size:11.2px;color:#a8443a;display:block}
+  .lgd{font-size:11.6px;color:var(--ink-soft);line-height:1.9}
+  .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;
+    background:#f0f0f2;color:#55555c;margin:3px 5px 0 0}
+  .pill.ok{background:rgba(47,158,111,.14);color:#1f6b4a}
+  .pill.bad{background:rgba(192,69,95,.12);color:#a8443a}
+
   #quiz{margin-top:14px}
-  #quiz .qhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
-  #quiz h2{margin:0;font-size:17px;font-weight:650;color:#8b6914;
+  #quiz .qhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  #quiz h2{margin:0;font-size:16px;font-weight:650;color:var(--gold-deep);
     font-family:"Songti TC","Noto Serif TC",Georgia,serif;letter-spacing:.04em}
-  #quiz .qsub{font-size:12px;color:#6b6b73}
-  #score{font-size:13px;font-weight:700;color:#8b6914;background:rgba(201,162,39,.14);
+  #quiz .qsub{font-size:11.8px;color:var(--ink-soft)}
+  #score{font-size:12.4px;font-weight:700;color:var(--gold-deep);background:rgba(201,162,39,.15);
     border:1px solid rgba(184,134,11,.35);border-radius:20px;padding:4px 13px}
-  .qitem{background:#fff;border:1px solid #d4d4d8;border-radius:11px;padding:18px 20px;margin-top:14px;
-    box-shadow:0 1px 2px rgba(60,60,67,.05),0 6px 18px rgba(60,60,67,.05)}
-  .qitem .qno{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#9a9aa2}
-  .qitem .qtext{font-size:14.5px;line-height:1.8;color:#2b2b30;margin:7px 0 13px}
-  .qopts{display:flex;flex-direction:column;gap:8px}
-  .qopt{display:flex;gap:11px;align-items:flex-start;text-align:left;cursor:pointer;
-    background:#fbfbfd;border:1px solid #e2e2e6;border-radius:9px;padding:11px 14px;
-    font-size:14px;line-height:1.65;color:#3c3c43;font-family:inherit;transition:.16s}
-  .qopt:hover{border-color:#c9a227;background:rgba(201,162,39,.07)}
-  .qopt .key{flex:0 0 22px;height:22px;border-radius:50%;border:1.5px solid #c9c9d0;color:#77777f;
-    font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
-  .qopt.right{border-color:#2f9e6f;background:rgba(47,158,111,.09)}
+  .qitem{background:#fff;border:1px solid var(--line);border-radius:11px;padding:16px 18px;margin-top:12px;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 6px 16px rgba(60,60,67,.05)}
+  .qno{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#9a9aa2}
+  .qtext{font-size:13.6px;line-height:1.8;color:#2b2b30;margin:6px 0 12px}
+  .qopts{display:flex;flex-direction:column;gap:7px}
+  .qopt{display:flex;gap:10px;align-items:flex-start;text-align:left;cursor:pointer;background:#fbfbfd;
+    border:1px solid #e2e2e6;border-radius:9px;padding:10px 13px;font-size:13.2px;line-height:1.7;
+    color:var(--ink);font-family:inherit;transition:.16s}
+  .qopt:hover{border-color:var(--gold-bright);background:rgba(201,162,39,.07)}
+  .qopt .key{flex:0 0 21px;height:21px;border-radius:50%;border:1.5px solid #c9c9d0;color:#77777f;
+    font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .qopt.right{border-color:#2f9e6f;background:rgba(47,158,111,.10)}
   .qopt.right .key{border-color:#2f9e6f;background:#2f9e6f;color:#fff}
-  .qopt.wrong{border-color:#c0455f;background:rgba(192,69,95,.08)}
+  .qopt.wrong{border-color:#c0455f;background:rgba(192,69,95,.09)}
   .qopt.wrong .key{border-color:#c0455f;background:#c0455f;color:#fff}
   .qopt[disabled]{cursor:default}
-  .qexp{margin-top:12px;font-size:13.4px;line-height:1.85;color:#4a4a52;
-    background:#fbf8ef;border-left:3px solid #c9a227;border-radius:0 8px 8px 0;padding:12px 15px;display:none}
+  .qexp{margin-top:11px;font-size:12.8px;line-height:1.9;color:#4a4a52;background:#fbf8ef;
+    border-left:3px solid var(--gold-bright);border-radius:0 8px 8px 0;padding:12px 15px;display:none}
   .qexp.show{display:block}
   .qexp b{color:#8b6914}
   .qexp .verdict{font-weight:700;display:block;margin-bottom:5px}
-  .qexp .verdict.ok{color:#2f9e6f}.qexp .verdict.no{color:#c0455f}
-  .qreset{margin-top:16px;background:#fff;border:1px solid #d4d4d8;border-radius:8px;
-    color:#8b6914;font-size:13px;font-weight:650;padding:8px 16px;cursor:pointer}
-  .qreset:hover{border-color:#c9a227;background:rgba(201,162,39,.08)}
-</style>
+  .qexp .verdict.ok{color:#1f6b4a}.qexp .verdict.no{color:#a8443a}
+  .qreset{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:8px;
+    color:var(--gold-deep);font-size:12.6px;font-weight:650;padding:8px 16px;cursor:pointer;font-family:inherit}
+  .qreset:hover{border-color:var(--gold-bright);background:rgba(201,162,39,.08)}
 
-<!-- ══ 概念小測：結構（放在 canvas 與「快捷情境」卡之間） ══ -->
-<section class="card" id="quiz" style="margin-top:14px">
-  <div class="qhead">
-    <h2>DSE 概念小測 · Circular Motion</h2>
-    <span class="qsub">點選答案即時對答，附完整拆解</span>
-    <span id="score">得分 0 / 6</span>
+  footer{margin-top:26px;padding:30px 0 46px;text-align:center;border-top:1px solid var(--line)}
+  footer .mark{display:inline-block;margin-bottom:10px;font-size:11px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--gold-deep)}
+  footer p{margin:0;font-size:12.4px;color:#7d7d85}
+</style>
+</head>
+<body data-nav="sim">
+
+<nav class="topnav">
+  <div class="bar">
+    <a class="brand" href="index.html"><b>最強 Physics by Jacky</b><i>DSE Lab</i></a>
+    <div class="navlinks" id="navLinks">
+      <a href="index.html"          data-nav="home"><em>🏠</em><span class="en">Home</span><span class="zh">主頁</span></a>
+      <a href="simulations.html"    data-nav="sim"><em>🧪</em><span class="en">Simulations</span><span class="zh">互動模擬</span></a>
+      <a href="exam-bank.html"      data-nav="exam"><em>📝</em><span class="en">Exam Bank</span><span class="zh">試題庫</span></a>
+      <a href="formula-sheet.html"  data-nav="formula"><em>📖</em><span class="en">Formula</span><span class="zh">公式表</span></a>
+      <a href="revision-notes.html" data-nav="notes"><em>📚</em><span class="en">Notes</span><span class="zh">筆記</span></a>
+      <a href="about.html"          data-nav="about"><em>ℹ️</em><span class="en">About</span><span class="zh">關於</span></a>
+    </div>
   </div>
-  <div id="qlist"></div>
-  <button class="qreset" id="qreset">重做全部</button>
-</section>
+</nav>
+
+<div class="wrap">
+  <header class="page-head">
+    <div class="eyebrow">Simulation · Mechanics</div>
+    <h1 class="title">Circular Motion 圓周運動</h1>
+    <p class="lede">四個場景：水平圓周、斜坡彎道、圓錐擺、鉛垂圓周。所有數值可直接鍵入，向量箭頭與拖尾即時更新。</p>
+    <hr class="divider">
+  </header>
+
+  <div class="layout">
+    <div>
+      <div class="stage">
+        <div class="tabs" id="tabs"></div>
+        <canvas id="cv" width="1000" height="640"></canvas>
+      </div>
+
+      <section class="card" id="quiz" style="margin-top:14px">
+        <div class="qhead">
+          <h2>DSE 概念小測 · Circular Motion</h2>
+          <span class="qsub">點選答案即時對答，附完整拆解</span>
+          <span id="score">得分 0 / 6</span>
+        </div>
+        <div id="qlist"></div>
+        <button class="qreset" id="qreset">重做全部</button>
+      </section>
+
+      <div class="card" style="margin-top:12px">
+        <h2>快捷情境</h2>
+        <div class="chips" id="chips"></div>
+        <div class="chips" id="modes" style="margin-top:8px"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="card"><h2>實時數值</h2><div id="outs"></div><div id="badge"></div></div>
+      <div class="card"><h2>參數（鍵入即時更新）</h2><div id="ctls"></div></div>
+      <div class="card"><h2>控制</h2><div class="btns">
+        <button class="btn" id="pp">暫停</button>
+        <button class="btn alt" id="rs">重置</button>
+        <button class="btn alt" id="lbl">隱藏標籤</button>
+      </div></div>
+      <div class="card"><h2>DSE Exam Note</h2><div class="note" id="note">–</div></div>
+      <div class="card"><h2>DSE 技巧戰略庫 · circularMotion</h2><div class="kb" id="kb"></div></div>
+      <div class="card"><h2>圖例</h2><div class="lgd" id="lgd">
+        <code class="cy">■</code> v velocity　<code class="rd">■</code> a centripetal acceleration　
+        <code class="am">■</code> force（T / N / friction）
+      </div></div>
+    </div>
+  </div>
+
+  <footer>
+    <span class="mark">最強 Physics by Jacky</span>
+    <p>Circular Motion Simulation · 深色模擬介面，配合淺色教學網站</p>
+  </footer>
+</div>
 
 <script>
-/* ══ 概念小測引擎：題目同本頁模擬場景一一對應 ══ */
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const W = cv.width, H = cv.height, TAU = Math.PI * 2, D2R = Math.PI / 180, G = 9.81;
+const money = id => document.getElementById(id);
+
+/* ══ 技巧庫（circularMotion） ══ */
+const KH = [
+ ['CM1 力源識別', '先寫出提供向心力的實際力（張力／摩擦力／法向力／重力分量），再令它 = mv²/r。', '⚠ 只寫 the centripetal force 而不指明來源 → 該分不給。'],
+ ['CM2 禁離心力', '離心力係假想力；乘客外傾要用 inertia 解釋。', '⚠ 出現 centrifugal force acts on the object → 直接扣分。'],
+ ['CM3 固定變量比值', 'v 固定 → F_c ∝ 1/r；ω 固定 → F_c ∝ r（用 mω²r 更快）。', '⚠ 未判斷哪個量固定就代 mv²/r，平方／反比搞反。'],
+ ['CM4 單位換算', 'ω = 2πn / 60（n 為 rpm）。', '⚠ 漏 ÷60，全題連鎖錯。'],
+ ['CM5 臨界條件', '設 T = 0 或 N = 0，只用重力提供 F_c ⇒ v_min = √(gr)。', '⚠ 臨界時仍代住 T 或 N，方程多一個未知數。'],
+ ['CM6 鉛垂圓周兩點', '最高點 T + mg = mv²/r；最低點 T − mg = mv²/r；v_bot² = v_top² + 4gr。', '⚠ 方向搞反、漏重力項、忘記能量方程。'],
+ ['CM7 圓錐擺分解', '豎直 T cosθ = mg、水平 T sinθ = mω²r；相除消 T ⇒ tanθ = ω²r/g，與 m 無關。', '⚠ 忘記豎直平衡式無法消 T；誤以為 T = mg。'],
+ ['CM8 ω–r 陷阱', 'r 固定時 ω 加倍 ⇒ h = g/ω² 變 1/4、θ 變大；不可當 r、θ 同時不變。', '⚠ 強行代入 tanθ = ω²r/g 而忽略 h = r/tanθ 的連帶變化。']
+];
+money('kb').innerHTML = KH.map(([t, s, p]) =>
+  '<div class="kbi"><b>' + t + '</b><p>' + s + '</p><em>' + p + '</em></div>').join('');
+
+/* ══ 繪圖工具 ══ */
+function fmt(x, d) {
+  if (!isFinite(x)) return '∞';
+  const n = d === undefined ? (Math.abs(x) >= 100 ? 1 : Math.abs(x) >= 1 ? 2 : 3) : d;
+  return x.toFixed(n);
+}
+function drawArrow(x1, y1, x2, y2, color, w, dashed) {
+  const a = Math.atan2(y2 - y1, x2 - x1), len = Math.hypot(x2 - x1, y2 - y1);
+  if (len < 1.5) return;
+  const h = Math.min(13, len * .45);
+  ctx.save(); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = w || 3; ctx.lineCap = 'round';
+  if (dashed) ctx.setLineDash([7, 5]);
+  ctx.beginPath(); ctx.moveTo(x1, y1);
+  ctx.lineTo(x2 - h * .7 * Math.cos(a), y2 - h * .7 * Math.sin(a)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - h * Math.cos(a - .42), y2 - h * Math.sin(a - .42));
+  ctx.lineTo(x2 - h * Math.cos(a + .42), y2 - h * Math.sin(a + .42));
+  ctx.closePath(); ctx.fill(); ctx.restore();
+}
+function tag(t, x, y, c) {
+  if (!S.labels) return;
+  ctx.fillStyle = c; ctx.font = '600 12.5px ui-monospace,Menlo,monospace';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y);
+}
+function grid() {
+  ctx.strokeStyle = '#141926'; ctx.lineWidth = 1;
+  for (let x = 0; x <= W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y <= H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+}
+function heading(t, s) {
+  ctx.fillStyle = '#7a8698'; ctx.font = '600 12px ui-monospace,Menlo,monospace';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.fillText(t, 22, 18);
+  ctx.fillStyle = '#4a5468'; ctx.fillText(s, 22, 36);
+}
+function project3D(x0, y0, z0, camK, f) {
+  const den = 9.6 + z0 * camK;
+  return [f.cx + x0 * camK * 9.6 / den, f.cy + (y0 * 9.6 / den + z0 * camK / den) * camK];
+}
+function drawForceVectors(b, phy, theta, sw, scale, camK) {
+  const n3 = (x, y, z) => { const m = Math.hypot(x, y, z) || 1; return [x / m, y / m, z / m]; };
+  const vs = [n3(0, -Math.cos(theta), -Math.sin(theta)),
+              n3(-Math.sin(sw), 0, -Math.cos(sw)), n3(0, 1, 0)];
+  const cols = ['#ffb300', '#ffb300', '#ff4466'];
+  const mags = [phy.T, phy.F, phy.W];
+  const names = ['T = ' + fmt(phy.T, 1) + ' N', 'F_c = ' + fmt(phy.F, 1) + ' N', 'mg = ' + fmt(phy.W, 1) + ' N'];
+  vs.forEach((u, i) => {
+    const len = mags[i] * scale;
+    const ex = b.bx + u[0] * len, ey = b.by + (u[1] + u[2] * .30) * len;
+    drawArrow(b.bx, b.by, ex, ey, cols[i], 3.4 * camK, i === 2);
+    tag(names[i], ex + (i === 1 ? 10 : 6) * camK, ey - 10 * camK, cols[i]);
+  });
+}
+function drawConeFrame(f, camK, p, th, L) {
+  const Lc = L * camK;
+  ctx.strokeStyle = '#2a3245'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(f.cx, f.cy - 42 * camK); ctx.lineTo(f.cx, f.cy); ctx.stroke();
+  ctx.fillStyle = '#3a4457'; ctx.fillRect(f.cx - 36 * camK, f.cy - 48 * camK, 72 * camK, 8 * camK);
+  ctx.save(); ctx.globalAlpha = .5; ctx.strokeStyle = '#1d2331';
+  for (let i = 0; i < 26; i++) {
+    const a = i / 26 * TAU, g = project3D(p.r * Math.sin(a), -Lc, p.r * Math.cos(a), camK, f);
+    ctx.beginPath(); ctx.moveTo(f.cx, f.cy); ctx.lineTo(g[0], g[1]); ctx.stroke();
+  }
+  ctx.restore();
+  ctx.setLineDash([5, 6]); ctx.strokeStyle = '#3a4457'; ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  for (let i = 0; i <= 48; i++) {
+    const g = project3D(p.r * Math.sin(i / 48 * TAU), -Lc, p.r * Math.cos(i / 48 * TAU), camK, f);
+    i ? ctx.lineTo(g[0], g[1]) : ctx.moveTo(g[0], g[1]);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+  for (let i = 0; i < S.trail.length; i++) {
+    const a = i / S.trail.length;
+    const g = project3D(p.r * Math.sin(S.trail[i]), -Lc, p.r * Math.cos(S.trail[i]), camK, f);
+    ctx.globalAlpha = .05 + .6 * a; ctx.fillStyle = '#00d4ff';
+    ctx.beginPath(); ctx.arc(g[0], g[1], (1.6 + 2.6 * a) * camK, 0, TAU); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  const gb = project3D(p.r * Math.sin(S.sw), -Lc, p.r * Math.cos(S.sw), camK, f);
+  ctx.strokeStyle = '#4a5468'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(f.cx, f.cy); ctx.lineTo(gb[0], gb[1]); ctx.stroke();
+  const ar = Math.min(120, Lc * .34);
+  ctx.strokeStyle = '#ffb300'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(f.cx, f.cy, ar, Math.PI / 2 - th, Math.PI / 2); ctx.stroke();
+  ctx.fillStyle = '#ffb300'; ctx.font = '600 13px ui-monospace,monospace';
+  ctx.fillText('θ = ' + fmt(th / D2R, 1) + '°', f.cx + 14 * camK, f.cy + ar + 6 * camK);
+  ctx.fillStyle = '#5c6475'; ctx.font = '12px ui-monospace,monospace'; ctx.textAlign = 'center';
+  ctx.fillText('鉛垂線', f.cx, f.cy - 54 * camK); ctx.textAlign = 'left';
+  ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 16 * camK; ctx.fillStyle = '#e8edf5';
+  ctx.beginPath(); ctx.arc(gb[0], gb[1], 9 * camK, 0, TAU); ctx.fill(); ctx.shadowBlur = 0;
+  return { bx: gb[0], by: gb[1] };
+}
+
+/* ══ 場景 ══ */
+const SCN = {
+  basic: {
+    name: '① 水平圓周（繩）', params: { m: 1.5, r: 1.2, v: 6 },
+    ctl: [{ k: 'm', t: '質量 mass m (kg)', min: .1, max: 20, step: .1 },
+          { k: 'r', t: '半徑 radius r (m)', min: .2, max: 4, step: .05 },
+          { k: 'v', t: '速率 speed v (m/s)', min: .2, max: 20, step: .1 }],
+    chips: [['輕球慢轉', { m: 1, r: 1.5, v: 4 }], ['重球快轉', { m: 5, r: 1.5, v: 8 }],
+            ['短半徑快轉', { m: 1.5, r: .6, v: 8 }], ['標準', { m: 1.5, r: 1.2, v: 6 }]],
+    derive: p => ({ w: p.v / p.r, a: p.v * p.v / p.r, F: p.m * p.v * p.v / p.r, T: TAU * p.r / p.v }),
+    out: d => [['a_c = v²/r', fmt(d.a) + ' m s⁻²', 'rd'], ['F_c = m v²/r', fmt(d.F) + ' N', 'am'],
+               ['ω = v/r', fmt(d.w) + ' rad s⁻¹', ''], ['T = 2πr/v', fmt(d.T) + ' s', '']],
+    base: d => [['a_c 對照', fmt(d.a)], ['F_c 對照', fmt(d.F)]],
+    note: () => '<b>F_c 由繩張力提供：</b>v 加倍 → F_c 變 4 倍；r 加倍（v 固定）→ F_c 減半。圓周上速率不變，只有方向變。',
+    draw(p, d) {
+      const R = Math.max(48, Math.min(178, p.r * 92)), CX = W / 2 - 80, CY = H / 2 + 20;
+      ctx.setLineDash([6, 7]); ctx.strokeStyle = '#2a3245'; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.arc(CX, CY, R, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = '#3a4457'; ctx.beginPath();
+      ctx.moveTo(CX - 9, CY); ctx.lineTo(CX + 9, CY); ctx.moveTo(CX, CY - 9); ctx.lineTo(CX, CY + 9); ctx.stroke();
+      ctx.fillStyle = '#5c6475'; ctx.font = '12px ui-monospace,monospace'; ctx.textAlign = 'left';
+      ctx.fillText('O', CX + 12, CY + 16);
+      for (let i = 0; i < S.trail.length; i++) {
+        const a = i / S.trail.length, ang = S.trail[i];
+        ctx.globalAlpha = .05 + .55 * a; ctx.fillStyle = '#00d4ff';
+        ctx.beginPath(); ctx.arc(CX + R * Math.cos(ang), CY - R * Math.sin(ang), 1.6 + 2.6 * a, 0, TAU); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      const x = CX + R * Math.cos(S.sw), y = CY - R * Math.sin(S.sw);
+      ctx.strokeStyle = '#2a3245'; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(x, y); ctx.stroke();
+      ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 15; ctx.fillStyle = '#e8edf5';
+      ctx.beginPath(); ctx.arc(x, y, 9, 0, TAU); ctx.fill(); ctx.shadowBlur = 0;
+      const ux = Math.cos(S.sw), uy = Math.sin(S.sw);
+      const Lv = 36 + Math.min(70, p.v * 4), La = 44 + Math.min(90, d.a * 3.5), Lf = 44 + Math.min(90, d.F * 1.6);
+      drawArrow(x, y, x - uy * Lv, y - ux * Lv, '#00d4ff', 3.2);
+      tag('v = ' + fmt(p.v, 1), x - uy * Lv + 6, y - ux * Lv - 10, '#00d4ff');
+      drawArrow(x + 8, y + 12, x - ux * La + 8, y + uy * La + 12, '#ff4466', 3.2);
+      tag('a_c = ' + fmt(d.a, 1), x - ux * La + 12, y + uy * La + 22, '#ff4466');
+      drawArrow(x - 8, y - 12, x - ux * Lf - 8, y + uy * Lf - 12, '#ffb300', 3.2);
+      tag('F_c = ' + fmt(d.F, 1) + ' N', x - ux * Lf - 6, y + uy * Lf - 22, '#ffb300');
+      heading('① 水平圓周（string tension）', 'v 恆切線；T 與 a_c 恆指向圓心 O');
+    }
+  },
+  bank: {
+    name: '② 斜坡彎道 banking', params: { m: 1200, r: 60, th: 15, v: 12.5, mu: .7 },
+    ctl: [{ k: 'm', t: '質量 mass m (kg)', min: 50, max: 5000, step: 10 },
+          { k: 'r', t: '彎道半徑 r (m)', min: 10, max: 300, step: 1 },
+          { k: 'th', t: '路面傾角 θ (degree)', min: 0, max: 40, step: .5 },
+          { k: 'v', t: '車速 v (m/s)', min: 2, max: 80, step: .5 },
+          { k: 'mu', t: '摩擦係數 μ', min: 0, max: 1.2, step: .01 }],
+    chips: [['設計速率', { m: 1200, r: 60, th: 15, v: 12.5, mu: .7 }],
+            ['車速 1.5 倍', { m: 1200, r: 60, th: 15, v: 19, mu: .7 }],
+            ['無摩擦設計', { m: 1200, r: 60, th: 25, v: 16.6, mu: 0 }],
+            ['平面彎道 μ=0.7', { m: 1200, r: 60, th: 0, v: 19, mu: .7 }]],
+    derive: p => {
+      const th = p.th * D2R, F = p.m * p.v * p.v / p.r, Wt = p.m * G;
+      const N = Wt * Math.cos(th) + F * Math.sin(th);
+      const fr = F * Math.cos(th) - Wt * Math.sin(th);
+      const fmax = p.mu * N;
+      return { th: th, F: F, W: Wt, N: N, fr: fr, fmax: fmax,
+               ok: Math.abs(fr) <= fmax + 1e-6, vd: Math.sqrt(p.r * G * Math.tan(th)),
+               muMin: Math.abs(fr) > 0 ? Math.abs(fr) / N : 0 };
+    },
+    out: d => [['所需 F_c = mv²/r', fmt(d.F, 0) + ' N', 'rd'], ['設計速率 √(rg tanθ)', fmt(d.vd, 1) + ' m/s', ''],
+               ['法向力 N', fmt(d.N, 0) + ' N', 'am'], ['需要摩擦 |f|', fmt(Math.abs(d.fr), 0) + ' N', 'am'],
+               ['最大摩擦 μN', fmt(d.fmax, 0) + ' N', 'am'],
+               ['最低 μ = ' + fmt(d.muMin, 2), d.ok ? '✅ 可過彎' : '❌ 打滑', d.ok ? 'gn' : 'rd']],
+    base: d => [['F_c 對照', fmt(d.F, 0)], ['N 對照', fmt(d.N, 0)]],
+    note: d => d.ok
+      ? '<b>可安全過彎：</b>所需徑向力 ' + fmt(d.F, 0) + ' N，摩擦極限 μN = ' + fmt(d.fmax, 0) + ' N。<br>注意 N ≠ mg：N = mg cosθ + (mv²/r) sinθ。'
+      : '<b>打滑：</b>所需 ' + fmt(Math.abs(d.fr), 0) + ' N 超過 μN = ' + fmt(d.fmax, 0) + ' N ⇒ 最低 μ_min = ' + fmt(d.muMin, 2) + '。',
+    draw(p, d) {
+      const CX = W / 2 - 60, CY = H / 2 + 30, R = 205, YK = 88, th = d.th;
+      const depth = 1 + .6 * Math.cos(S.sw);
+      ctx.strokeStyle = '#1d2331'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.ellipse(CX, CY + .5 * YK, R, YK, 0, 0, TAU); ctx.stroke();
+      ctx.setLineDash([5, 6]); ctx.strokeStyle = '#2a3245'; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.ellipse(CX, CY + .5 * YK, R, YK, 0, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+      const gp = (s, c) => [CX + R * s, CY + (c + .5) * YK];
+      for (let i = 0; i < S.trail.length; i++) {
+        const a = i / S.trail.length, g = gp(Math.sin(S.trail[i]), Math.cos(S.trail[i]));
+        ctx.globalAlpha = .05 + .5 * a; ctx.fillStyle = '#00d4ff';
+        ctx.beginPath(); ctx.arc(g[0], g[1], 1.4 + 2.4 * a, 0, TAU); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#3a4457'; ctx.beginPath(); ctx.arc(CX, CY + .5 * YK, 15, 0, TAU); ctx.fill();
+      const g0 = gp(Math.sin(S.sw), Math.cos(S.sw)), cx = g0[0], cy = g0[1], s = depth;
+      ctx.strokeStyle = '#2a3245'; ctx.beginPath(); ctx.moveTo(CX, CY + .5 * YK); ctx.lineTo(cx, cy); ctx.stroke();
+      ctx.fillStyle = '#5c6475'; ctx.font = '12px ui-monospace,monospace'; ctx.textAlign = 'left';
+      ctx.fillText('r = ' + fmt(p.r, 0) + ' m', CX + 20, CY + .5 * YK - 8);
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(-th); ctx.scale(1, .8);
+      ctx.fillStyle = '#0f1117'; ctx.strokeStyle = '#ffb300'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.ellipse(0, 0, 34 * s, 13 * s, 0, 0, TAU); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#1a1f2c';
+      ctx.beginPath(); ctx.moveTo(24 * s, 12 * s); ctx.lineTo(34 * s, 22 * s); ctx.lineTo(0, 22 * s); ctx.lineTo(-16 * s, 12 * s);
+      ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+      ctx.fillStyle = '#e8edf5'; ctx.font = '600 13px ui-monospace,monospace';
+      ctx.fillText('m = ' + fmt(p.m, 0) + ' kg · ' + fmt(p.v, 1) + ' m/s', cx + 44, cy + 6);
+      const off = (qx, qy) => [cx + qx * p.r - qy * 17, cy + qx * 17 + qy * p.r];
+      const e1 = off(-Math.sin(S.sw), -Math.max(.4, Math.abs(Math.cos(S.sw)))), e2 = off(0, -1);
+      const e3 = off(-Math.sign(d.fr) * Math.sin(S.sw) || -1, -Math.sign(d.fr) * Math.max(.4, Math.abs(Math.cos(S.sw))) || 0);
+      drawArrow(cx, cy, cx + e1[0] * 1.05, cy + e1[1] * 1.05, '#ff4466', 3.4);
+      tag('F_c = ' + fmt(d.F, 0) + ' N', cx + e1[0] * 1.1, cy + e1[1] * 1.1, '#ff4466');
+      drawArrow(cx, cy, cx + e2[0] * 100, cy + e2[1] * 100, '#ffb300', 3.2);
+      tag('N = ' + fmt(d.N, 0) + ' N', cx + e2[0] * 100 + 8, cy + e2[1] * 100, '#ffb300');
+      drawArrow(cx, cy, cx, cy + 78, '#ff4466', 2.6, true);
+      tag('mg = ' + fmt(d.W, 0) + ' N', cx + 10, cy + 78, '#ff4466');
+      drawArrow(cx, cy, cx + e3[0] * 74, cy + e3[1] * 74, d.ok ? '#ffb300' : '#ff4466', 3);
+      tag('f = ' + fmt(Math.abs(d.fr), 0) + ' N', cx + e3[0] * 80, cy + e3[1] * 80, d.ok ? '#ffb300' : '#ff4466');
+      ctx.fillStyle = '#4a5468'; ctx.font = '11px ui-monospace,monospace';
+      ctx.fillText('θ = ' + fmt(p.th, 1) + '°｜向心方向水平指圓心', 22, H - 26);
+      heading('② 斜坡彎道（banked track）', 'N 與摩擦 f 共同提供 F_c；設計速率時 f = 0');
+    }
+  },
+  cone: {
+    name: '③ 圓錐擺 conical', params: { m: 1.5, r: 1.2, g: 9.81, th: 35, cw: 0 },
+    ctl: [{ k: 'm', t: '質量 mass m (kg)', min: .1, max: 20, step: .1 },
+          { k: 'r', t: '圓周半徑 r (m)', min: .2, max: 3, step: .05 },
+          { k: 'th', t: '夾角 θ (degree)', min: 3, max: 82, step: .5 },
+          { k: 'g', t: '重力 g (m s⁻²)', min: 1, max: 20, step: .01 }],
+    chips: [['慢轉 θ=20°', { th: 20 }], ['中速 θ=45°', { th: 45 }],
+            ['高速 θ=70°', { th: 70 }], ['重球（T 升）', { th: 35, m: 6 }]],
+    derive: p => {
+      const th = p.th * D2R, w = Math.sqrt(p.g * Math.tan(th) / p.r);
+      return { th: th, deg: p.th, w: w, a: p.g * Math.tan(th), F: p.m * p.g * Math.tan(th),
+               T: p.m * p.g / Math.cos(th), W: p.m * p.g, Tp: TAU / w };
+    },
+    out: d => [['a_c = g tanθ', fmt(d.a) + ' m s⁻²', 'rd'], ['F_c = T sinθ', fmt(d.F) + ' N', 'am'],
+               ['T = mg/cosθ', fmt(d.T) + ' N', 'am'], ['ω = √(g tanθ/r)', fmt(d.w) + ' rad s⁻¹', ''],
+               ['T_p = 2π/ω', fmt(d.Tp) + ' s', '']],
+    base: d => [['a_c 對照', fmt(d.a)], ['T 對照', fmt(d.T)]],
+    note: d => d.deg > 68
+      ? '<b>θ 過大：</b>cosθ → 0 使 T = mg/cosθ 急升，繩會斷。DSE 常問「可否做到 θ = 90°」：不可，因 T cosθ = mg 需無限大。'
+      : '<b>分解法：</b>豎直 T cosθ = mg、水平 T sinθ = mω²r；相除消 T ⇒ tanθ = ω²r/g，與 m 無關。',
+    draw(p, d) {
+      const camK = Math.min(H, W) / (4.7 * Math.max(.5, p.r)), f = { cx: W / 2 - 60, cy: 80 };
+      const g = drawConeFrame(f, camK, p, d.th, 90 / Math.cos(d.th));
+      drawForceVectors(g, { T: d.T, F: d.F, W: d.W }, d.th, S.sw,
+        Math.min(22 * camK, 280 / Math.max(1, Math.max(d.T, d.F))), camK);
+      const vl = (34 + Math.min(60, d.w * p.r * 9)) * camK;
+      drawArrow(g.bx, g.by, g.bx - Math.sin(S.sw) * vl, g.by - Math.cos(S.sw) * vl * .30, '#00d4ff', 3 * camK);
+      tag('v', g.bx - Math.sin(S.sw) * vl + 6 * camK, g.by - Math.cos(S.sw) * vl * .30 - 10 * camK, '#00d4ff');
+      heading('③ 圓錐擺（conical pendulum）· θ = ' + fmt(d.deg, 1) + '°', 'T 分解為豎直 mg 與水平 F_c；θ 由 ω 與 r 決定');
+    }
+  },
+  vert: {
+    name: '④ 鉛垂圓周', params: { m: .5, r: .8, vtop: 2.8, g: 9.81 },
+    ctl: [{ k: 'm', t: '質量 mass m (kg)', min: .05, max: 20, step: .05 },
+          { k: 'r', t: '半徑 radius r (m)', min: .2, max: 3, step: .05 },
+          { k: 'vtop', t: '最高點速率 v_top (m/s)', min: .5, max: 14, step: .01 },
+          { k: 'g', t: '重力 g (m s⁻²)', min: 1, max: 20, step: .01 }],
+    chips: [['DSE 示範題臨界', { m: .5, r: .8, vtop: 2.8, g: 9.81 }],
+            ['低於臨界（脫軌）', { m: .5, r: .8, vtop: 2.5, g: 9.81 }],
+            ['高速', { m: 1, r: 1.2, vtop: 8, g: 9.81 }],
+            ['長繩 r=2.5', { m: 2, r: 2.5, vtop: 6, g: 9.81 }]],
+    derive: p => {
+      const vc = Math.sqrt(p.g * p.r), vbot = Math.sqrt(p.vtop * p.vtop + 4 * p.g * p.r);
+      return { vc: vc, ok: p.vtop >= vc - 1e-6, vbot: vbot,
+               Ttop: p.m * p.vtop * p.vtop / p.r - p.m * p.g,
+               Tbot: p.m * vbot * vbot / p.r + p.m * p.g,
+               Ftop: p.m * p.vtop * p.vtop / p.r };
+    },
+    out: d => [['臨界 v_c = √(gr)', fmt(d.vc) + ' m/s', 'gn'], ['最高點 F_c = mv²/r', fmt(d.Ftop) + ' N', 'rd'],
+               ['最高點張力 T_top', (d.ok ? fmt(d.Ttop) : '0（繩鬆）') + ' N', 'am'],
+               ['最低點速率 v_bot', fmt(d.vbot) + ' m/s', ''],
+               ['最低點張力 T_bot', fmt(d.Tbot) + ' N', 'am'],
+               ['狀態', d.ok ? '✅ 可完成整圈' : '❌ 未到頂就脫離', d.ok ? 'gn' : 'rd']],
+    base: d => [['v_c 對照', fmt(d.vc)], ['T_bot 對照', fmt(d.Tbot)]],
+    note: d => d.ok
+      ? '<b>可完成整圈：</b>T_top = mv²/r − mg = ' + fmt(d.Ttop) + ' N ≥ 0；T_bot = ' + fmt(d.Tbot) + ' N（最大）。<br>最高點重力已向下（已提供部分 F_c），故 T_top &lt; T_bot。'
+      : '<b>脫軌：</b>v_top &lt; √(gr) = ' + fmt(d.vc) + ' m/s，重力超過所需 F_c，繩鬆。臨界求法：T_top = 0 ⇒ mv²/r = mg。',
+    draw(p, d) {
+      const CX = W / 2 - 70, CY = H / 2 + 6, R = Math.max(80, Math.min(182, p.r * 95));
+      ctx.setLineDash([6, 6]); ctx.strokeStyle = '#2a3245'; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.arc(CX, CY, R, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = '#3a4457'; ctx.beginPath();
+      ctx.moveTo(CX - 9, CY); ctx.lineTo(CX + 9, CY); ctx.moveTo(CX, CY - 9); ctx.lineTo(CX, CY + 9); ctx.stroke();
+      ctx.fillStyle = '#5c6475'; ctx.font = '12px ui-monospace,monospace'; ctx.textAlign = 'left';
+      ctx.fillText('O', CX + 12, CY + 16);
+      ctx.fillText('最高點 top', CX - 34, CY - R - 20);
+      ctx.fillText('最低點 bottom', CX - 44, CY + R + 32);
+      ctx.strokeStyle = '#2a3245'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(CX, CY - R); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(CX, CY + R); ctx.stroke();
+      for (let i = 0; i < S.trail.length; i++) {
+        const a = i / S.trail.length, ang = S.trail[i];
+        ctx.globalAlpha = .05 + .55 * a; ctx.fillStyle = '#00d4ff';
+        ctx.beginPath(); ctx.arc(CX + R * Math.cos(ang), CY - R * Math.sin(ang), 1.6 + 2.6 * a, 0, TAU); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      const ang = S.sw, x = CX + R * Math.cos(ang), y = CY - R * Math.sin(ang), s = Math.sin(ang);
+      const v2 = Math.max(.01, p.vtop * p.vtop + 2 * p.g * p.r * (1 + s)), v = Math.sqrt(v2), ac = v2 / p.r;
+      ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 15; ctx.fillStyle = '#e8edf5';
+      ctx.beginPath(); ctx.arc(x, y, 9, 0, TAU); ctx.fill(); ctx.shadowBlur = 0;
+      const ux = Math.cos(ang), uy = Math.sin(ang);
+      const Lv = 34 + Math.min(70, v * 5), La = 44 + Math.min(90, ac * 3);
+      drawArrow(x, y, x - uy * Lv, y - ux * Lv, '#00d4ff', 3.2);
+      tag('v = ' + fmt(v, 2), x - uy * Lv + 6, y - ux * Lv - 10, '#00d4ff');
+      drawArrow(x + 10, y + 12, x - ux * La + 10, y + uy * La + 12, '#ff4466', 3.2);
+      tag('a_c = ' + fmt(ac, 1), x - ux * La + 14, y + uy * La + 22, '#ff4466');
+      drawArrow(x - 12, y, x - 12, y + 70, '#ff4466', 2.8, true);
+      tag('mg = ' + fmt(p.m * p.g, 2) + ' N', x - 8, y + 78, '#ff4466');
+      const Tr = p.m * v2 / p.r - p.m * p.g * s, Lf = Math.max(30, Math.min(150, Math.abs(Tr) * 10));
+      if (Tr > .001) {
+        drawArrow(x + 14, y - 14, x + 14 - ux * Lf, y - 14 + uy * Lf, '#ffb300', 3.2);
+        tag('T = ' + fmt(Tr, 2) + ' N', x + 18 - ux * Lf, y - 24 + uy * Lf, '#ffb300');
+      } else tag('T = 0（繩鬆 slack）', x + 18, y - 30, '#ff9876');
+      heading('④ 鉛垂圓周（vertical circle）', 'v_bot² = v_top² + 4gr（能量守恆）＋徑向 F_c = mv²/r');
+    }
+  }
+};
+
+/* ══ 狀態與 UI ══ */
+let cur = 'basic', P = {}, base = null;
+const S = { sw: 0, run: true, trail: [], labels: true, cmode: 'live' };
+
+function loadScene(key) {
+  cur = key;
+  const sc = SCN[key];
+  P = Object.assign({}, sc.params);
+  base = sc.derive(P);
+  S.sw = 0; S.trail.length = 0;
+  [...money('tabs').children].forEach(b => b.classList.toggle('on', b.dataset.k === key));
+  money('ctls').innerHTML = '';
+  sc.ctl.forEach(c => {
+    const box = document.createElement('div');
+    const lab = document.createElement('label'); lab.className = 'ctl';
+    const sp = document.createElement('span'); sp.textContent = c.t; lab.appendChild(sp);
+    const num = document.createElement('input');
+    num.type = 'number'; num.value = P[c.k]; num.min = c.min; num.max = c.max; num.step = c.step;
+    const rng = document.createElement('input');
+    rng.type = 'range'; rng.min = c.min; rng.max = c.max; rng.step = c.step; rng.value = P[c.k];
+    num.addEventListener('input', () => {
+      const x = parseFloat(num.value);
+      if (isFinite(x)) {
+        P[c.k] = Math.max(c.min, Math.min(c.max, x));
+        num.value = P[c.k]; rng.value = P[c.k]; readout();
+      }
+    });
+    rng.addEventListener('input', () => { P[c.k] = parseFloat(rng.value); num.value = P[c.k]; readout(); });
+    lab.appendChild(num); box.appendChild(lab); box.appendChild(rng);
+    money('ctls').appendChild(box);
+  });
+  money('chips').innerHTML = '';
+  sc.chips.forEach(([name, vals]) => {
+    const b = document.createElement('button'); b.className = 'chip'; b.textContent = name;
+    b.addEventListener('click', () => {
+      P = Object.assign({}, P, vals); base = sc.derive(P); S.trail.length = 0;
+      [...money('ctls').querySelectorAll('input[type=number]')].forEach((n, i) => n.value = P[sc.ctl[i].k]);
+      [...money('ctls').querySelectorAll('input[type=range]')].forEach((n, i) => n.value = P[sc.ctl[i].k]);
+      readout();
+    });
+    money('chips').appendChild(b);
+  });
+  money('modes').innerHTML = '';
+  if (key === 'cone') {
+    const MODES = [['live', '圓錐擺本體'], ['path', '路徑檢視'], ['force', '力分解檢視']];
+    MODES.forEach(([k, label]) => {
+      const mb = document.createElement('button');
+      mb.className = 'chip' + (S.cmode === k ? ' on' : ''); mb.textContent = label;
+      mb.style.borderColor = S.cmode === k ? '#b8860b' : '';
+      mb.addEventListener('click', () => {
+        S.cmode = k; S.trail.length = 0;
+        [...money('modes').children].forEach(c => { c.style.borderColor = ''; });
+        mb.style.borderColor = '#b8860b'; readout();
+      });
+      money('modes').appendChild(mb);
+    });
+  }
+  readout();
+}
+function readout() {
+  const sc = SCN[cur], d = sc.derive(P);
+  money('outs').innerHTML = sc.out(d).map(([k, v, c]) =>
+    '<div class="out"><k>' + k + '</k><b class="' + c + '">' + v + '</b></div>').join('');
+  const a = sc.base(d).map(x => x[1]).join('|'), b = sc.base(base).map(x => x[1]).join('|');
+  money('badge').innerHTML = sc.base(d).map(([k, v]) =>
+    '<span class="pill">' + k + '：' + v + '</span>').join('') +
+    '<span class="pill ' + (a === b ? 'ok' : 'bad') + '">' +
+    (a === b ? '目前 = 基準 ✅' : '參數已改變（基準失效）') + '</span>';
+  money('note').innerHTML = sc.note(d);
+}
+function step(dt) {
+  const p = SCN[cur].params;
+  const w = cur === 'basic' ? p.v / p.r
+          : cur === 'bank' ? p.v / p.r
+          : cur === 'vert' ? 1.6
+          : Math.sqrt(G * Math.tan(P.th * D2R) / P.r);
+  S.sw = (S.sw + w * dt) % TAU;
+  S.trail.push(S.sw); if (S.trail.length > 96) S.trail.shift();
+}
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, .05); last = now;
+  if (S.run) step(dt);
+  ctx.fillStyle = '#0a0c11'; ctx.fillRect(0, 0, W, H);
+  grid();
+  SCN[cur].draw(P, SCN[cur].derive(P));
+  requestAnimationFrame(loop);
+}
+Object.keys(SCN).forEach(k => {
+  const b = document.createElement('button');
+  b.className = 'tab' + (k === 'basic' ? ' on' : ''); b.dataset.k = k; b.textContent = SCN[k].name;
+  b.addEventListener('click', () => loadScene(k));
+  money('tabs').appendChild(b);
+});
+money('pp').addEventListener('click', () => { S.run = !S.run; money('pp').textContent = S.run ? '暫停' : '繼續'; });
+money('rs').addEventListener('click', () => { S.sw = 0; S.trail.length = 0; });
+money('lbl').addEventListener('click', () => {
+  S.labels = !S.labels; money('lbl').textContent = S.labels ? '隱藏標籤' : '顯示標籤';
+});
+
+/* ══ 概念小測 ══ */
 (function () {
-  var QUESTIONS = [
+  const Q = [
     { q: '質量 m 的物件以繩繫住，在光滑水平面上作等速率圓周運動。若速率加倍而半徑不變，繩的張力變為原來的多少倍？',
       o: ['1/2 倍', '2 倍', '4 倍', '不變'], a: 2,
-      e: '<b>F_c = mv²/r。</b>m、r 固定時 F_c ∝ v²。v → 2v 即 F_c → 4F_c。<br>對應模擬 ①：把速率由 6 m/s 改成 12 m/s，面板 F_c 由 45 N 跳到 180 N。<br><b>陷阱：</b>答「2 倍」係把平方關係誤當線性；DSE 幾乎每年都考 ∝v² 或 ∝1/r。' },
+      e: '<b>F_c = mv²/r。</b>m、r 固定時 F_c ∝ v²，v → 2v 即 F_c → 4F_c。<br>對應模擬 ①：速率由 6 m/s 改成 12 m/s，F_c 由 45 N 跳到 180 N。<br><b>陷阱：</b>答「2 倍」係把平方關係誤當線性。' },
     { q: '物件作等速率圓周運動期間，下列敘述何者正確？',
       o: ['速度向量不變', '加速度恆指向圓心，大小不變', '加速度沿切線方向，使速率改變', '合外力為零，因為速率不變'], a: 1,
-      e: '<b>方向不斷改變 ⇒ 必有加速度。</b>加速度恆指向圓心（centripetal），大小 a_c = v²/r，只改方向不改速率。<br><b>陷阱：</b>「速率不變 ⇒ 合外力為零」係最典型迷思；只要方向變，合力就唔係零。' },
-    { q: '圓錐擺（conical pendulum）中，小球在水平面作等速率圓周運動，繩與鉛垂線成角 θ。若把小球的質量加倍（r、ω 不變），下列何者<b>不變</b>？',
+      e: '<b>方向不斷改變 ⇒ 必有加速度。</b>加速度恆指向圓心，大小 a_c = v²/r，只改方向不改速率。<br><b>陷阱：</b>「速率不變 ⇒ 合力為零」係最典型迷思。' },
+    { q: '圓錐擺中小球在水平面作等速率圓周運動，繩與鉛垂線成角 θ。若質量加倍（r、ω 不變），下列何者<b>不變</b>？',
       o: ['繩張力 T', 'θ 角', '向心力 F_c', '繩的豎直分量 T cosθ'], a: 1,
-      e: '<b>豎直 T cosθ = mg、水平 T sinθ = mω²r。</b>兩式相除消去 m 得 tanθ = ω²r/g ⇒ θ 只由 ω、r 決定，與 m 無關。<br>m 加倍時：T = mg/cosθ 加倍、F_c = mω²r 加倍、T cosθ 加倍。<br><b>陷阱：</b>以為「重啲會擺得低啲」；實驗上 θ 完全唔變，只有繩更緊。' },
-    { q: '小球以繩在鉛垂面內作圓周運動。若小球在最高點的速率剛好等於 √(gr)，則最高點時繩的張力為？',
+      e: '<b>豎直 T cosθ = mg、水平 T sinθ = mω²r。</b>相除消去 m 得 tanθ = ω²r/g ⇒ θ 只由 ω、r 決定。<br>m 加倍時 T、F_c、T cosθ 全部加倍，只有 θ 不變。<br><b>陷阱：</b>以為「重啲會擺得低啲」。' },
+    { q: '小球以繩在鉛垂面內作圓周運動。若最高點速率剛好等於 √(gr)，則最高點時繩的張力為？',
       o: ['mg', '2mg', 'mg/2', '零'], a: 3,
-      e: '<b>最高點：T + mg = mv²/r。</b>代入 v² = gr ⇒ T + mg = mg ⇒ T = 0，即臨界狀態（繩剛鬆）。<br><b>陷阱：</b>寫成 T − mg 會得出 T = 2mg；方向搞反係最常失分位。鉛垂圓周最高點重力已向下（指向圓心），重力已提供部分 F_c。' },
-    { q: '汽車以設計速率（design speed）通過斜坡彎道，不倚賴摩擦力。此時提供向心力的力是？',
+      e: '<b>最高點：T + mg = mv²/r。</b>代入 v² = gr ⇒ T = 0（臨界，繩剛鬆）。<br><b>陷阱：</b>寫成 T − mg 會得出 2mg；最高點重力已向下（指向圓心）。' },
+    { q: '汽車以設計速率通過斜坡彎道，不倚賴摩擦力。此時提供向心力的力是？',
       o: ['路面對車的摩擦力', '法向力 N 的水平分量', '車重 mg 的水平分量', '離心力'], a: 1,
-      e: '<b>設計速率時：N cosθ = mg、N sinθ = mv²/r</b>（θ 為路面傾角），相除得 v = √(rg tanθ)。向心力全部來自 N 的水平分量。<br><b>陷阱：</b>「車重水平分量」錯——mg 係鉛垂向下，冇水平分量；寫「離心力」直接扣分，DSE 不接受 centrifugal force。' },
+      e: '<b>設計速率：N cosθ = mg、N sinθ = mv²/r</b>，相除得 v = √(rg tanθ)。向心力全部來自 N 的水平分量。<br><b>陷阱：</b>mg 鉛垂向下冇水平分量；寫「離心力」直接扣分。' },
     { q: '唱片以 33⅓ rpm 轉動。2.0 分鐘內，唱片共轉了多少圈？',
       o: ['33 圈', '50 圈', '67 圈', '100 圈'], a: 2,
-      e: '<b>33⅓ rpm = 每分鐘 33⅓ 圈</b>⇒ 2 分鐘 = 66⅔ ≈ 67 圈。<br>若要用角速度：ω = 2πn/60 = 2π(33.33)/60 = 3.49 rad s⁻¹，θ = ωt = 3.49 × 120 = 419 rad，圈數 = 419/2π = 66.7。<br><b>陷阱：</b>漏 ÷60 或把 rpm 當 rad/s；單位換算錯會令全題連鎖出錯。' }
+      e: '<b>33⅓ rpm = 每分鐘 33⅓ 圈</b>⇒ 2 分鐘 ≈ 67 圈。<br>或用 ω = 2πn/60 = 3.49 rad s⁻¹，θ = 3.49 × 120 = 419 rad，圈數 = 419/2π = 66.7。<br><b>陷阱：</b>漏 ÷60 或把 rpm 當 rad/s。' }
   ];
-
-  var listEl = document.getElementById('qlist'), scoreEl = document.getElementById('score');
+  const list = money('qlist'), score = money('score');
+  let answered = {}, correct = 0;
   function build() {
-    scoreEl.textContent = '得分 0 / ' + QUESTIONS.length;
-    listEl.innerHTML = QUESTIONS.map(function (item, qi) {
-      var opts = item.o.map(function (text, oi) {
-        return '<button class="qopt" data-q="' + qi + '" data-o="' + oi + '">' +
-               '<span class="key">' + 'ABCD'[oi] + '</span><span>' + text + '</span></button>';
-      }).join('');
-      return '<div class="qitem"><div class="qno">Question ' + (qi + 1) + '</div>' +
-             '<div class="qtext">' + item.q + '</div><div class="qopts">' + opts + '</div>' +
-             '<div class="qexp" id="exp-' + qi + '"></div></div>';
-    }).join('');
+    score.textContent = '得分 0 / ' + Q.length;
+    list.innerHTML = Q.map((it, qi) =>
+      '<div class="qitem"><div class="qno">Question ' + (qi + 1) + '</div>' +
+      '<div class="qtext">' + it.q + '</div><div class="qopts">' +
+      it.o.map((t, oi) => '<button class="qopt" data-q="' + qi + '" data-o="' + oi + '">' +
+        '<span class="key">' + 'ABCD'[oi] + '</span><span>' + t + '</span></button>').join('') +
+      '</div><div class="qexp" id="exp-' + qi + '"></div></div>').join('');
+    answered = {}; correct = 0;
   }
-  var answered = {}, correct = 0;
-  listEl.addEventListener('click', function (e) {
-    var btn = e.target.closest('.qopt'); if (!btn) return;
-    var qi = +btn.dataset.q, oi = +btn.dataset.o;
+  list.addEventListener('click', e => {
+    const btn = e.target.closest('.qopt'); if (!btn) return;
+    const qi = +btn.dataset.q, oi = +btn.dataset.o;
     if (answered[qi] !== undefined) return;
     answered[qi] = oi;
-    var item = QUESTIONS[qi], ok = oi === item.a;
+    const it = Q[qi], ok = oi === it.a;
     if (ok) correct++;
-    scoreEl.textContent = '得分 ' + correct + ' / ' + QUESTIONS.length;
-    listEl.querySelectorAll('.qopt[data-q="' + qi + '"]').forEach(function (b) {
+    score.textContent = '得分 ' + correct + ' / ' + Q.length;
+    list.querySelectorAll('.qopt[data-q="' + qi + '"]').forEach(b => {
       b.disabled = true;
-      var bo = +b.dataset.o;
-      if (bo === item.a) b.classList.add('right');
-      else if (bo === oi) b.classList.add('wrong');
+      if (+b.dataset.o === it.a) b.classList.add('right');
+      else if (+b.dataset.o === oi) b.classList.add('wrong');
     });
-    var exp = document.getElementById('exp-' + qi);
-    exp.innerHTML = '<span class="verdict ' + (ok ? 'ok' : 'no') + '">' +
-      (ok ? '正確' : '正確答案：' + 'ABCD'[item.a]) + '</span>' + item.e;
-    exp.classList.add('show');
+    const ex = money('exp-' + qi);
+    ex.innerHTML = '<span class="verdict ' + (ok ? 'ok' : 'no') + '">' +
+      (ok ? '正確' : '正確答案：' + 'ABCD'[it.a]) + '</span>' + it.e;
+    ex.classList.add('show');
   });
-  document.getElementById('qreset').addEventListener('click', function () {
-    answered = {}; correct = 0; build();
-  });
+  money('qreset').addEventListener('click', build);
   build();
 })();
+
+loadScene('basic');
+requestAnimationFrame(loop);
 </script>
+
+<script>
+  (function () {
+    var key = document.body.dataset.nav || '';
+    document.querySelectorAll('#navLinks a').forEach(function (a) {
+      if (a.dataset.nav === key) a.classList.add('on');
+    });
+    var on = document.querySelector('#navLinks a.on');
+    if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'center' });
+  })();
+</script>
+</body>
+</html>

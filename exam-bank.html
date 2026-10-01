@@ -8,91 +8,91 @@
   *{box-sizing:border-box}
   :root{--gold:#b8860b;--gold-bright:#c9a227;--gold-deep:#8b6914;
         --ink:#3c3c43;--ink-soft:#6b6b73;--line:#d4d4d8}
-  body{margin:0;color:var(--ink);font-size:15px;line-height:1.7;
+  body{zoom:1.1}
+  body{margin:0;color:var(--ink);font-size:15px;line-height:1.75;
     font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",sans-serif;
     background:
       radial-gradient(1100px 620px at 50% -140px,rgba(255,255,255,.96),rgba(255,255,255,0) 70%),
       radial-gradient(760px 460px at 12% 108%,rgba(201,162,39,.09),rgba(201,162,39,0) 72%),
       linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
-    background-attachment:fixed;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 22px}
-  .topnav{position:sticky;top:0;z-index:60;backdrop-filter:saturate(180%) blur(14px);
+    background-attachment:fixed;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+  .topnav{position:sticky;top:0;z-index:80;backdrop-filter:saturate(180%) blur(14px);
     -webkit-backdrop-filter:saturate(180%) blur(14px);
-    background:rgba(250,250,252,.86);border-bottom:1px solid rgba(212,212,216,.9)}
-  .topnav .bar{max-width:1180px;margin:0 auto;padding:9px 18px;display:flex;align-items:center;gap:16px}
-  .brand{display:flex;align-items:baseline;gap:8px;text-decoration:none;margin-right:auto;white-space:nowrap}
-  .brand b{font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-size:16.5px;font-weight:650;
-    letter-spacing:.04em;color:var(--gold-deep)}
-  .brand i{font-style:normal;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2}
-  .navlinks{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
-  .navlinks a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:13.2px;
-    font-weight:550;color:#55555c;padding:7px 11px;border-radius:8px;border:1px solid transparent;
-    transition:.18s;white-space:nowrap}
+    background:rgba(250,250,252,.90);border-bottom:1px solid rgba(212,212,216,.9)}
+  .topnav .bar{max-width:1420px;margin:0 auto;padding:9px 16px;
+    display:flex;align-items:center;gap:12px;flex-wrap:nowrap}
+  .brand{display:flex;align-items:baseline;gap:7px;text-decoration:none;white-space:nowrap;flex:0 0 auto}
+  .brand b{font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-size:16px;font-weight:650;
+    letter-spacing:.03em;color:var(--gold-deep)}
+  .brand i{font-style:normal;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#9a9aa2}
+  .navlinks{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:flex-end;
+    gap:2px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;padding:2px 0}
+  .navlinks::-webkit-scrollbar{display:none}
+  .navlinks a{display:inline-flex;align-items:center;gap:5px;text-decoration:none;flex:0 0 auto;
+    font-size:12.6px;font-weight:600;color:#55555c;padding:7px 10px;border-radius:8px;
+    border:1px solid transparent;white-space:nowrap;transition:.16s}
   .navlinks a:hover{color:var(--gold-deep);background:rgba(201,162,39,.10);border-color:rgba(184,134,11,.28)}
-  .navlinks a.on{color:var(--gold-deep);background:rgba(201,162,39,.15);border-color:rgba(184,134,11,.42);font-weight:650}
-  .navlinks a em{font-style:normal;font-size:14px;line-height:1}
-  .navtoggle{display:none;background:#fff;border:1px solid var(--line);border-radius:8px;
-    font-size:18px;line-height:1;color:var(--gold-deep);padding:6px 11px;cursor:pointer}
-  @media(max-width:900px){
-    .topnav .bar{padding:8px 14px}.navtoggle{display:block}
-    .navlinks{display:none;position:absolute;left:12px;right:12px;top:calc(100% + 6px);
-      background:rgba(252,252,254,.98);border:1px solid var(--line);border-radius:12px;
-      box-shadow:0 10px 30px rgba(60,60,67,.14);padding:8px;flex-direction:column;align-items:stretch}
-    .navlinks.open{display:flex}.navlinks a{padding:10px 12px;font-size:14px}}
-  .page-head{padding:54px 0 26px;text-align:center}
-  .eyebrow{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:16px}
+  .navlinks a.on{color:var(--gold-deep);background:rgba(201,162,39,.15);border-color:rgba(184,134,11,.45);font-weight:700}
+  .navlinks a em{font-style:normal;font-size:13.5px;line-height:1}
+  @media(max-width:1180px){.brand b{font-size:14.5px}.brand i{display:none}
+    .navlinks a{padding:7px 8px;gap:4px}.navlinks a .en{display:none}}
+  @media(max-width:760px){.brand b{font-size:13px}
+    .navlinks a{padding:6px 7px;font-size:12px}
+    .navlinks a .zh{display:none}.navlinks a em{font-size:15px}}
+  .page-head{padding:50px 0 24px;text-align:center}
+  .eyebrow{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:15px}
   h1.title{margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
     font-size:clamp(30px,5vw,46px);letter-spacing:.06em;
     background:linear-gradient(180deg,#a97c0f 0%,#c9a227 62%,#8b6914 100%);
     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-  .lede{margin:16px auto 0;max-width:680px;font-size:14px;color:var(--ink-soft)}
-  .divider{width:132px;height:1px;margin:26px auto 0;border:0;
+  .lede{margin:15px auto 0;max-width:700px;font-size:14px;color:var(--ink-soft)}
+  .divider{width:132px;height:1px;margin:24px auto 0;border:0;
     background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
-  .filterbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:26px 0 30px}
+  .filterbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:24px 0 28px}
   .fbtn{background:#fff;border:1px solid var(--line);border-radius:20px;padding:7px 16px;
-    font-size:13px;font-weight:600;color:#55555c;cursor:pointer;transition:.18s;font-family:inherit}
+    font-size:12.6px;font-weight:600;color:#55555c;cursor:pointer;font-family:inherit;transition:.18s}
   .fbtn:hover{border-color:var(--gold-bright);color:var(--gold-deep)}
-  .fbtn.on{background:rgba(201,162,39,.15);border-color:rgba(184,134,11,.45);color:var(--gold-deep);font-weight:700}
-  .topic{margin-bottom:44px}
-  .topic-head{display:flex;align-items:baseline;gap:13px;padding-left:15px;position:relative;margin-bottom:18px}
+  .fbtn.on{background:rgba(201,162,39,.16);border-color:rgba(184,134,11,.45);color:var(--gold-deep);font-weight:700}
+  .topic{margin-bottom:42px}
+  .topic-head{display:flex;align-items:baseline;gap:13px;padding-left:15px;position:relative;margin-bottom:16px}
   .topic-head::before{content:"";position:absolute;left:0;top:3px;bottom:3px;width:3px;border-radius:2px;
     background:var(--gold);opacity:.85}
   .topic-head h2{margin:0;font-size:18px;font-weight:650;color:var(--gold-deep);
     font-family:"Songti TC","Noto Serif TC",Georgia,serif;letter-spacing:.04em}
   .topic-head span{font-size:12.5px;color:var(--ink-soft)}
-  .q{background:#fff;border:1px solid var(--line);border-radius:12px;padding:0;margin-bottom:16px;
-    overflow:hidden;box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05)}
-  .q-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 20px 0}
+  .q{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:16px;overflow:hidden;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05)}
+  .q-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:15px 20px 0}
   .lv{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
     padding:3px 10px;border-radius:20px;border:1px solid}
-  .lv.b{color:#2f7d5c;border-color:rgba(47,158,111,.4);background:rgba(47,158,111,.10)}
+  .lv.b{color:#1f6b4a;border-color:rgba(47,158,111,.4);background:rgba(47,158,111,.10)}
   .lv.d{color:var(--gold-deep);border-color:rgba(184,134,11,.45);background:rgba(201,162,39,.12)}
   .lv.c{color:#a8443a;border-color:rgba(192,69,95,.4);background:rgba(192,69,95,.09)}
   .q-title{font-size:15.5px;font-weight:650;color:#2b2b30;margin:10px 20px 6px}
   .q-body{font-size:14px;line-height:1.85;color:#3c3c43;padding:0 20px 6px}
   .q-body .ask{margin:8px 0 0;color:#55555c}
-  .q-body ol,.q-body ul{margin:8px 0;padding-left:22px}
-  .q-body li{margin:3px 0}
-  .hint{font-size:12.5px;color:#8b6914;background:rgba(201,162,39,.09);
+  .hint{font-size:12.5px;color:var(--gold-deep);background:rgba(201,162,39,.09);
     border:1px solid rgba(184,134,11,.28);border-radius:8px;padding:9px 13px;margin:12px 20px}
   .solbtn{margin:14px 20px 18px;background:var(--gold);color:#fff;border:0;border-radius:8px;
-    padding:9px 18px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit}
+    padding:9px 18px;font-size:13.2px;font-weight:700;cursor:pointer;font-family:inherit}
   .solbtn:hover{background:#a3760a}
   .sol{display:none;border-top:1px dashed #e2e2e6;padding:16px 20px 20px;background:#fbfaf6}
   .sol.show{display:block}
-  .step{font-size:13.8px;line-height:1.9;color:#4a4a52;margin:0 0 10px}
+  .step{font-size:13.6px;line-height:1.95;color:#4a4a52;margin:0 0 10px}
   .step b{color:#8b6914}
   .step .f{display:inline-block;background:#fff;border:1px solid #e6e2d2;border-radius:6px;
-    padding:2px 9px;margin:2px 0;font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#7a5c10}
-  .ans{font-size:14.5px;font-weight:700;color:#2f7d5c;background:rgba(47,158,111,.09);
+    padding:2px 9px;margin:2px 0;font-family:ui-monospace,Menlo,monospace;font-size:12.8px;color:#7a5c10}
+  .ans{font-size:14.5px;font-weight:700;color:#1f6b4a;background:rgba(47,158,111,.09);
     border-left:3px solid #2f9e6f;border-radius:0 8px 8px 0;padding:10px 14px;margin:12px 0 4px}
-  .trap{font-size:13px;line-height:1.8;color:#a8443a;background:rgba(192,69,95,.07);
+  .trap{font-size:13px;line-height:1.85;color:#a8443a;background:rgba(192,69,95,.07);
     border-left:3px solid #c0455f;border-radius:0 8px 8px 0;padding:10px 14px;margin-top:12px}
   .trap b{color:#8f2f28}
   .coming{text-align:center;font-size:13px;color:#9a9aa2;background:#fbfbfd;border:1px dashed #dcdce0;
-    border-radius:12px;padding:20px;margin-top:14px}
-  footer{margin-top:30px;padding:34px 0 46px;text-align:center;border-top:1px solid var(--line)}
-  footer .mark{display:inline-block;margin-bottom:12px;font-size:11px;letter-spacing:.3em;
+    border-radius:12px;padding:20px}
+  footer{margin-top:26px;padding:32px 0 46px;text-align:center;border-top:1px solid var(--line)}
+  footer .mark{display:inline-block;margin-bottom:11px;font-size:11px;letter-spacing:.3em;
     text-transform:uppercase;color:var(--gold-deep)}
   footer p{margin:0;font-size:12.5px;color:#7d7d85}
 </style>
@@ -102,14 +102,13 @@
 <nav class="topnav">
   <div class="bar">
     <a class="brand" href="index.html"><b>最強 Physics by Jacky</b><i>DSE Lab</i></a>
-    <button class="navtoggle" id="navToggle" aria-label="開啟導覽選單" aria-expanded="false">☰</button>
     <div class="navlinks" id="navLinks">
-      <a href="index.html" data-nav="home"><em>🏠</em>Home 主頁</a>
-      <a href="simulations.html" data-nav="sim"><em>🧪</em>Simulations 互動模擬</a>
-      <a href="exam-bank.html" data-nav="exam"><em>📝</em>Exam Bank 試題庫</a>
-      <a href="formula-sheet.html" data-nav="formula"><em>📖</em>Formula Sheet 公式速記表</a>
-      <a href="revision-notes.html" data-nav="notes"><em>📚</em>Revision Notes 溫書筆記</a>
-      <a href="about.html" data-nav="about"><em>ℹ️</em>About</a>
+      <a href="index.html"          data-nav="home"><em>🏠</em><span class="en">Home</span><span class="zh">主頁</span></a>
+      <a href="simulations.html"    data-nav="sim"><em>🧪</em><span class="en">Simulations</span><span class="zh">互動模擬</span></a>
+      <a href="exam-bank.html"      data-nav="exam"><em>📝</em><span class="en">Exam Bank</span><span class="zh">試題庫</span></a>
+      <a href="formula-sheet.html"  data-nav="formula"><em>📖</em><span class="en">Formula</span><span class="zh">公式表</span></a>
+      <a href="revision-notes.html" data-nav="notes"><em>📚</em><span class="en">Notes</span><span class="zh">筆記</span></a>
+      <a href="about.html"          data-nav="about"><em>ℹ️</em><span class="en">About</span><span class="zh">關於</span></a>
     </div>
   </div>
 </nav>
@@ -118,7 +117,7 @@
   <header class="page-head">
     <div class="eyebrow">Exam Bank</div>
     <h1 class="title">DSE 試題庫</h1>
-    <p class="lede">按課題分類，每題標明難度並附「思路 → 逐步解 → 答案 → 扣分位」。所有題目為原創改編，針對 DSE 常考模型，非歷屆試題原文。</p>
+    <p class="lede">按課題分類，每題標明難度並附「思路 → 逐步解 → 答案 → 扣分位」。原創改編，針對 DSE 常考模型。</p>
     <hr class="divider">
   </header>
 
@@ -130,7 +129,6 @@
   </div>
 
   <main>
-
     <section class="topic">
       <div class="topic-head"><h2>Circular Motion</h2><span>圓周運動</span></div>
 
@@ -144,13 +142,12 @@
         <div class="hint">思路：水平面上重力與法向力互相抵消，唯一水平力就係繩張力，佢就係 centripetal force 的全部來源。</div>
         <button class="solbtn">顯示解答</button>
         <div class="sol">
-          <p class="step"><b>Step 1 建模。</b>等速率圓周運動 ⇒ 只需徑向方程。水平方向：<span class="f">T = mv²/r</span>。</p>
-          <p class="step"><b>Step 2 計算 a_c。</b><span class="f">a_c = v²/r = 3.0² / 1.5 = 6.0 m s⁻²</span>（指向圓心）。</p>
-          <p class="step"><b>Step 3 計算 T。</b><span class="f">T = m a_c = 2.0 × 6.0 = 12 N</span>。</p>
-          <p class="step"><b>Step 4 比值。</b>m、r 不變 ⇒ <span class="f">T ∝ v²</span>。v 由 3.0 增到 6.0（×2）⇒ T 變 <b>4 倍</b>（即 48 N）。</p>
+          <p class="step"><b>Step 1 建模。</b>等速率圓周運動 ⇒ 只需徑向方程：<span class="f">T = mv²/r</span>。</p>
+          <p class="step"><b>Step 2 a_c。</b><span class="f">a_c = v²/r = 3.0² / 1.5 = 6.0 m s⁻²</span>（指向圓心）。</p>
+          <p class="step"><b>Step 3 T。</b><span class="f">T = m a_c = 2.0 × 6.0 = 12 N</span>。</p>
+          <p class="step"><b>Step 4 比值。</b>m、r 不變 ⇒ <span class="f">T ∝ v²</span>，v 加倍 ⇒ T 變 <b>4 倍</b>（48 N）。</p>
           <p class="ans">答案：(a) a<sub>c</sub> = 6.0 m s⁻²、T = 12 N；(b) 4 倍（48 N）</p>
-          <div class="trap"><b>扣分位：</b>① 只寫 "centripetal force" 而唔指出係繩張力；② 把 ∝v² 當成線性答「2 倍」；
-          ③ 單位寫 N 但無表明方向指向圓心。</div>
+          <div class="trap"><b>扣分位：</b>① 只寫 "centripetal force" 而唔指出係繩張力；② 把 ∝v² 當線性答「2 倍」；③ 無表明方向指向圓心。</div>
         </div>
       </article>
 
@@ -161,16 +158,15 @@
           一張唱片以 33⅓ rpm 等速率轉動，直徑 30 cm。
           <p class="ask">(a) 求角速度（rad s⁻¹）。(b) 求唱片邊緣一點的線速率與向心加速度。</p>
         </div>
-        <div class="hint">思路：rpm 係「每分鐘圈數」，必須先轉成 rad s⁻¹，再處理其他量。半徑 = 直徑 ÷ 2。</div>
+        <div class="hint">思路：rpm 係「每分鐘圈數」，必須先轉成 rad s⁻¹；半徑 = 直徑 ÷ 2。</div>
         <button class="solbtn">顯示解答</button>
         <div class="sol">
-          <p class="step"><b>Step 1 換算 ω。</b><span class="f">ω = 2πn / 60 = 2π(33.33) / 60 = 3.49 rad s⁻¹</span>。</p>
-          <p class="step"><b>Step 2 取半徑。</b><span class="f">r = 0.30 / 2 = 0.15 m</span>（切勿用直徑）。</p>
-          <p class="step"><b>Step 3 線速率。</b><span class="f">v = rω = 0.15 × 3.49 = 0.52 m s⁻¹</span>。</p>
-          <p class="step"><b>Step 4 向心加速度。</b><span class="f">a_c = ω²r = 3.49² × 0.15 = 1.83 m s⁻²</span>（或 v²/r 同樣結果）。</p>
+          <p class="step"><b>Step 1 ω。</b><span class="f">ω = 2πn / 60 = 2π(33.33) / 60 = 3.49 rad s⁻¹</span>。</p>
+          <p class="step"><b>Step 2 r。</b><span class="f">r = 0.30 / 2 = 0.15 m</span>（切勿用直徑）。</p>
+          <p class="step"><b>Step 3 v。</b><span class="f">v = rω = 0.15 × 3.49 = 0.52 m s⁻¹</span>。</p>
+          <p class="step"><b>Step 4 a_c。</b><span class="f">a_c = ω²r = 3.49² × 0.15 = 1.83 m s⁻²</span>。</p>
           <p class="ans">答案：(a) 3.49 rad s⁻¹；(b) v = 0.52 m s⁻¹、a<sub>c</sub> = 1.8 m s⁻²</p>
-          <div class="trap"><b>扣分位：</b>① 漏 ÷60，得 209 rad s⁻¹；② 用直徑代入 r，全部答案大一倍；
-          ③ 誤以為唱片上各點 a<sub>c</sub> 相同（實際 a<sub>c</sub> = ω²r 隨 r 增加，只有 ω 相同）。</div>
+          <div class="trap"><b>扣分位：</b>① 漏 ÷60；② 用直徑代入 r；③ 誤以為唱片上各點 a<sub>c</sub> 相同（實際 a<sub>c</sub> = ω²r 隨 r 增加）。</div>
         </div>
       </article>
 
@@ -178,26 +174,24 @@
         <div class="q-top"><span class="lv d">DSE Standard</span><span style="font-size:12px;color:#9a9aa2">Banked track</span></div>
         <div class="q-title">Q3 斜坡彎道的設計速率與最低摩擦係數</div>
         <div class="q-body">
-          一段半徑 60 m 的彎道，路面與水平成 15°。汽車質量 1200 kg 通過彎道，g = 9.81 m s⁻²。
-          <p class="ask">(a) 求汽車剛好不需要摩擦力時的速率（design speed）。(b) 若車速為 25 m s⁻¹，求所需的最低摩擦係數 μ。</p>
+          一段半徑 60 m 的彎道，路面與水平成 15°。汽車質量 1200 kg，g = 9.81 m s⁻²。
+          <p class="ask">(a) 求剛好不需要摩擦力時的速率。(b) 若車速為 25 m s⁻¹，求所需的最低摩擦係數 μ。</p>
         </div>
-        <div class="hint">思路：把坐標取在斜面上——沿徑向（水平指向圓心）與垂直斜面分解。設計速率時摩擦力為零。</div>
+        <div class="hint">思路：坐標取在斜面上，沿徑向與垂直斜面分解；設計速率時摩擦力為零。</div>
         <button class="solbtn">顯示解答</button>
         <div class="sol">
-          <p class="step"><b>Step 1 設計速率。</b>無摩擦時，法向力 N 的水平分量提供全部 F<sub>c</sub>：<br>
-            <span class="f">N sinθ = mv²/r</span>、<span class="f">N cosθ = mg</span>（豎直方向無加速度）。<br>
-            相除消去 N：<span class="f">tanθ = v²/(rg)</span> ⇒ <span class="f">v = √(rg tanθ)</span>。</p>
+          <p class="step"><b>Step 1 設計速率。</b>無摩擦時 <span class="f">N sinθ = mv²/r</span>、<span class="f">N cosθ = mg</span>，
+            相除得 <span class="f">tanθ = v²/(rg)</span> ⇒ <span class="f">v = √(rg tanθ)</span>。</p>
           <p class="step"><b>Step 2 代入。</b><span class="f">v = √(60 × 9.81 × tan15°) = √157.7 = 12.6 m s⁻¹</span>。</p>
-          <p class="step"><b>Step 3 高速時的一般方程。</b>車速 25 &gt; 12.6 ⇒ 車有向外滑趨勢，摩擦力 f 沿斜面向下（指向圓心一側）。<br>
-            徑向：<span class="f">N sinθ + f cosθ = mv²/r</span>；垂直斜面：<span class="f">N = mg cosθ + (mv²/r) sinθ</span>。</p>
-          <p class="step"><b>Step 4 數值。</b>所需 F<sub>c</sub> = mv²/r = 1200 × 625 / 60 = 12500 N。<br>
-            <span class="f">N = 1200(9.81)cos15° + 12500 sin15° = 11371 + 3235 = 14606 N</span>。<br>
-            <span class="f">f = F_c cosθ − mg sinθ = 12500 cos15° − 11772 sin15° = 12073 − 3047 = 9026 N</span>。<br>
-            <span class="f">μ_min = f / N = 9026 / 14606 = 0.62</span>。</p>
+          <p class="step"><b>Step 3 一般方程（車速 25 &gt; 12.6）。</b>徑向：<span class="f">N sinθ + f cosθ = mv²/r</span>；
+            垂直斜面：<span class="f">N = mg cosθ + (mv²/r) sinθ</span>。</p>
+          <p class="step"><b>Step 4 數值。</b>F<sub>c</sub> = 1200 × 625 / 60 = 12500 N；
+            <span class="f">N = 1200(9.81)cos15° + 12500 sin15° = 14606 N</span>；
+            <span class="f">f = 12500 cos15° − 11772 sin15° = 9026 N</span>；
+            <span class="f">μ_min = f / N = 0.62</span>。</p>
           <p class="ans">答案：(a) 12.6 m s⁻¹；(b) μ<sub>min</sub> ≈ 0.62</p>
-          <div class="trap"><b>扣分位：</b>① 直接寫 N = mg（有斜面時 N ≠ mg）；
-          ② 分不清「設計速率 v = √(rg tanθ)」與「有摩擦的極限速率」；
-          ③ 未說明「車速大於設計速率 ⇒ 摩擦力方向指向圓心」；④ 用離心力解釋打滑 — DSE 不接受。</div>
+          <div class="trap"><b>扣分位：</b>① 直接寫 N = mg；② 混淆設計速率與有摩擦極限速率；
+          ③ 未說明「車速大於設計速率 ⇒ 摩擦指向圓心」；④ 用離心力解釋打滑。</div>
         </div>
       </article>
 
@@ -211,14 +205,14 @@
         <div class="hint">思路：繩張力係唯一斜向力，必須分解。豎直方向無加速度 ⇒ 平衡；水平方向 ⇒ 向心力。</div>
         <button class="solbtn">顯示解答</button>
         <div class="sol">
-          <p class="step"><b>Step 1 豎直方程。</b><span class="f">T cosθ = mg</span> ⇒ <span class="f">T = mg / cosθ = 1.5(9.81)/cos30° = 17.0 N</span>。</p>
-          <p class="step"><b>Step 2 圓周半徑。</b>半徑係水平圓周半徑，唔係繩長：<span class="f">r = L sinθ = 2.0 sin30° = 1.00 m</span>。</p>
-          <p class="step"><b>Step 3 水平方程。</b><span class="f">T sinθ = mω²r</span> ⇒
-            <span class="f">ω = √(T sinθ / (mr)) = √(17.0 × 0.5 / (1.5 × 1.0)) = √5.67 = 2.38 rad s⁻¹</span>。</p>
-          <p class="step"><b>Step 4 週期。</b><span class="f">T_p = 2π/ω = 2π / 2.38 = 2.64 s</span>。</p>
+          <p class="step"><b>Step 1 豎直。</b><span class="f">T cosθ = mg</span> ⇒ <span class="f">T = 1.5(9.81)/cos30° = 17.0 N</span>。</p>
+          <p class="step"><b>Step 2 半徑。</b>係水平圓周半徑：<span class="f">r = L sinθ = 2.0 sin30° = 1.00 m</span>。</p>
+          <p class="step"><b>Step 3 水平。</b><span class="f">T sinθ = mω²r</span> ⇒
+            <span class="f">ω = √(T sinθ / (mr)) = √(17.0 × 0.5 / 1.5) = 2.38 rad s⁻¹</span>。</p>
+          <p class="step"><b>Step 4 週期。</b><span class="f">T_p = 2π/ω = 2.64 s</span>。</p>
           <p class="ans">答案：T = 17.0 N、r = 1.00 m、ω = 2.38 rad s⁻¹、T<sub>p</sub> = 2.64 s</p>
-          <div class="trap"><b>扣分位：</b>① 用繩長 L 當半徑代入 F<sub>c</sub>；② 誤以為 T = mg（只有 θ → 0 才近似成立）；
-          ③ 只寫水平方程而缺豎直方程，令 T 變成未知數無法解；④ 週期與張力的 T 混用同一符號時要標清楚。</div>
+          <div class="trap"><b>扣分位：</b>① 用繩長 L 當半徑；② 誤以為 T = mg；
+          ③ 只寫水平方程而缺豎直方程；④ 週期與張力共用符號 T 時未標清楚。</div>
         </div>
       </article>
 
@@ -227,22 +221,22 @@
         <div class="q-title">Q5 完成整圈的最低條件</div>
         <div class="q-body">
           質量 0.50 kg 的小球以不可伸長輕繩繫於 O，繩長 0.80 m，在鉛垂面內作圓周運動。
-          <p class="ask">(a) 求小球能完成整圈時，最高點的最低速率。(b) 求該情況下最低點的速率與繩張力。(c) 若小球在最高點的速率為 2.0 m s⁻¹，判斷能否完成整圈並解釋。</p>
+          <p class="ask">(a) 求能完成整圈時最高點的最低速率。(b) 求該情況最低點的速率與繩張力。(c) 若最高點速率為 2.0 m s⁻¹，判斷能否完成整圈並解釋。</p>
         </div>
-        <div class="hint">思路：臨界條件在最高點 —— 繩張力剛好為零，重力單獨提供向心力。之後全程用能量守恆連繫最高點與最低點。</div>
+        <div class="hint">思路：臨界條件在最高點（張力為零，重力單獨提供向心力）；之後全程用能量守恆連繫最高點與最低點。</div>
         <button class="solbtn">顯示解答</button>
         <div class="sol">
-          <p class="step"><b>Step 1 臨界條件。</b>最高點徑向（向下指向 O）：<span class="f">T + mg = mv²/r</span>。
-            繩剛鬆 ⇒ T = 0 ⇒ <span class="f">mg = mv_top²/r</span> ⇒ <span class="f">v_top = √(gr) = √(9.81 × 0.80) = 2.80 m s⁻¹</span>。</p>
-          <p class="step"><b>Step 2 能量守恆求 v_bot。</b>最高點到最低點的高度差 = 直徑 = 2r：<br>
-            <span class="f">½mv_bot² = ½mv_top² + mg(2r)</span> ⇒ <span class="f">v_bot² = v_top² + 4gr</span> = 7.85 + 31.39 = 39.24 ⇒ <span class="f">v_bot = 6.26 m s⁻¹</span>。</p>
-          <p class="step"><b>Step 3 最低點張力。</b>最低點 T 向上、mg 向下：<span class="f">T_bot − mg = mv_bot²/r</span> ⇒
+          <p class="step"><b>Step 1 臨界。</b>最高點 <span class="f">T + mg = mv²/r</span>，繩剛鬆 T = 0 ⇒
+            <span class="f">v_top = √(gr) = √(9.81 × 0.80) = 2.80 m s⁻¹</span>。</p>
+          <p class="step"><b>Step 2 能量守恆。</b>高度差 = 直徑 = 2r：<span class="f">v_bot² = v_top² + 4gr</span>
+            = 7.85 + 31.39 = 39.24 ⇒ <span class="f">v_bot = 6.26 m s⁻¹</span>。</p>
+          <p class="step"><b>Step 3 最低點張力。</b><span class="f">T_bot − mg = mv_bot²/r</span> ⇒
             <span class="f">T_bot = 0.50(39.24/0.80 + 9.81) = 29.4 N</span>（= 6mg）。</p>
-          <p class="step"><b>Step 4 判斷 2.0 m s⁻¹。</b>2.0 &lt; 2.80 = √(gr)，最高點所需向心力 mv²/r = 2.5 N 少於重力 mg = 4.9 N，
-            繩無法推球，小球早在到達最高點前已離開圓軌跡。</p>
+          <p class="step"><b>Step 4 判斷 2.0 m s⁻¹。</b>2.0 &lt; 2.80 = √(gr)；最高點所需向心力 mv²/r = 2.5 N 少於重力 4.9 N，
+            繩無法推球，小球未到最高點已離開圓軌跡。</p>
           <p class="ans">答案：(a) 2.80 m s⁻¹；(b) v<sub>bot</sub> = 6.26 m s⁻¹、T<sub>bot</sub> = 29.4 N；(c) 不能，因 v<sub>top</sub> &lt; √(gr)</p>
           <div class="trap"><b>扣分位：</b>① 最高點寫成 T − mg；② 能量守恆高度差寫成 r 而非 2r；
-          ③ 未說明「T = 0 才是臨界」就直接引用 √(gr)；④ 拿 constant-speed 公式算最低點速率。</div>
+          ③ 未說明「T = 0 才是臨界」；④ 用 constant-speed 公式算最低點速率。</div>
         </div>
       </article>
     </section>
@@ -266,7 +260,6 @@
       <div class="topic-head"><h2>Radioactivity and Nuclear Energy</h2><span>放射性與核能</span></div>
       <div class="coming">此課題題目陸續新增：decay equations、half-life、nuclear energy。</div>
     </section>
-
   </main>
 
   <footer>
@@ -281,25 +274,13 @@
     document.querySelectorAll('#navLinks a').forEach(function (a) {
       if (a.dataset.nav === key) a.classList.add('on');
     });
-    var t = document.getElementById('navToggle'), l = document.getElementById('navLinks');
-    t.addEventListener('click', function () {
-      var open = l.classList.toggle('open');
-      t.setAttribute('aria-expanded', open ? 'true' : 'false');
-      t.textContent = open ? '✕' : '☰';
-    });
-    document.addEventListener('click', function (e) {
-      if (!e.target.closest('.topnav') && l.classList.contains('open')) {
-        l.classList.remove('open'); t.textContent = '☰';
-      }
-    });
+    var on = document.querySelector('#navLinks a.on');
+    if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'center' });
   })();
-
-  /* 解答開合 + 難度篩選 */
   (function () {
     document.querySelectorAll('.solbtn').forEach(function (b) {
       b.addEventListener('click', function () {
-        var s = b.nextElementSibling;
-        var open = s.classList.toggle('show');
+        var s = b.nextElementSibling, open = s.classList.toggle('show');
         b.textContent = open ? '收起解答' : '顯示解答';
       });
     });
