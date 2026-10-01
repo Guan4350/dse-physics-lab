@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Revision Notes 溫書筆記 · 最強 Physics by Jacky</title>
+<style>
+  *{box-sizing:border-box}
+  :root{--gold:#b8860b;--gold-bright:#c9a227;--gold-deep:#8b6914;
+        --ink:#3c3c43;--ink-soft:#6b6b73;--line:#d4d4d8}
+  body{margin:0;color:var(--ink);font-size:15px;line-height:1.75;
+    font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",sans-serif;
+    background:
+      radial-gradient(1100px 620px at 50% -140px,rgba(255,255,255,.96),rgba(255,255,255,0) 70%),
+      radial-gradient(760px 460px at 12% 108%,rgba(201,162,39,.09),rgba(201,162,39,0) 72%),
+      linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
+    background-attachment:fixed;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:0 22px}
+  .topnav{position:sticky;top:0;z-index:60;backdrop-filter:saturate(180%) blur(14px);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+    background:rgba(250,250,252,.86);border-bottom:1px solid rgba(212,212,216,.9)}
+  .topnav .bar{max-width:1180px;margin:0 auto;padding:9px 18px;display:flex;align-items:center;gap:16px}
+  .brand{display:flex;align-items:baseline;gap:8px;text-decoration:none;margin-right:auto;white-space:nowrap}
+  .brand b{font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-size:16.5px;font-weight:650;
+    letter-spacing:.04em;color:var(--gold-deep)}
+  .brand i{font-style:normal;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2}
+  .navlinks{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+  .navlinks a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:13.2px;
+    font-weight:550;color:#55555c;padding:7px 11px;border-radius:8px;border:1px solid transparent;
+    transition:.18s;white-space:nowrap}
+  .navlinks a:hover{color:var(--gold-deep);background:rgba(201,162,39,.10);border-color:rgba(184,134,11,.28)}
+  .navlinks a.on{color:var(--gold-deep);background:rgba(201,162,39,.15);border-color:rgba(184,134,11,.42);font-weight:650}
+  .navlinks a em{font-style:normal;font-size:14px;line-height:1}
+  .navtoggle{display:none;background:#fff;border:1px solid var(--line);border-radius:8px;
+    font-size:18px;line-height:1;color:var(--gold-deep);padding:6px 11px;cursor:pointer}
+  @media(max-width:900px){
+    .topnav .bar{padding:8px 14px}.navtoggle{display:block}
+    .navlinks{display:none;position:absolute;left:12px;right:12px;top:calc(100% + 6px);
+      background:rgba(252,252,254,.98);border:1px solid var(--line);border-radius:12px;
+      box-shadow:0 10px 30px rgba(60,60,67,.14);padding:8px;flex-direction:column;align-items:stretch}
+    .navlinks.open{display:flex}.navlinks a{padding:10px 12px;font-size:14px}}
+  .page-head{padding:54px 0 26px;text-align:center}
+  .eyebrow{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:16px}
+  h1.title{margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
+    font-size:clamp(30px,5vw,46px);letter-spacing:.06em;
+    background:linear-gradient(180deg,#a97c0f 0%,#c9a227 62%,#8b6914 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .lede{margin:16px auto 0;max-width:680px;font-size:14px;color:var(--ink-soft)}
+  .divider{width:132px;height:1px;margin:26px auto 0;border:0;
+    background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
+  .topic{margin-bottom:40px}
+  .topic-head{display:flex;align-items:baseline;gap:13px;padding-left:15px;position:relative;margin-bottom:16px}
+  .topic-head::before{content:"";position:absolute;left:0;top:3px;bottom:3px;width:3px;border-radius:2px;
+    background:var(--gold);opacity:.85}
+  .topic-head h2{margin:0;font-size:17.5px;font-weight:650;color:var(--gold-deep);
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif;letter-spacing:.04em}
+  .topic-head span{font-size:12.5px;color:var(--ink-soft)}
+  .mis{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:15px;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05)}
+  .mis h3{margin:0 0 12px;font-size:15.5px;font-weight:650;color:#2b2b30}
+  .mis h3 i{font-style:normal;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:#9a9aa2;display:block;margin-bottom:4px}
+  .bad,.good{font-size:13.6px;line-height:1.85;border-radius:0 8px 8px 0;padding:10px 14px;margin:8px 0}
+  .bad{color:#8f2f28;background:rgba(192,69,95,.07);border-left:3px solid #c0455f}
+  .good{color:#1f6b4a;background:rgba(47,158,111,.08);border-left:3px solid #2f9e6f}
+  .bad b,.good b{display:block;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
+  .why{font-size:13.4px;line-height:1.85;color:#4a4a52;margin-top:10px}
+  .why b{color:#8b6914}
+  footer{margin-top:24px;padding:34px 0 46px;text-align:center;border-top:1px solid var(--line)}
+  footer .mark{display:inline-block;margin-bottom:12px;font-size:11px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--gold-deep)}
+  footer p{margin:0;font-size:12.5px;color:#7d7d85}
+</style>
+</head>
+<body data-nav="notes">
+
+<nav class="topnav">
+  <div class="bar">
+    <a class="brand" href="index.html"><b>最強 Physics by Jacky</b><i>DSE Lab</i></a>
+    <button class="navtoggle" id="navToggle" aria-label="開啟導覽選單" aria-expanded="false">☰</button>
+    <div class="navlinks" id="navLinks">
+      <a href="index.html" data-nav="home"><em>🏠</em>Home 主頁</a>
+      <a href="simulations.html" data-nav="sim"><em>🧪</em>Simulations 互動模擬</a>
+      <a href="exam-bank.html" data-nav="exam"><em>📝</em>Exam Bank 試題庫</a>
+      <a href="formula-sheet.html" data-nav="formula"><em>📖</em>Formula Sheet 公式速記表</a>
+      <a href="revision-notes.html" data-nav="notes"><em>📚</em>Revision Notes 溫書筆記</a>
+      <a href="about.html" data-nav="about"><em>ℹ️</em>About</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header class="page-head">
+    <div class="eyebrow">Revision Notes</div>
+    <h1 class="title">DSE 概念辨析筆記</h1>
+    <p class="lede">唔係再教一次課文，而係專門拆解學生最常錯嘅地方。每條用「常見誤解 → 正確講法 → 為何會錯」三段處理。</p>
+    <hr class="divider">
+  </header>
+
+  <main>
+
+    <section class="topic">
+      <div class="topic-head"><h2>Circular Motion</h2><span>圓周運動</span></div>
+
+      <article class="mis">
+        <h3><i>Misconception 01</i>向心力係一種「真實力」</h3>
+        <div class="bad"><b>常見誤解</b>物體作圓周運動時，除咗重力、張力之外，仲有一種叫「向心力」嘅力作用在物體上。</div>
+        <div class="good"><b>正確講法</b>向心力唔係新一種力，而係「合力嘅角色」。真正提供向心力嘅一定係某個實際力：繩的張力、路面的摩擦力、路軌的法向力、重力、或者磁力。</div>
+        <p class="why"><b>為何重要：</b>DSE 長題目要求你寫出方程 <b>T = mv²/r</b>、<b>f = mv²/r</b> 或 <b>N sinθ = mv²/r</b>，而唔係「F_c = mv²/r」就算完成。只寫 centripetal force 而唔指明邊個力，通常拿唔到分。<br>
+        <b>自檢：</b>寫方程前先問一句「呢個圓周運動係邊個力拉住佢？」答得出，方程就寫得出。</p>
+      </article>
+
+      <article class="mis">
+        <h3><i>Misconception 02</i>轉彎時有「離心力」把你推向外</h3>
+        <div class="bad"><b>常見誤解</b>汽車轉彎時，乘客被「離心力」推向外側，所以應該寫 centrifugal force 作用在乘客身上。</div>
+        <div class="good"><b>正確講法</b>離心力係非慣性參考系下的假想力，DSE 不接受。乘客外傾係因為<b>慣性（inertia）</b>：身體想沿切線方向直線前進，但座椅／車門施加向內的力令佢轉向。</div>
+        <p class="why"><b>為何重要：</b>答案出現 centrifugal force 通常直接扣分。正確敘述：「乘客趨向沿切線方向運動（慣性），車廂向內加速，故乘客相對車廂外傾。」<br>
+        <b>自檢：</b>「呢個力有冇施力者？」答唔出，就係假想力。</p>
+      </article>
+
+      <article class="mis">
+        <h3><i>Misconception 03</i>速率不變就代表合力為零</h3>
+        <div class="bad"><b>常見誤解</b>等速率圓周運動速率無變，所以加速度為零、合力為零。</div>
+        <div class="good"><b>正確講法</b>加速度係向量。速度<b>方向</b>不斷改變，所以一定有加速度，而且恆指向圓心，大小 a<sub>c</sub> = v²/r。合外力大小為 mv²/r，方向指向圓心。</div>
+        <p class="why"><b>為何重要：</b>呢個係 Newton's second law 的核心考核：合力決定加速度，唔係決定速率。物體可以有加速度但速率不變（圓周運動正是唯一常見例子）。<br>
+        <b>自檢：</b>問「速度向量有冇變？」而唔係問「速率有冇變？」</p>
+      </article>
+
+      <article class="mis">
+        <h3><i>Misconception 04</i>圓錐擺越重，擺得越低（θ 越大）</h3>
+        <div class="bad"><b>常見誤解</b>小球越重，繩會被拉得越低，所以 θ 會增加。</div>
+        <div class="good"><b>正確講法</b>豎直 T cosθ = mg、水平 T sinθ = mω²r，兩式相除消去 m 得 tanθ = ω²r/g。θ 只由 ω 與 r 決定，與質量完全無關。質量只影響張力 T = mg/cosθ。</div>
+        <p class="why"><b>為何重要：</b>呢條係 DSE 最愛的「隱藏消去」題型：明明加咗質量，但答案話「不變」，好多考生以為自己計錯而改答案。<br>
+        <b>自檢：</b>列出兩條方程，再問「邊個未知數被消去？」</p>
+      </article>
+
+      <article class="mis">
+        <h3><i>Misconception 05</i>斜坡彎道上 N = mg</h3>
+        <div class="bad"><b>常見誤解</b>路面的法向力永遠等於車重，即 N = mg。</div>
+        <div class="good"><b>正確講法</b>只有在水平路面上 N = mg。有傾角的彎道上，車同時受向心加速度影響：<b>N = mg cosθ + (mv²/r) sinθ</b>，恆大於 mg cosθ。</div>
+        <p class="why"><b>為何重要：</b>N 用錯會令摩擦力上限 μN 計錯，之後「會唔會打滑」的結論全錯。<br>
+        <b>自檢：</b>凡見斜面就改用「垂直斜面」方向列方程，唔好直接寫 N = mg。</p>
+      </article>
+
+      <article class="mis">
+        <h3><i>Misconception 06</i>鉛垂圓周全程速率相同</h3>
+        <div class="bad"><b>常見誤解</b>圓周運動速率不變，所以鉛垂圓周最高點與最低點速率一樣。</div>
+        <div class="good"><b>正確講法</b>只有<b>等速率</b>圓周運動速率才不變。鉛垂圓周有重力作功，速率處處不同：最高點最慢、最低點最快，兩點關係由能量守恆給出 <b>v_bot² = v_top² + 4gr</b>（高度差 = 直徑 = 2r）。</div>
+        <p class="why"><b>為何重要：</b>用 v²/r 代入「同一個 v」係最常見的整題崩壞點。一定要分開 v_top 與 v_bot。<br>
+        <b>自檢：</b>見到「鉛垂面」三個字，即刻寫能量守恆式，再寫徑向方程。</p>
+      </article>
+    </section>
+
+    <section class="topic">
+      <div class="topic-head"><h2>Coming Soon</h2><span>陸續新增課題</span></div>
+      <div class="mis" style="text-align:center;color:#9a9aa2;font-size:13.5px">
+        即將推出：Waves 概念辨析（波形圖 vs 粒子振動、干涉條件）、Electricity 概念辨析（內電阻與 terminal voltage、Lenz's law 方向）、
+        Heat and Gases（溫度 vs 內能、潛熱平台）、Radioactivity（隨機性與半衰期）。
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span class="mark">最強 Physics by Jacky</span>
+    <p>Revision Notes · 針對 DSE 常見誤解，持續更新</p>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var key = document.body.dataset.nav || '';
+    document.querySelectorAll('#navLinks a').forEach(function (a) {
+      if (a.dataset.nav === key) a.classList.add('on');
+    });
+    var t = document.getElementById('navToggle'), l = document.getElementById('navLinks');
+    t.addEventListener('click', function () {
+      var open = l.classList.toggle('open');
+      t.setAttribute('aria-expanded', open ? 'true' : 'false');
+      t.textContent = open ? '✕' : '☰';
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.topnav') && l.classList.contains('open')) {
+        l.classList.remove('open'); t.textContent = '☰';
+      }
+    });
+  })();
+</script>
+</body>
+</html>
