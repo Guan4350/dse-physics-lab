@@ -1,234 +1,1142 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="zh-Hant" data-lang="zh">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Description" content="DSE Physics 拋體運動互動模擬：水平與垂直方向獨立計算、SUVAT 表格、速度向量與完整解題步驟。">
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2487.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.5px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.5px '.Apple Color Emoji UI'; color: #43434a; -webkit-text-stroke: #43434a}
-    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.6px 'PingFang HK Semibold'; color: #43434a; -webkit-text-stroke: #43434a}
-    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 11.5px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711}
-    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.6px 'PingFang HK'; color: #585860; -webkit-text-stroke: #585860}
-    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 15.0px 'Helvetica Neue'; color: #6d6d6d; -webkit-text-stroke: #6d6d6d; min-height: 18.0px}
-    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px '.SF NS'; color: #2e2d33; -webkit-text-stroke: #2e2d33; background-color: #ffffff}
-    p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px 'Helvetica Neue'; color: #2e2d33; -webkit-text-stroke: #2e2d33; background-color: #ffffff; min-height: 18.0px}
-    p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711}
-    p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.4px 'PingFang HK'; color: #585860; -webkit-text-stroke: #585860}
-    p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.4px 'Helvetica Neue'; color: #585860; -webkit-text-stroke: #585860}
-    p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.8px 'PingFang HK'; color: #585860; -webkit-text-stroke: #585860}
-    p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.2px 'Helvetica Neue'; color: #585860; -webkit-text-stroke: #585860}
-    p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.5px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711}
-    p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.8px '.SF NS'; color: #2e2d33; -webkit-text-stroke: #2e2d33; background-color: #ffffff; min-height: 15.0px}
-    p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px '.SF NS'; color: #ffffff; -webkit-text-stroke: #ffffff; background-color: #a8740d}
-    p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.6px 'Songti TC'; color: #585860; -webkit-text-stroke: #585860}
-    p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711; min-height: 16.0px}
-    p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711}
-    p.p21 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 10.4px '.SF NS'; color: #585860; -webkit-text-stroke: #585860}
-    p.p22 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.0px 'Helvetica Neue'; color: #585860; -webkit-text-stroke: #585860}
-    p.p23 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.0px 'PingFang HK Semibold'; color: #585860; -webkit-text-stroke: #585860}
-    p.p24 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px '.SF NS'; color: #2e2d33; -webkit-text-stroke: #2e2d33}
-    p.p25 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px '.SF NS'; color: #585860; -webkit-text-stroke: #585860}
-    p.p26 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.6px 'PingFang HK'; color: #585860; -webkit-text-stroke: #585860}
-    p.p27 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; color: #585860; -webkit-text-stroke: #585860}
-    p.p28 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.2px 'Helvetica Neue'; color: #185b84; -webkit-text-stroke: #185b84}
-    p.p29 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.2px 'Helvetica Neue'; color: #a12841; -webkit-text-stroke: #a12841}
-    p.p30 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.2px 'Helvetica Neue'; color: #2e2d33; -webkit-text-stroke: #2e2d33}
-    p.p31 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.2px 'Helvetica Neue'; color: #195a37; -webkit-text-stroke: #195a37}
-    p.p32 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.2px 'Helvetica Neue'; color: #765810; -webkit-text-stroke: #765810}
-    p.p34 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.6px 'Helvetica Neue'; color: #2e2d33; -webkit-text-stroke: #2e2d33; min-height: 16.0px}
-    p.p35 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.8px 'Helvetica Neue'; color: #7b3830; -webkit-text-stroke: #7b3830; background-color: #fcf2f1; min-height: 15.0px}
-    p.p36 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711}
-    p.p37 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.4px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711; background-color: #bc921e; background-color: rgba(188, 146, 30, 0.15)}
-    p.p38 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px 'Helvetica Neue'; color: #2e2d33; -webkit-text-stroke: #2e2d33; min-height: 18.0px}
-    p.p39 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.6px 'PingFang HK Semibold'; color: #775711; -webkit-text-stroke: #775711; background-color: #ffffff}
-    p.p40 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 11.0px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711}
-    p.p41 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.5px 'Helvetica Neue'; color: #6a6972; -webkit-text-stroke: #6a6972}
-    li.li33 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.9px 'Helvetica Neue'; color: #585860; min-height: 15.0px}
-    span.s1 {font-kerning: none; background-color: rgba(249, 249, 251, 0.9)}
-    span.s2 {font-kerning: none}
-    span.s3 {font: 13.5px '.Apple Color Emoji UI'; font-kerning: none; color: #43434a; -webkit-text-stroke: 0px #43434a}
-    span.s4 {font: 12.6px '.AppleHongKongChineseFont'; font-kerning: none; background-color: rgba(249, 249, 251, 0.9)}
-    span.s5 {font: 13.6px 'Helvetica Neue'; font-kerning: none}
-    span.s6 {font: 11.3px 'Helvetica Neue'; font-kerning: none}
-    span.s7 {font: 13.0px '.AppleHongKongChineseFont'; font-kerning: none}
-    span.s8 {font: 13.0px '.AppleHongKongChineseFont'; font-kerning: none; color: #2e2d33; background-color: #ffffff; -webkit-text-stroke: 0px #2e2d33}
-    span.s9 {font: 13.0px '.SF NS'; font-kerning: none; color: #2e2d33; background-color: #ffffff; -webkit-text-stroke: 0px #2e2d33}
-    span.s10 {font-kerning: none; background-color: #ffffff}
-    span.s11 {font: 12.4px 'Helvetica Neue'; font-kerning: none; background-color: #ffffff}
-    span.s12 {font: 13.2px 'PingFang HK'; font-kerning: none; background-color: #ffffff}
-    span.s13 {font: 12.0px '.AppleHongKongChineseFont'; font-kerning: none; background-color: #ffffff}
-    span.s14 {font: 11.6px 'Helvetica Neue'; font-kerning: none; background-color: #ffffff}
-    span.s15 {font: 13.0px 'PingFang HK'; font-kerning: none; background-color: #ffffff}
-    span.s16 {font: 12.4px '.AppleHongKongChineseFont'; font-kerning: none}
-    span.s17 {font: 12.6px '.AppleHongKongChineseFont'; font-kerning: none}
-    span.s18 {font: 11.0px 'PingFang HK'; font-kerning: none}
-    table.t1 {border-collapse: collapse; table-layout: fixed}
-    td.td1 {width: 40.0px; background-color: #fcf9ee; border-style: solid; border-width: 0.0px 0.0px 1.0px 0.0px; border-color: #775711 #775711 #eadebc #775711; padding: 7.0px 2.0px 7.0px 2.0px}
-    td.td2 {width: 135.6px; background-color: #fcf9ee; border-style: solid; border-width: 0.0px 0.0px 1.0px 0.0px; border-color: #775711 #775711 #eadebc #775711; padding: 7.0px 2.0px 7.0px 2.0px}
-    td.td3 {width: 40.0px; background-color: #fbfbfc; border-style: solid; border-width: 0.0px 0.0px 1.0px 0.0px; border-color: #585860 #585860 #eaeaef #585860; padding: 7.0px 2.0px 7.0px 2.0px}
-    td.td4 {width: 135.6px; border-style: solid; border-width: 0.0px 0.0px 1.0px 0.0px; border-color: #2e2d33 #2e2d33 #eaeaef #2e2d33; padding: 7.0px 2.0px 7.0px 2.0px}
-    td.td5 {width: 135.6px; border-style: solid; border-width: 0.0px 0.0px 1.0px 0.0px; border-color: #585860 #585860 #eaeaef #585860; padding: 7.0px 2.0px 7.0px 2.0px}
-    td.td6 {width: 40.0px; background-color: #fbfbfc; padding: 7.0px 2.0px 7.0px 2.0px}
-    td.td7 {width: 135.6px; padding: 7.0px 2.0px 7.0px 2.0px}
-    ul.ul1 {list-style-type: none}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Projectile Motion 拋體運動 · 最強 Physics by Jacky</title>
+<meta name="description" content="DSE Physics 拋體運動互動模擬：水平與垂直方向獨立計算、SUVAT 表格、速度向量與完整解題步驟。">
+<style>
+  *{box-sizing:border-box}
+
+  /* ══ 沿用主網站 dse-physics-lab 的全站變數 ══ */
+  :root{
+    --gold:#b8860b; --gold-bright:#c9a227; --gold-deep:#8b6914;
+    --ink:#3c3c43; --ink-soft:#6b6b73; --line:#d4d4d8;
+    /* 向量色：改成與白金金調協調的深青藍／深磚紅，避免刺眼純藍 */
+    --vx:#20607d; --vy:#a8443a; --vv:#8a6a12; --w:#96453c;
+  }
+  html{background:#f5f5f7}
+  body{margin:0;color:var(--ink);font-size:15px;line-height:1.75;
+    font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",sans-serif;
+    /* ── 與首頁／simulations.html 完全相同的銀白金漸層底 ── */
+    background:
+      radial-gradient(1100px 620px at 50% -140px,rgba(255,255,255,.96),rgba(255,255,255,0) 70%),
+      radial-gradient(760px 460px at 12% 108%,rgba(201,162,39,.09),rgba(201,162,39,0) 72%),
+      radial-gradient(760px 460px at 92% 4%,rgba(184,134,11,.07),rgba(184,134,11,0) 70%),
+      linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
+    background-attachment:fixed;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .wrap{max-width:1440px;margin:0 auto;padding:0 24px 40px}
+
+  /* ══ 頂部導航：沿用主網站規範（單排、可橫向滑動） ══ */
+  .topnav{position:sticky;top:0;z-index:80;backdrop-filter:saturate(180%) blur(14px);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+    background:rgba(250,250,252,.90);border-bottom:1px solid rgba(212,212,216,.9)}
+  .topnav .bar{max-width:1420px;margin:0 auto;padding:9px 16px;
+    display:flex;align-items:center;gap:12px;flex-wrap:nowrap}
+  .brand{display:flex;align-items:baseline;gap:7px;text-decoration:none;white-space:nowrap;flex:0 0 auto}
+  .brand b{font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-size:16px;font-weight:650;
+    letter-spacing:.03em;color:var(--gold-deep)}
+  .brand i{font-style:normal;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#9a9aa2}
+  .navlinks{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:flex-end;
+    gap:2px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;padding:2px 0}
+  .navlinks::-webkit-scrollbar{display:none}
+  .navlinks a{display:inline-flex;align-items:center;gap:5px;text-decoration:none;flex:0 0 auto;
+    font-size:12.6px;font-weight:600;color:#55555c;padding:7px 10px;border-radius:8px;
+    border:1px solid transparent;white-space:nowrap;transition:.16s}
+  .navlinks a:hover{color:var(--gold-deep);background:rgba(201,162,39,.10);border-color:rgba(184,134,11,.28)}
+  .navlinks a.on{color:var(--gold-deep);background:rgba(201,162,39,.15);border-color:rgba(184,134,11,.45);font-weight:700}
+  .navlinks a em{font-style:normal;font-size:13.5px;line-height:1}
+  @media(max-width:1180px){.brand b{font-size:14.5px}.brand i{display:none}
+    .navlinks a{padding:7px 8px;gap:4px}.navlinks a .en{display:none}}
+  @media(max-width:760px){.brand b{font-size:13px}
+    .navlinks a{padding:6px 7px;font-size:12px}
+    .navlinks a .zh{display:none}.navlinks a em{font-size:15px}}
+
+  /* ══ 頁首：與 simulations.html 的 .page-head 完全一致 ══ */
+  .page-head{padding:34px 0 22px;text-align:center}
+  .eyebrow{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;
+    color:var(--gold-deep);margin-bottom:15px}
+  h1.title{margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
+    font-size:clamp(26px,4vw,40px);letter-spacing:.05em;
+    background:linear-gradient(180deg,#a97c0f 0%,#c9a227 62%,#8b6914 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  h1.title .lt{display:block;font-size:.52em;letter-spacing:.10em;font-weight:500;
+    background:none;-webkit-text-fill-color:var(--gold-deep);color:var(--gold-deep);
+    margin-top:6px;font-family:-apple-system,"PingFang TC",sans-serif}
+  .lede{margin:14px auto 0;max-width:830px;font-size:13.6px;color:var(--ink-soft)}
+  .divider{width:132px;height:1px;margin:22px auto 0;border:0;
+    background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
+  .toolbar{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:18px}
+
+  /* ══ 版面：左 3 : 右 2 ══ */
+  .layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);
+    gap:18px;align-items:start}
+  .stage{min-width:0}
+  .sidebar{display:flex;flex-direction:column;gap:13px;min-width:0;
+    max-height:calc(100vh - 92px);overflow-y:auto;overscroll-behavior:contain;
+    padding-right:5px;scrollbar-width:thin;scrollbar-color:#ddd8ca transparent}
+  .sidebar::-webkit-scrollbar{width:9px}
+  .sidebar::-webkit-scrollbar-thumb{background:#ddd8ca;border-radius:9px}
+  .sidebar::-webkit-scrollbar-track{background:transparent}
+  @media(max-width:1200px){
+    .layout{grid-template-columns:minmax(0,1fr)}
+    .sidebar{max-height:none;overflow:visible;display:grid;
+      grid-template-columns:1fr 1fr;gap:13px;padding-right:0}
+  }
+  @media(max-width:820px){.sidebar{grid-template-columns:1fr}}
+
+  /* ══ 卡片：與網站 .card 完全一致（頂部金色細條 + 雙層柔和陰影） ══ */
+  .card{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:16px 17px;min-width:0;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05)}
+  .card::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;
+    border-radius:12px 12px 0 0;opacity:.9;
+    background:linear-gradient(90deg,var(--gold-bright),transparent 90%)}
+  .card h2{margin:0 0 11px;font-size:13px;letter-spacing:.04em;color:var(--gold-deep);
+    font-weight:700;display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif}
+  .card h2 span.sub{font-size:11.6px;color:var(--ink-soft);font-weight:500;letter-spacing:0;
+    font-family:inherit}
+
+  /* 畫布：白底融入頁面，不再像黑框插件 */
+  canvas{display:block;width:100%;height:auto;max-width:100%;border-radius:12px;
+    background:#fff;border:1px solid var(--line);touch-action:none;cursor:default;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05)}
+
+  /* ══ 參數滑桿 ══ */
+  .ctl{margin:13px 0 0}
+  .ctl:first-of-type{margin-top:2px}
+  .ctl .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+    font-size:13.2px;color:var(--ink-soft)}
+  .ctl .top b{color:var(--gold-deep);font-size:15.5px;font-weight:700;
+    font-variant-numeric:tabular-nums;white-space:nowrap}
+  input[type=range]{width:100%;accent-color:#c9a227;background:none;cursor:pointer;
+    margin:5px 0 0;height:17px}
+
+  /* ══ 按鈕：沿用網站 .btn / .btn.live ══ */
+  .btns{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{display:inline-block;cursor:pointer;font-family:inherit;font-size:13px;font-weight:650;
+    letter-spacing:.03em;border-radius:9px;padding:9px 15px;text-decoration:none;
+    border:1px solid var(--line);background:#fff;color:var(--ink);transition:.18s}
+  .btn:hover{border-color:var(--gold-bright);background:#fdfaf1;color:var(--gold-deep)}
+  .btn.live{background:var(--gold);border-color:var(--gold);color:#fff;
+    box-shadow:0 3px 10px rgba(184,134,11,.26)}
+  .btn.live:hover{background:#a3760a;border-color:#a3760a;color:#fff}
+  .btn demo,.btn.demo{display:block;width:100%;text-align:left;font-size:12.8px;line-height:1.55;
+    font-weight:600;margin-bottom:8px}
+  .btn.demo:last-of-type{margin-bottom:0}
+  .btn.langbtn{border-color:var(--gold-bright);color:var(--gold-deep);font-weight:700;
+    background:rgba(201,162,39,.08)}
+  .btn.langbtn:hover{background:#fdf3dd;border-color:var(--gold)}
+
+  /* ══ SUVAT 表格：鎖死欄寬、永不溢出 ══ */
+  .tablewrap{width:100%;max-width:100%;overflow:hidden}
+  table{width:100%;max-width:100%;table-layout:fixed;border-collapse:collapse;
+    font-size:13px;font-variant-numeric:tabular-nums}
+  col.c-axis{width:40px}
+  col.c-val{width:calc((100% - 40px) / 5)}
+  th,td{padding:7px 2px;text-align:center;border-bottom:1px solid #eeeef2;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  thead th{background:#fdfaf1;color:var(--gold-deep);font-weight:700;font-size:13px;
+    line-height:1.3;border-bottom:1px solid #eee4c8}
+  thead th em{display:block;font-style:normal;font-size:10.4px;color:var(--ink-soft);
+    font-weight:500;letter-spacing:0;margin-top:2px}
+  tbody th{background:#fcfcfd;color:var(--ink-soft);font-weight:700;font-size:12px;line-height:1.3}
+  tbody td{color:var(--ink);font-weight:600;font-size:13px}
+  tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+  .dim{color:var(--ink-soft) !important;font-weight:500 !important}
+  .tnote{margin-top:9px;font-size:11.6px;color:var(--ink-soft);line-height:1.6}
+
+  /* ══ 數據輸出 ══ */
+  .out{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+    font-size:13px;padding:6px 0;border-bottom:1px dashed #eeeef2}
+  .out:last-child{border-bottom:0}
+  .out k{color:var(--ink-soft);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .out b{font-weight:700;font-variant-numeric:tabular-nums;font-size:14.2px;white-space:nowrap}
+  .kx{color:var(--vx)}.ky{color:var(--vy)}.kv{color:var(--vv)}.gn{color:#1c6b47}
+
+  /* ══ 提示 ══ */
+  .tips{list-style:none;margin:0;padding:0;font-size:12.9px;line-height:1.72;color:var(--ink-soft)}
+  .tips li{padding:5px 0 5px 15px;position:relative}
+  .tips li::before{content:"";position:absolute;left:2px;top:12px;width:4.5px;height:4.5px;
+    border-radius:50%;background:var(--gold-bright)}
+  .tips b{color:var(--gold-deep)}
+
+  /* ══ 解題步驟 ══ */
+  .sol{font-size:13.6px;line-height:1.9;color:var(--ink)}
+  .sol .q{background:#fdfaf1;border:1px solid #f0e8cf;border-radius:10px;padding:12px 15px;
+    margin-bottom:13px;font-size:13.4px;color:var(--gold-deep)}
+  .sol .sp{margin:10px 0;padding-left:12px;border-left:2px solid #f0e8cf}
+  .sol .sp b{color:var(--gold-deep)}
+  .f{display:inline-block;background:#fcfcfd;border:1px solid #ececf0;border-radius:6px;
+    padding:1px 9px;margin:1px 0;font-family:ui-monospace,Menlo,monospace;font-size:12.8px;
+    color:var(--gold-deep)}
+  .ans{display:inline-block;font-weight:700;color:#1c6b47;background:#f1f8f4;
+    border:1px solid #d4e9de;border-radius:7px;padding:1px 10px;margin:2px 0}
+  .react{font-size:12.8px;color:#8f4a3f;background:#fdf5f4;border:1px solid #f2e0dd;
+    border-radius:9px;padding:10px 13px;margin-top:12px;line-height:1.78}
+  .react b{color:#7d3a30}
+
+  .lgd{display:flex;gap:15px;flex-wrap:wrap;font-size:12.4px;color:var(--ink-soft)}
+  .lgd i{display:inline-block;width:16px;height:3px;border-radius:2px;margin-right:5px;
+    vertical-align:middle}
+  .hint{font-size:11.8px;color:var(--ink-soft);margin-top:9px;line-height:1.6}
+
+  /* ══ 概念小測：沿用網站全站樣式 ══ */
+  .quizbox{margin-top:15px}
+  #quiz .qhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  #quiz h2{margin:0;font-size:16px;font-weight:650;color:var(--gold-deep);
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif;letter-spacing:.04em}
+  #quiz .qsub{font-size:11.8px;color:var(--ink-soft)}
+  #score{font-size:12.4px;font-weight:700;color:var(--gold-deep);background:rgba(201,162,39,.15);
+    border:1px solid rgba(184,134,11,.35);border-radius:20px;padding:4px 13px}
+  .qitem{background:#fff;border:1px solid var(--line);border-radius:11px;padding:16px 18px;margin-top:12px;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 6px 16px rgba(60,60,67,.05)}
+  .qno{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#9a9aa2}
+  .qtext{font-size:13.6px;line-height:1.8;color:#2b2b30;margin:6px 0 12px}
+  .qopts{display:flex;flex-direction:column;gap:7px}
+  .qopt{display:flex;gap:10px;align-items:flex-start;text-align:left;cursor:pointer;background:#fbfbfd;
+    border:1px solid #e2e2e6;border-radius:9px;padding:10px 13px;font-size:13.2px;line-height:1.7;
+    color:var(--ink);font-family:inherit;transition:.16s}
+  .qopt:hover{border-color:var(--gold-bright);background:rgba(201,162,39,.07)}
+  .qopt .key{flex:0 0 21px;height:21px;border-radius:50%;border:1.5px solid #c9c9d0;color:#77777f;
+    font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .qopt.right{border-color:#2f9e6f;background:rgba(47,158,111,.10)}
+  .qopt.right .key{border-color:#2f9e6f;background:#2f9e6f;color:#fff}
+  .qopt.wrong{border-color:#c0455f;background:rgba(192,69,95,.09)}
+  .qopt.wrong .key{border-color:#c0455f;background:#c0455f;color:#fff}
+  .qopt[disabled]{cursor:default}
+  .qexp{margin-top:11px;font-size:12.8px;line-height:1.9;color:#4a4a52;background:#fbf8ef;
+    border-left:3px solid var(--gold-bright);border-radius:0 8px 8px 0;padding:12px 15px;display:none}
+  .qexp.show{display:block}
+  .qexp b{color:var(--gold-deep)}
+  .qexp .verdict{font-weight:700;display:block;margin-bottom:5px}
+  .qexp .verdict.ok{color:#1f6b4a}.qexp .verdict.no{color:#a8443a}
+  .qreset{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:8px;
+    color:var(--gold-deep);font-size:12.6px;font-weight:650;padding:8px 16px;cursor:pointer;font-family:inherit}
+  .qreset:hover{border-color:var(--gold-bright);background:rgba(201,162,39,.08)}
+
+  /* ══ 頁腳：沿用網站規範 ══ */
+  footer{margin-top:26px;padding:30px 0 46px;text-align:center;border-top:1px solid var(--line)}
+  footer .mark{display:inline-block;margin-bottom:11px;font-size:11px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--gold-deep)}
+  footer p{margin:0;font-size:12.5px;color:#7d7d85}
+
+  /* ══ 嵌入模式（?embed=1）：隱藏網站導航，只留模擬本體 ══ */
+  body.embed .topnav{display:none}
+  body.embed .wrap{max-width:100%;padding:14px 16px 20px}
+  body.embed .page-head{padding:6px 0 14px;text-align:left}
+  body.embed .page-head .lede{margin-left:0;max-width:100%}
+  body.embed .divider{margin-left:0}
+  body.embed .toolbar{justify-content:flex-start;margin-top:12px}
+  body.embed .sidebar{max-height:none}
+</style>
 </head>
-<body>
-<p class="p1"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/index.html"><b>最強 Physics by Jacky</b><span class="s2"><b></b></span></a></span></p>
-<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/index.html">🏠<span class="s3"></span></a></span></p>
-<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/index.html"><b>主頁</b><span class="s2"><b></b></span></a></span></p>
-<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/simulations.html">🧪<span class="s3"></span></a></span></p>
-<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/simulations.html"><b>互動模擬</b><span class="s2"><b></b></span></a></span></p>
-<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/exam-bank.html">📝<span class="s3"></span></a></span></p>
-<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/exam-bank.html"><b>試題庫</b><span class="s2"><b></b></span></a></span></p>
-<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/formula-sheet.html">📖<span class="s3"></span></a></span></p>
-<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/formula-sheet.html"><b>公式表</b><span class="s2"><b></b></span></a></span></p>
-<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/revision-notes.html">📚<span class="s3"></span></a></span></p>
-<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/revision-notes.html"><b>筆記</b><span class="s2"><b></b></span></a></span></p>
-<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/about.html">ℹ️<span class="s3"></span></a></span></p>
-<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/about.html"><b>關於</b><span class="s2"><b></b></span></a></span></p>
-<p class="p4"><span class="s2">SIMULATION · MECHANICS</span></p>
-<h1 style="margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 32.0px 'Songti TC'; color: #2e2d33; -webkit-text-stroke: #2e2d33"><span class="s2"><b>Projectile Motion 拋體運動</b></span></h1>
-<p class="p6"><span class="s2">水平與垂直運動互相獨立：</span><span class="s5">a</span><span class="s6"><sub>x</sub></span><span class="s5"> = 0</span><span class="s2">、</span><span class="s5">a</span><span class="s6"><sub>y</sub></span><span class="s5"> = −g</span><span class="s2">。全程唯一作用力係垂直向下嘅重量</span><span class="s5"> W</span><span class="s2">。拖動滑桿，所有數值同</span><span class="s5"> SUVAT </span><span class="s2">表即時更新。</span></p>
-<p class="p7"><span class="s2"></span><br></p>
-<p class="p8"><span class="s7"><b>中文</b></span><span class="s2"><b> / English</b></span></p>
-<p class="p8"><span class="s2"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/simulations.html"><b>← </b><span class="s8"><b>返回</b></span><span class="s9"><b> Simulations</b></span></a></span></p>
-<p class="p9"><span class="s2"></span><br></p>
-<p class="p10"><span class="s10"><b>圖例</b></span></p>
-<p class="p11"><span class="s10">軌跡（新</span><span class="s11"> → </span><span class="s10">淡出）</span></p>
-<p class="p12"><span class="s10">Vx</span></p>
-<p class="p12"><span class="s10">Vy</span></p>
-<p class="p11"><span class="s10">合速度</span><span class="s11"> v</span></p>
-<p class="p12"><span class="s10">W = mg</span></p>
-<p class="p13"><span class="s10">左上參數卡：按住拖動可移動位置；滾輪或雙指上下滑動可調透明度。</span></p>
-<p class="p10"><span class="s10"><b>參數</b></span></p>
-<p class="p14"><span class="s12">初速度</span><span class="s10"> / Initial Velocity</span></p>
-<p class="p15"><span class="s10"><b>15.00</b></span></p>
-<p class="p14"><span class="s12">發射角度</span><span class="s10"> / Launch Angle</span></p>
-<p class="p15"><span class="s10"><b>0</b></span></p>
-<p class="p14"><span class="s12">發射高度</span><span class="s10"> / Launch Height</span></p>
-<p class="p15"><span class="s10"><b>25.00</b></span></p>
-<p class="p14"><span class="s12">重力加速度</span><span class="s10"> / Gravitational Acceleration</span></p>
-<p class="p15"><span class="s10"><b>9.81</b></span></p>
-<p class="p10"><span class="s10"><b>示範 / Example</b></span></p>
-<p class="p16"><span class="s2"><b></b></span><br></p>
-<p class="p16"><span class="s2"><b></b></span><br></p>
-<p class="p16"><span class="s2"><b></b></span><br></p>
-<p class="p17"><span class="s7"><b>顯示示範</b></span><span class="s2"><b> / Show Example</b></span></p>
-<p class="p10"><span class="s10"><b>SUVAT Table</b></span></p>
-<p class="p18"><span class="s10">x / y 分開</span></p>
-<table cellspacing="0" cellpadding="0" class="t1">
-  <tbody>
-    <tr>
-      <td valign="middle" class="td1">
-        <p class="p19"><span class="s2"><b></b></span><br></p>
-      </td>
-      <td valign="middle" class="td2">
-        <p class="p20"><span class="s10"><b>s</b></span></p>
-        <p class="p21"><span class="s10">m</span></p>
-      </td>
-      <td valign="middle" class="td2">
-        <p class="p20"><span class="s10"><b>u</b></span></p>
-        <p class="p21"><span class="s10">m/s</span></p>
-      </td>
-      <td valign="middle" class="td2">
-        <p class="p20"><span class="s10"><b>v</b></span></p>
-        <p class="p21"><span class="s10">m/s</span></p>
-      </td>
-      <td valign="middle" class="td2">
-        <p class="p20"><span class="s10"><b>a</b></span></p>
-        <p class="p21"><span class="s10">m/s²</span></p>
-      </td>
-      <td valign="middle" class="td2">
-        <p class="p20"><span class="s10"><b>t</b></span></p>
-        <p class="p21"><span class="s10">s</span></p>
-      </td>
-    </tr>
-    <tr>
-      <td valign="middle" class="td3">
-        <p class="p22"><span class="s10"><b>x</b></span></p>
-        <p class="p23"><span class="s13"><b>水平</b></span></p>
-      </td>
-      <td valign="middle" class="td4">
-        <p class="p24"><span class="s10"><b>0.00</b></span></p>
-      </td>
-      <td valign="middle" class="td4">
-        <p class="p24"><span class="s10"><b>0.00</b></span></p>
-      </td>
-      <td valign="middle" class="td4">
-        <p class="p24"><span class="s10"><b>0.00</b></span></p>
-      </td>
-      <td valign="middle" class="td5">
-        <p class="p25"><span class="s10">0.00</span></p>
-      </td>
-      <td valign="middle" class="td4">
-        <p class="p24"><span class="s10"><b>0.00</b></span></p>
-      </td>
-    </tr>
-    <tr>
-      <td valign="middle" class="td6">
-        <p class="p22"><span class="s10"><b>y</b></span></p>
-        <p class="p23"><span class="s13"><b>垂直</b></span></p>
-      </td>
-      <td valign="middle" class="td7">
-        <p class="p24"><span class="s10"><b>0.00</b></span></p>
-      </td>
-      <td valign="middle" class="td7">
-        <p class="p24"><span class="s10"><b>0.00</b></span></p>
-      </td>
-      <td valign="middle" class="td7">
-        <p class="p24"><span class="s10"><b>0.00</b></span></p>
-      </td>
-      <td valign="middle" class="td7">
-        <p class="p25"><span class="s10">-9.81</span></p>
-      </td>
-      <td valign="middle" class="td7">
-        <p class="p24"><span class="s10"><b>0.00</b></span></p>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<p class="p26"><span class="s14">x </span><span class="s10">行</span><span class="s14"> a = 0</span><span class="s10">（無淨力，</span><span class="s14">Vx </span><span class="s10">不變）；</span><span class="s14">y </span><span class="s10">行</span><span class="s14"> a = −g</span><span class="s10">（只有重量）。數值保留</span><span class="s14"> 2 </span><span class="s10">位小數。</span></p>
-<p class="p10"><span class="s10"><b>計算結果 / Results</b></span></p>
-<p class="p27"><span class="s15">水平速度</span><span class="s10"> Horizontal Velocity (Vx)</span></p>
-<p class="p28"><span class="s10"><b>–</b></span></p>
-<p class="p27"><span class="s15">垂直速度</span><span class="s10"> Vertical Velocity (Vy)</span></p>
-<p class="p29"><span class="s10"><b>–</b></span></p>
-<p class="p27"><span class="s15">飛行時間</span><span class="s10"> Time of Flight</span></p>
-<p class="p30"><span class="s10"><b>–</b></span></p>
-<p class="p27"><span class="s15">最大高度</span><span class="s10"> Maximum Height</span></p>
-<p class="p31"><span class="s10"><b>–</b></span></p>
-<p class="p27"><span class="s15">水平射程</span><span class="s10"> Horizontal Range</span></p>
-<p class="p31"><span class="s10"><b>–</b></span></p>
-<p class="p27"><span class="s15">合速度</span><span class="s10"> Resultant Velocity (v)</span></p>
-<p class="p32"><span class="s10"><b>–</b></span></p>
-<p class="p27"><span class="s15">落地角度</span><span class="s10"> Impact Angle</span></p>
-<p class="p32"><span class="s10"><b>–</b></span></p>
-<p class="p27"><span class="s15">當前時間</span><span class="s10"> Current Time</span></p>
-<p class="p30"><span class="s10"><b>–</b></span></p>
-<p class="p10"><span class="s10"><b>播放 / Playback</b></span></p>
-<p class="p17"><span class="s7"><b>暫停</b></span><span class="s2"><b> / Pause</b></span></p>
-<p class="p8"><span class="s7"><b>單幀</b></span><span class="s2"><b> / Step</b></span></p>
-<p class="p8"><span class="s7"><b>重置</b></span><span class="s2"><b> / Reset</b></span></p>
-<p class="p14"><span class="s12">拖曳時間</span><span class="s10"> / Scrub Time</span></p>
-<p class="p15"><span class="s10"><b>0.00</b></span></p>
-<p class="p10"><span class="s10"><b>DSE 考試重點 / Exam Notes</b></span></p>
-<ul class="ul1">
-  <li class="li33"></li>
-</ul>
-<p class="p10"><span class="s10"><b>解題步驟 / Solution Walkthrough</b></span></p>
-<p class="p34"><span class="s2"></span><br></p>
-<p class="p35"><span class="s2"></span><br></p>
-<p class="p36"><span class="s10"><b>DSE 概念小測 · Projectile Motion</b></span></p>
-<p class="p13"><span class="s10">點選答案即時對答，附完整拆解</span></p>
-<p class="p37"><span class="s16"><b>得分</b></span><span class="s2"><b> 0 / 5</b></span></p>
-<p class="p38"><span class="s2"></span><br></p>
-<p class="p39"><span class="s17"><b>重做全部</b></span></p>
-<p class="p40"><span class="s18">最強</span><span class="s2"> PHYSICS BY JACKY</span></p>
-<p class="p41"><span class="s2">Projectile Motion Simulation · DSE Physics Interactive Simulation Lab</span></p>
+<body data-nav="sim">
+
+<nav class="topnav">
+  <div class="bar">
+    <a class="brand" href="index.html"><b>最強 Physics by Jacky</b><i>DSE Lab</i></a>
+    <div class="navlinks" id="navLinks">
+      <a href="index.html"          data-nav="home"><em>🏠</em><span class="en">Home</span><span class="zh">主頁</span></a>
+      <a href="simulations.html"    data-nav="sim"><em>🧪</em><span class="en">Simulations</span><span class="zh">互動模擬</span></a>
+      <a href="exam-bank.html"      data-nav="exam"><em>📝</em><span class="en">Exam Bank</span><span class="zh">試題庫</span></a>
+      <a href="formula-sheet.html"  data-nav="formula"><em>📖</em><span class="en">Formula</span><span class="zh">公式表</span></a>
+      <a href="revision-notes.html" data-nav="notes"><em>📚</em><span class="en">Notes</span><span class="zh">筆記</span></a>
+      <a href="about.html"          data-nav="about"><em>ℹ️</em><span class="en">About</span><span class="zh">關於</span></a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="page-head">
+    <div class="eyebrow">Simulation · Mechanics</div>
+    <h1 class="title">
+      <span data-i18n="title.main">拋體運動 互動模擬</span>
+      <span class="lt" data-i18n="title.sub">Projectile Motion Simulation</span>
+    </h1>
+    <p class="lede" data-i18n="lede">水平與垂直運動互相獨立：a<sub>x</sub> = 0、a<sub>y</sub> = −g。全程唯一作用力係垂直向下嘅重量 W。拖動滑桿，所有數值同 SUVAT 表即時更新。</p>
+    <hr class="divider">
+    <div class="toolbar">
+      <button class="btn langbtn" id="langBtn" type="button"><span id="langLabel">中文 / English</span></button>
+      <a class="btn" href="simulations.html">← 返回 Simulations</a>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- ═══ 左（3 份）：Canvas 模擬區 ═══ -->
+    <div class="stage">
+      <canvas id="cv" width="1020" height="672"></canvas>
+      <div class="card" style="margin-top:13px">
+        <h2><span data-i18n="legend">圖例</span></h2>
+        <div class="lgd">
+          <span><i style="background:#d9b64a"></i><span data-i18n="lg.trail">軌跡（新 → 淡出）</span></span>
+          <span><i style="background:#20607d"></i>Vx</span>
+          <span><i style="background:#a8443a"></i>Vy</span>
+          <span><i style="background:#8a6a12"></i><span data-i18n="lg.v">合速度 v</span></span>
+          <span><i style="background:#96453c"></i>W = mg</span>
+        </div>
+        <div class="hint" data-i18n="hud.hint">左上參數卡：按住拖動可移動位置；滾輪或雙指上下滑動可調透明度。</div>
+      </div>
+    </div>
+
+    <!-- ═══ 右（2 份）：所有面板 ═══ -->
+    <aside class="sidebar">
+
+      <div class="card">
+        <h2><span data-i18n="h.params">參數</span></h2>
+        <div class="ctl">
+          <div class="top"><span data-i18n="p.u">初速度 / Initial Velocity</span><b id="vu">15.00</b></div>
+          <input type="range" id="su" min="5" max="40" step="0.5" value="15">
+        </div>
+        <div class="ctl">
+          <div class="top"><span data-i18n="p.th">發射角度 / Launch Angle</span><b id="vth">0</b></div>
+          <input type="range" id="sth" min="0" max="90" step="1" value="0">
+        </div>
+        <div class="ctl">
+          <div class="top"><span data-i18n="p.h">發射高度 / Launch Height</span><b id="vh">25.00</b></div>
+          <input type="range" id="sh" min="5" max="60" step="0.5" value="25">
+        </div>
+        <div class="ctl">
+          <div class="top"><span data-i18n="p.g">重力加速度 / Gravitational Acceleration</span><b id="vg">9.81</b></div>
+          <input type="range" id="sg" min="1.6" max="12" step="0.01" value="9.81">
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span data-i18n="h.examples">示範 / Example</span></h2>
+        <button class="btn demo" id="p1" type="button"></button>
+        <button class="btn demo" id="p2" type="button"></button>
+        <button class="btn demo" id="p3" type="button"></button>
+        <div class="btns" style="margin-top:9px">
+          <button class="btn live" id="showExample" type="button" data-i18n="btn.showExample">顯示示範 / Show Example</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span data-i18n="h.suvat">SUVAT Table</span><span class="sub" data-i18n="h.suvat.sub">x / y 分開</span></h2>
+        <div class="tablewrap">
+          <table>
+            <colgroup>
+              <col class="c-axis"><col class="c-val"><col class="c-val">
+              <col class="c-val"><col class="c-val"><col class="c-val">
+            </colgroup>
+            <thead>
+              <tr>
+                <th></th>
+                <th>s<em>m</em></th>
+                <th>u<em>m/s</em></th>
+                <th>v<em>m/s</em></th>
+                <th>a<em>m/s²</em></th>
+                <th>t<em>s</em></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th data-i18n="ax.x">x<br>水平</th>
+                <td id="tx_s">0.00</td><td id="tx_u">0.00</td><td id="tx_v">0.00</td>
+                <td class="dim">0.00</td><td id="tx_t">0.00</td>
+              </tr>
+              <tr>
+                <th data-i18n="ax.y">y<br>垂直</th>
+                <td id="ty_s">0.00</td><td id="ty_u">0.00</td><td id="ty_v">0.00</td>
+                <td class="dim" id="ty_a">-9.81</td><td id="ty_t">0.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tnote" data-i18n="suvat.note">x 行 a = 0（無淨力，Vx 不變）；y 行 a = −g（只有重量）。數值保留 2 位小數。</div>
+      </div>
+
+      <div class="card">
+        <h2><span data-i18n="h.results">計算結果 / Results</span></h2>
+        <div class="out"><k data-i18n="r.vx">水平速度 Horizontal Velocity (Vx)</k><b class="kx" id="r_ux">–</b></div>
+        <div class="out"><k data-i18n="r.vy">垂直速度 Vertical Velocity (Vy)</k><b class="ky" id="r_vy0">–</b></div>
+        <div class="out"><k data-i18n="r.t">飛行時間 Time of Flight</k><b id="r_t">–</b></div>
+        <div class="out"><k data-i18n="r.H">最大高度 Maximum Height</k><b class="gn" id="r_H">–</b></div>
+        <div class="out"><k data-i18n="r.R">水平射程 Horizontal Range</k><b class="gn" id="r_R">–</b></div>
+        <div class="out"><k data-i18n="r.v">合速度 Resultant Velocity (v)</k><b class="kv" id="r_v">–</b></div>
+        <div class="out"><k data-i18n="r.ang">落地角度 Impact Angle</k><b class="kv" id="r_ang">–</b></div>
+        <div class="out"><k data-i18n="r.tc">當前時間 Current Time</k><b id="r_tc">–</b></div>
+      </div>
+
+      <div class="card">
+        <h2><span data-i18n="h.play">播放 / Playback</span></h2>
+        <div class="btns">
+          <button class="btn live" id="play" type="button" data-i18n="btn.pause">暫停 / Pause</button>
+          <button class="btn" id="step" type="button" data-i18n="btn.step">單幀 / Step</button>
+          <button class="btn" id="reset" type="button" data-i18n="btn.reset">重置 / Reset</button>
+        </div>
+        <div class="ctl">
+          <div class="top"><span data-i18n="p.scrub">拖曳時間 / Scrub Time</span><b id="vtc">0.00</b></div>
+          <input type="range" id="stc" min="0" max="1" step="0.001" value="0">
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span data-i18n="h.notes">DSE 考試重點 / Exam Notes</span></h2>
+        <ul class="tips" id="tips"></ul>
+      </div>
+
+    </aside>
+  </div>
+
+  <div class="card" style="margin-top:15px">
+    <h2><span data-i18n="h.sol">解題步驟 / Solution Walkthrough</span></h2>
+    <div class="sol" id="steps"></div>
+    <div class="react" id="react"></div>
+  </div>
+
+  <div class="card quizbox" id="quiz">
+    <div class="qhead">
+      <h2>DSE 概念小測 · Projectile Motion</h2>
+      <span class="qsub">點選答案即時對答，附完整拆解</span>
+      <span id="score">得分 0 / 5</span>
+    </div>
+    <div id="qlist"></div>
+    <button class="qreset" id="qreset" type="button">重做全部</button>
+  </div>
+
+  <footer>
+    <span class="mark">最強 Physics by Jacky</span>
+    <p>Projectile Motion Simulation · DSE Physics Interactive Simulation Lab</p>
+  </footer>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   Projectile Motion 拋體運動 互動模擬
+   適配 dse-physics-lab 網站：沿用全站導航、白金配色、.card／.btn.live 規範
+   額外支援：?embed=1 嵌入模式、URL 參數深層連結、postMessage 家長頁控制
+   ═══════════════════════════════════════════════════════ */
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const W = 1020, H = 672;
+const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+const money = id => document.getElementById(id);
+
+const CLR = {
+  vx:'#20607d', vy:'#a8443a', v:'#8a6a12', w:'#96453c',
+  grid:'#f2f0ea', grid2:'#eae6da', ground:'#c8c2b4',
+  ghost:'rgba(199,177,126,.42)', dot:'#d9b64a',
+  hudBrd:'#e3e3e9', hudInk:'#3c3c43', hudGold:'#8b6914', hudBar:'#dcbf62'
+};
+
+const P = { u:15, th:0, h:25, g:9.81 };
+const S = { t:0, run:true, lang:'zh' };
+
+/* ───────── 物理核心 ───────── */
+function calc(){
+  const th = P.th * Math.PI / 180;
+  const ux = P.u * Math.cos(th), uy = P.u * Math.sin(th);
+  const t  = (uy + Math.sqrt(uy*uy + 2*P.g*P.h)) / P.g;
+  const Hh = P.h + (uy > 0 ? uy*uy/(2*P.g) : 0);
+  const R  = ux * t;
+  const vyEnd = uy - P.g * t;
+  return {
+    th, ux, uy, t, H:Hh, R, vyEnd,
+    vEnd: Math.hypot(ux, vyEnd),
+    angEnd: Math.atan2(-vyEnd, ux) * 180 / Math.PI,
+    tApex: uy > 0 ? uy / P.g : 0
+  };
+}
+function state(tt){
+  const k = calc();
+  const t = Math.max(0, Math.min(tt, k.t));
+  return {
+    k, t,
+    x: k.ux * t,
+    y: P.h + k.uy * t - 0.5 * P.g * t * t,
+    vx: k.ux,
+    vy: k.uy - P.g * t
+  };
+}
+const f2 = v => v.toFixed(2);
+
+/* ───────── 左上參數卡（3 格數值，可拖動、可調透明度） ───────── */
+const HUD = {
+  x: 12, y: 12, w: 158, h: 40, gap: 6,
+  op: 1, minOp: 0.15, maxOp: 1,
+  drag: null, hover: false
+};
+const HUD_KEYS = ['hl.u', 'hl.th', 'hl.h'];
+const HUD_SYM  = ['u', 'θ', 'h'];
+function hudVals(){ return [f2(P.u) + ' m/s', P.th + '°', f2(P.h) + ' m']; }
+function zhOnly(s){
+  const i = String(s).indexOf('/');
+  return (i > 0 ? String(s).slice(0, i) : String(s)).trim();
+}
+function hudPanelH(){ return HUD_KEYS.length * HUD.h + (HUD_KEYS.length - 1) * HUD.gap; }
+function hudClamp(){
+  HUD.x = Math.max(0, Math.min(W - HUD.w, HUD.x));
+  HUD.y = Math.max(0, Math.min(H - hudPanelH(), HUD.y));
+}
+function toCanvas(ev){
+  const r = cv.getBoundingClientRect();
+  return { x:(ev.clientX - r.left) * (W / r.width), y:(ev.clientY - r.top) * (H / r.height) };
+}
+function drawHUD(){
+  const vals = hudVals();
+  ctx.save();
+  ctx.globalAlpha *= HUD.op;
+  HUD_KEYS.forEach((key, i) => {
+    const y = HUD.y + i * (HUD.h + HUD.gap);
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = CLR.hudBrd;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(HUD.x, y, HUD.w, HUD.h, 8); else ctx.rect(HUD.x, y, HUD.w, HUD.h);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = CLR.hudBar;
+    ctx.fillRect(HUD.x + 0.5, y + 8, 2.4, HUD.h - 16);
+
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#6b6b73';
+    ctx.font = '600 11.5px -apple-system,"PingFang TC","Microsoft JhengHei",sans-serif';
+    ctx.fillText(zhOnly(T(key)), HUD.x + 11, y + 16);
+
+    ctx.textAlign = 'right';
+    ctx.fillStyle = CLR.hudGold;
+    ctx.font = '700 15.5px ui-monospace,Menlo,monospace';
+    ctx.fillText(vals[i], HUD.x + HUD.w - 10, y + 33);
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#c3c3ca';
+    ctx.font = '600 9.5px ui-monospace,Menlo,monospace';
+    ctx.fillText(HUD_SYM[i], HUD.x + 11, y + 33);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  });
+  ctx.restore();
+}
+
+/* ───────── 語言包 ───────── */
+const L = {
+  zh: {
+    'title.main':'拋體運動 互動模擬','title.sub':'Projectile Motion Simulation',
+    'lede':'水平與垂直運動互相獨立：a<sub>x</sub> = 0、a<sub>y</sub> = −g。全程唯一作用力係垂直向下嘅重量 W。拖動滑桿，所有數值同 SUVAT 表即時更新。',
+    'legend':'圖例','lg.trail':'軌跡（新 → 淡出）','lg.v':'合速度 v',
+    'hud.hint':'左上參數卡：按住拖動可移動位置；滾輪或雙指上下滑動可調透明度。',
+    'h.params':'參數','h.examples':'示範 / Example',
+    'p.u':'初速度 / Initial Velocity','p.th':'發射角度 / Launch Angle',
+    'p.h':'發射高度 / Launch Height','p.g':'重力加速度 / Gravitational Acceleration',
+    'p.scrub':'拖曳時間 / Scrub Time',
+    'h.suvat':'SUVAT Table','h.suvat.sub':'x / y 分開',
+    'suvat.note':'x 行 a = 0（無淨力，Vx 不變）；y 行 a = −g（只有重量）。數值保留 2 位小數。',
+    'ax.x':'x<br>水平','ax.y':'y<br>垂直',
+    'h.results':'計算結果 / Results',
+    'r.vx':'水平速度 Horizontal Velocity (Vx)',
+    'r.vy':'垂直速度 Vertical Velocity (Vy)',
+    'r.t':'飛行時間 Time of Flight',
+    'r.H':'最大高度 Maximum Height',
+    'r.R':'水平射程 Horizontal Range',
+    'r.v':'合速度 Resultant Velocity (v)',
+    'r.ang':'落地角度 Impact Angle',
+    'r.tc':'當前時間 Current Time',
+    'h.play':'播放 / Playback',
+    'btn.pause':'暫停 / Pause','btn.play':'播放 / Play','btn.step':'單幀 / Step',
+    'btn.reset':'重置 / Reset','btn.showExample':'顯示示範 / Show Example',
+    'h.notes':'DSE 考試重點 / Exam Notes',
+    'h.sol':'解題步驟 / Solution Walkthrough',
+    'hl.u':'初速度 Initial Velocity','hl.th':'發射角度 Launch Angle','hl.h':'發射高度 Launch Height',
+    'langLabel':'中文 / English'
+  },
+  en: {
+    'title.main':'Projectile Motion Simulation','title.sub':'拋體運動 互動模擬',
+    'lede':'Horizontal and vertical motions are independent: a<sub>x</sub> = 0, a<sub>y</sub> = −g. The only force acting is the weight W, vertically downwards. Drag the sliders — all values and the SUVAT table update instantly.',
+    'legend':'Legend','lg.trail':'Trajectory (new → faded)','lg.v':'Resultant velocity v',
+    'hud.hint':'Top-left panel: drag to move anywhere; scroll (or two-finger swipe) to change its opacity.',
+    'h.params':'Parameters','h.examples':'Example / 示範',
+    'p.u':'Initial Velocity / 初速度','p.th':'Launch Angle / 發射角度',
+    'p.h':'Launch Height / 發射高度','p.g':'Gravitational Acceleration / 重力加速度',
+    'p.scrub':'Scrub Time / 拖曳時間',
+    'h.suvat':'SUVAT Table','h.suvat.sub':'x / y separately',
+    'suvat.note':'x row: a = 0 (no net force, Vx constant)｜y row: a = −g (weight only). Values to 2 d.p.',
+    'ax.x':'x<br>Horizontal','ax.y':'y<br>Vertical',
+    'h.results':'Results / 計算結果',
+    'r.vx':'Horizontal Velocity (Vx)','r.vy':'Vertical Velocity (Vy)',
+    'r.t':'Time of Flight','r.H':'Maximum Height','r.R':'Horizontal Range',
+    'r.v':'Resultant Velocity (v)','r.ang':'Impact Angle','r.tc':'Current Time',
+    'h.play':'Playback / 播放',
+    'btn.pause':'Pause / 暫停','btn.play':'Play / 播放','btn.step':'Step / 單幀',
+    'btn.reset':'Reset / 重置','btn.showExample':'Show Example / 顯示示範',
+    'h.notes':'Exam Notes / DSE 考試重點','h.sol':'Solution Walkthrough / 解題步驟',
+    'hl.u':'初速度 Initial Velocity','hl.th':'發射角度 Launch Angle','hl.h':'發射高度 Launch Height',
+    'langLabel':'English / 中文'
+  }
+};
+const T = k => (L[S.lang] && L[S.lang][k]) || k;
+
+const DEMO_DEF = [
+  { id:'p1', u:15, th:0,  h:25, g:9.81,
+    zh:'示範：水平發射，初速 15 m/s，發射高度 25 m',
+    en:'Example: horizontal launch, u = 15 m/s, h = 25 m' },
+  { id:'p2', u:20, th:40, h:5,  g:9.81,
+    zh:'示範：斜拋 40°，初速 20 m/s，發射高度 5 m',
+    en:'Example: launch at 40°, u = 20 m/s, h = 5 m' },
+  { id:'p3', u:10, th:30, h:5,  g:9.81,
+    zh:'示範：斜拋 30°，初速 10 m/s，發射高度 5 m',
+    en:'Example: launch at 30°, u = 10 m/s, h = 5 m' }
+];
+
+const NOTES = {
+  zh: ['先分 <b>x / y</b> 兩個方向：兩軸互相獨立，唯一共用嘅係 <b>t</b>。',
+       '水平方向 <b>a = 0</b> ⇒ V<sub>x</sub> = u cosθ 全程不變。',
+       '垂直方向 <b>a = −g</b>，唯一作用力係重量 <b>W = mg</b>。',
+       '最高點 <b>V<sub>y</sub> = 0，但 V<sub>x</sub> ≠ 0</b>。',
+       '<b>速度方向 ≠ 加速度方向</b>，兩者無直接關係。',
+       '飛行時間由 <b>y</b> 方程決定，射程由 <b>x</b> 方程決定，切勿混用。'],
+  en: ['Split into <b>x / y</b> first — the axes are independent; the only shared quantity is <b>t</b>.',
+       'Horizontal: <b>a = 0</b> ⇒ V<sub>x</sub> = u cosθ stays constant.',
+       'Vertical: <b>a = −g</b>, the only force is the weight <b>W = mg</b>.',
+       'At maximum height <b>V<sub>y</sub> = 0 but V<sub>x</sub> ≠ 0</b>.',
+       '<b>Velocity direction ≠ acceleration direction</b> — no direct relation.',
+       'Time of flight from the <b>y</b> equation; range from the <b>x</b> equation.']
+};
+
+/* ───────── 軌跡淡出（每幀 −0.02，降到 0 即移除） ───────── */
+const TRAIL = { pts: [], acc: 1, sample: 0.030, step: 0.02, newA: 0.90 };
+function trailReset(){ TRAIL.pts.length = 0; TRAIL.acc = 1; }
+function trailPush(s){
+  const last = TRAIL.pts[TRAIL.pts.length - 1];
+  if (last && Math.abs(last.x - s.x) < 0.002 && Math.abs(last.y - s.y) < 0.002) return;
+  TRAIL.pts.push({ x:s.x, y:s.y, t:s.t, a:TRAIL.newA });
+  if (TRAIL.pts.length > 900) TRAIL.pts.shift();
+}
+function trailFade(){
+  for (let i = TRAIL.pts.length - 1; i >= 0; i--){
+    TRAIL.pts[i].a -= TRAIL.step;
+    if (TRAIL.pts[i].a <= 0) TRAIL.pts.splice(i, 1);
+  }
+}
+
+/* ───────── 座標 ───────── */
+function view(){
+  const k = calc();
+  const padL = 34, padR = 34, padT = 26, padB = 72;
+  const worldW = Math.max(k.R * 1.02, 2), worldH = Math.max(k.H * 1.02, 2);
+  const sc = Math.min((W - padL - padR) / worldW, (H - padT - padB) / worldH);
+  const gx = padL, gy = H - padB;
+  return { sc, gx, gy, k, X:x => gx + x*sc, Y:y => gy - y*sc };
+}
+
+/* ───────── 細線箭頭 ───────── */
+function arrow(x1, y1, x2, y2, color, width, dash){
+  const a = Math.atan2(y2 - y1, x2 - x1), len = Math.hypot(x2 - x1, y2 - y1);
+  if (len < 3) return;
+  const h = Math.min(9, len * 0.36);
+  ctx.save();
+  ctx.strokeStyle = color; ctx.fillStyle = color;
+  ctx.lineWidth = width || 1.6; ctx.lineCap = 'round';
+  ctx.globalAlpha = 0.88;
+  if (dash) ctx.setLineDash([5, 4]);
+  ctx.beginPath(); ctx.moveTo(x1, y1);
+  ctx.lineTo(x2 - h * 0.8 * Math.cos(a), y2 - h * 0.8 * Math.sin(a)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.globalAlpha = 0.78;
+  ctx.beginPath(); ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - h * Math.cos(a - 0.42), y2 - h * Math.sin(a - 0.42));
+  ctx.lineTo(x2 - h * Math.cos(a + 0.42), y2 - h * Math.sin(a + 0.42));
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function tag(t, x, y, color, align, size, weight){
+  ctx.save();
+  ctx.font = (weight || 600) + ' ' + (size || 12) + 'px ui-monospace,Menlo,monospace';
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle';
+  ctx.lineWidth = 3.4; ctx.strokeStyle = 'rgba(255,255,255,.94)';
+  ctx.strokeText(t, x, y);
+  ctx.fillStyle = color; ctx.fillText(t, x, y);
+  ctx.restore();
+}
+
+/* ───────── 主繪圖 ───────── */
+function draw(){
+  const k = calc(), cur = state(S.t), v = view(), X = v.X, Y = v.Y, sc = v.sc;
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, W * DPR, H * DPR);
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W * DPR, H * DPR);
+  ctx.save();
+  ctx.scale(DPR, DPR);
+
+  const step = sc > 7 ? 1 : sc > 3.5 ? 2 : 5;
+  ctx.strokeStyle = CLR.grid; ctx.lineWidth = 1;
+  for (let x = 0; X(x) < W - 12; x += step) { ctx.beginPath(); ctx.moveTo(X(x), 14); ctx.lineTo(X(x), Y(0)); ctx.stroke(); }
+  for (let y = 0; Y(y) > 12; y += step) { ctx.beginPath(); ctx.moveTo(12, Y(y)); ctx.lineTo(W - 12, Y(y)); ctx.stroke(); }
+  ctx.strokeStyle = CLR.grid2;
+  for (let x = 0; X(x) < W - 12; x += step * 5) { ctx.beginPath(); ctx.moveTo(X(x), 14); ctx.lineTo(X(x), Y(0)); ctx.stroke(); }
+
+  ctx.strokeStyle = CLR.ground; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.moveTo(12, Y(0)); ctx.lineTo(W - 12, Y(0)); ctx.stroke();
+  ctx.fillStyle = '#a8a294'; ctx.font = '600 11px ui-monospace,Menlo,monospace';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  const lab = step * (step === 1 ? 5 : step === 2 ? 5 : 2);
+  for (let x = 0; x <= k.R + step; x += step) {
+    const px = X(x); if (px > W - 12) break;
+    ctx.strokeStyle = '#d5d0c4'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(px, Y(0)); ctx.lineTo(px, Y(0) + 4); ctx.stroke();
+    if (Math.abs(x % lab) < 1e-6) ctx.fillText(f2(x), px, Y(0) + 8);
+  }
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#a8a294'; ctx.fillText('x / m', W - 48, Y(0) + 8);
+
+  ctx.setLineDash([3, 4]); ctx.strokeStyle = '#e0dbcd'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(0), Y(P.h)); ctx.stroke();
+  ctx.setLineDash([]);
+  tag('h = ' + f2(P.h) + ' m', X(0) + 7, (Y(0) + Y(P.h)) / 2, '#9c9585', 'left', 11.5, 600);
+
+  /* 拋物參考虛線 */
+  ctx.beginPath();
+  for (let i = 0; i <= 220; i++){ const s = state(k.t * i / 220); i ? ctx.lineTo(X(s.x), Y(s.y)) : ctx.moveTo(X(s.x), Y(s.y)); }
+  ctx.setLineDash([5, 7]); ctx.strokeStyle = CLR.ghost; ctx.lineWidth = 1.3; ctx.stroke();
+  ctx.setLineDash([]);
+
+  /* 淡出軌跡 */
+  ctx.save();
+  ctx.lineCap = 'round';
+  for (let i = 1; i < TRAIL.pts.length; i++){
+    const p0 = TRAIL.pts[i - 1], p1 = TRAIL.pts[i], a = p1.a;
+    if (a <= 0.02) continue;
+    ctx.globalAlpha = Math.min(1, a);
+    ctx.strokeStyle = CLR.dot;
+    ctx.lineWidth = 1.1 + 2.2 * a;
+    ctx.beginPath(); ctx.moveTo(X(p0.x), Y(p0.y)); ctx.lineTo(X(p1.x), Y(p1.y)); ctx.stroke();
+  }
+  ctx.restore();
+
+  if (k.uy > 0.01) {
+    const ax = X(k.ux * k.tApex);
+    ctx.strokeStyle = '#d9b64a'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ax - 5, Y(k.H) - 5); ctx.lineTo(ax + 5, Y(k.H) - 5); ctx.stroke();
+    tag('H = ' + f2(k.H) + ' m', ax, Y(k.H) - 15, CLR.v, 'center', 11.5, 600);
+  }
+  ctx.fillStyle = '#fff'; ctx.strokeStyle = '#c9a227'; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.arc(X(k.R), Y(0), 4, 0, 6.283); ctx.fill(); ctx.stroke();
+  tag('R = ' + f2(k.R) + ' m', X(k.R), Y(0) + 27, CLR.v, 'center', 11.5, 600);
+
+  const px = X(cur.x), py = Y(cur.y);
+  const vxLen = 72;
+  const vyLen = Math.max(18, Math.min(130, Math.abs(cur.vy) * 6.2));
+
+  arrow(px, py, px, py + vyLen, CLR.vy, 1.6);
+  tag('Vy ' + f2(cur.vy), px - 7, py + vyLen * 0.55, CLR.vy, 'right', 12, 600);
+
+  arrow(px, py, px + vxLen, py, CLR.vx, 1.6);
+  tag('Vx ' + f2(cur.vx), px + vxLen * 0.5, py - 13, CLR.vx, 'center', 12, 600);
+
+  arrow(px, py, px + vxLen, py + vyLen, CLR.v, 1.9);
+  tag('v ' + f2(Math.hypot(cur.vx, cur.vy)), px + vxLen + 6, py + vyLen + 3, CLR.v, 'left', 12, 600);
+
+  arrow(px - 32, py, px - 32, py + 46, CLR.w, 1.4, true);
+  tag('W = mg', px - 39, py + 23, CLR.w, 'right', 11.5, 600);
+
+  ctx.fillStyle = '#fff'; ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 1.8;
+  ctx.beginPath(); ctx.arc(px, py, 5, 0, 6.283); ctx.fill(); ctx.stroke();
+
+  drawHUD();
+
+  ctx.save();
+  ctx.globalAlpha = 0.5;
+  ctx.fillStyle = '#a8a294';
+  ctx.font = '600 11px -apple-system,"PingFang TC",sans-serif';
+  ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+  ctx.fillText(T('hud.hint'), W - 14, H - 10);
+  ctx.restore();
+
+  ctx.restore();
+}
+
+/* ───────── 側邊欄更新 ───────── */
+function updateTable(cur){
+  const k = calc();
+  money('tx_s').textContent = f2(cur.x);
+  money('tx_u').textContent = f2(k.ux);
+  money('tx_v').textContent = f2(k.ux);
+  money('tx_t').textContent = f2(cur.t);
+  money('ty_s').textContent = f2(cur.y - P.h);
+  money('ty_u').textContent = f2(k.uy);
+  money('ty_v').textContent = f2(k.uy - P.g * cur.t);
+  money('ty_a').textContent = '-' + f2(P.g);
+  money('ty_t').textContent = f2(cur.t);
+}
+function updateResults(cur){
+  const k = calc();
+  money('r_ux').textContent  = f2(k.ux) + ' m/s';
+  money('r_vy0').textContent = f2(k.uy) + ' m/s';
+  money('r_t').textContent   = f2(k.t) + ' s';
+  money('r_H').textContent   = f2(k.H) + ' m';
+  money('r_R').textContent   = f2(k.R) + ' m';
+  money('r_v').textContent   = f2(k.vEnd) + ' m/s';
+  money('r_ang').textContent = f2(k.angEnd) + '°';
+  money('r_tc').textContent  = f2(cur.t) + ' s';
+  money('vtc').textContent   = f2(cur.t);
+  money('stc').max = k.t.toFixed(3);
+  money('stc').value = Math.min(cur.t, k.t);
+}
+function updateWalkthrough(){
+  const k = calc(), zh = S.lang === 'zh';
+  const vx = k.ux, vyE = k.vyEnd, vE = k.vEnd;
+  money('steps').innerHTML =
+    '<div class="q"><b>' + (zh ? '示範：' : 'Example: ') + '</b>' +
+      (zh ? '水平發射，初速 u = ' + f2(P.u) + ' m/s，發射高度 h = ' + f2(P.h) + ' m，g = ' + f2(P.g) + ' m/s²，忽略空氣阻力。'
+          : 'horizontal launch, u = ' + f2(P.u) + ' m/s, h = ' + f2(P.h) + ' m, g = ' + f2(P.g) + ' m/s², air resistance neglected.') +
+      '<br>' + (zh ? '（現時 Launch angle θ = ' + P.th + '°，拖動滑桿即時重算）'
+                   : '(Current launch angle θ = ' + P.th + '°; move any slider to recompute)') + '</div>' +
+
+    '<div class="sp"><b>(a)(i) ' + (zh ? '垂直初速度 u<sub>y</sub>' : 'Vertical velocity, u<sub>y</sub>') + '</b>：' +
+      '<span class="f">u<sub>y</sub> = u sinθ = ' + f2(P.u) + ' × sin' + P.th + '° = ' + f2(k.uy) + ' m/s</span></div>' +
+
+    '<div class="sp"><b>(a)(ii) ' + (zh ? '飛行時間 t' : 'Time of flight, t') + '</b>：' +
+      '<span class="f">s<sub>y</sub> = u<sub>y</sub>t + ½a<sub>y</sub>t²</span>（' + (zh ? '向下為負' : 'downwards negative') + '）<br>' +
+      '<span class="f">−' + f2(P.h) + ' = (' + f2(k.uy) + ')t + ½(−' + f2(P.g) + ')t²</span> ⇒ ' +
+      '<span class="ans">t = ' + f2(k.t) + ' s</span></div>' +
+
+    '<div class="sp"><b>(a)(iii) ' + (zh ? '落地垂直速度 v<sub>y</sub>' : 'Impact vertical velocity, v<sub>y</sub>') + '</b>：' +
+      '<span class="f">v<sub>y</sub> = u<sub>y</sub> + a<sub>y</sub>t = ' + f2(k.uy) + ' + (−' + f2(P.g) + ')(' + f2(k.t) + ') = ' + f2(vyE) + ' m/s</span></div>' +
+
+    '<div class="sp"><b>(b) ' + (zh ? '水平射程 s<sub>x</sub>' : 'Horizontal range, s<sub>x</sub>') + '</b>：' +
+      '<span class="f">s<sub>x</sub> = u<sub>x</sub>t = ' + f2(vx) + ' × ' + f2(k.t) + ' = ' + f2(k.R) + ' m</span></div>' +
+
+    '<div class="sp"><b>(c) ' + (zh ? '落地速率與角度' : 'Impact speed &amp; angle') + '</b>：' +
+      '<span class="f">v = √(v<sub>x</sub>² + v<sub>y</sub>²) = √(' + f2(vx) + '² + (' + f2(vyE) + ')²) = ' + f2(vE) + ' m/s</span>，' +
+      '<span class="f">tanθ = v<sub>y</sub>/v<sub>x</sub></span> ⇒ <span class="ans">θ = ' + f2(k.angEnd) + '°</span></div>';
+}
+function updateNote(){
+  const k = calc(), zh = S.lang === 'zh';
+  let s = '<b>' + (zh ? '應試反應：' : 'Exam reaction: ') + '</b>' +
+    (zh ? '畫好 SUVAT 表才落方程。' : 'write the SUVAT table before touching the equations. ');
+  s += P.th === 0
+    ? (zh ? '水平發射時 u<sub>y</sub> = 0 係最易漏嘅一步。'
+          : 'For horizontal launch u<sub>y</sub> = 0 is the step most often missed.')
+    : (zh ? '斜拋要先分解 u<sub>x</sub> = u cosθ、u<sub>y</sub> = u sinθ。'
+          : 'For angled launch, resolve u<sub>x</sub> = u cosθ and u<sub>y</sub> = u sinθ first.');
+  s += zh ? ' 飛行時間由 y 方向決定，射程由 x 方向決定。'
+          : ' Time of flight comes from y, range from x.';
+  if (k.uy > 0.01) s += zh
+    ? ' 最高點 V<sub>y</sub> = 0，但 V<sub>x</sub> 仍為 ' + f2(k.ux) + ' m/s。'
+    : ' At the top V<sub>y</sub> = 0 while V<sub>x</sub> stays ' + f2(k.ux) + ' m/s.';
+  money('react').innerHTML = s;
+}
+
+function update(){
+  const k = calc();
+  if (S.t > k.t) S.t = k.t;
+  const cur = state(S.t);
+  hudClamp();
+  updateTable(cur); updateResults(cur); updateWalkthrough(); updateNote();
+  draw();
+  if (typeof postState === 'function') postState();
+}
+
+/* ───────── 動畫 ───────── */
+let last = performance.now();
+function loop(now){
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  if (S.run){
+    const k = calc();
+    S.t += dt * Math.max(0.6, k.t / 3.2);
+    if (S.t >= k.t){ S.t = k.t; S.run = false; money('play').textContent = T('btn.play'); }
+    TRAIL.acc += dt;
+    while (TRAIL.acc >= TRAIL.sample){
+      TRAIL.acc -= TRAIL.sample;
+      trailPush(state(S.t));
+    }
+    trailFade();
+    update();
+  } else {
+    if (TRAIL.pts.length){ trailFade(); draw(); }
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ───────── 語言切換 ───────── */
+function applyLang(){
+  document.documentElement.setAttribute('data-lang', S.lang);
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.innerHTML = T(el.getAttribute('data-i18n'));
+  });
+  DEMO_DEF.forEach(d => { const b = money(d.id); if (b) b.textContent = S.lang === 'zh' ? d.zh : d.en; });
+  money('tips').innerHTML = NOTES[S.lang].map(x => '<li>' + x + '</li>').join('');
+  money('play').textContent = S.run ? T('btn.pause') : T('btn.play');
+  money('langLabel').textContent = T('langLabel');
+  update();
+}
+money('langBtn').addEventListener('click', () => {
+  S.lang = S.lang === 'zh' ? 'en' : 'zh';
+  applyLang();
+  buildQuiz();
+});
+
+/* ───────── 輸入綁定 ───────── */
+function bindRange(id, out, key, dec){
+  money(id).addEventListener('input', e => {
+    P[key] = parseFloat(e.target.value);
+    money(out).textContent = P[key].toFixed(dec);
+    update();
+  });
+}
+bindRange('su','vu','u',2);
+bindRange('sth','vth','th',0);
+bindRange('sh','vh','h',2);
+bindRange('sg','vg','g',2);
+
+function applyDemo(d){
+  P.u = d.u; P.th = d.th; P.h = d.h; P.g = d.g;
+  money('su').value  = P.u;  money('vu').textContent  = P.u.toFixed(2);
+  money('sth').value = P.th; money('vth').textContent = P.th;
+  money('sh').value  = P.h;  money('vh').textContent  = P.h.toFixed(2);
+  money('sg').value  = P.g;  money('vg').textContent  = P.g.toFixed(2);
+  S.t = 0; S.run = true; trailReset();
+  money('play').textContent = T('btn.pause');
+  update();
+}
+DEMO_DEF.forEach(d => money(d.id).addEventListener('click', () => applyDemo(d)));
+money('showExample').addEventListener('click', () => {
+  applyDemo(DEMO_DEF[0]);
+  money('steps').scrollIntoView({ behavior:'smooth', block:'center' });
+});
+
+money('play').addEventListener('click', () => {
+  const k = calc();
+  if (S.t >= k.t - 1e-6){ S.t = 0; trailReset(); }
+  S.run = !S.run;
+  money('play').textContent = S.run ? T('btn.pause') : T('btn.play');
+});
+money('step').addEventListener('click', () => {
+  const k = calc();
+  S.run = false; money('play').textContent = T('btn.play');
+  S.t = Math.min(k.t, S.t + 0.02);
+  trailPush(state(S.t)); trailFade(); update();
+});
+money('reset').addEventListener('click', () => {
+  S.t = 0; S.run = true; trailReset();
+  money('play').textContent = T('btn.pause');
+  update();
+});
+money('stc').addEventListener('input', e => {
+  S.run = false; money('play').textContent = T('btn.play');
+  S.t = parseFloat(e.target.value);
+  trailReset(); update();
+});
+
+/* ═════════ 參數卡互動：整張卡拖動 + 滾輪調透明度 ═════════ */
+function hitPanel(pt){
+  const inPanel = pt.x >= HUD.x && pt.x <= HUD.x + HUD.w &&
+                  pt.y >= HUD.y && pt.y <= HUD.y + hudPanelH();
+  HUD.hover = inPanel;
+  return inPanel;
+}
+cv.addEventListener('pointerdown', e => {
+  const pt = toCanvas(e);
+  if (hitPanel(pt)){
+    HUD.drag = { dx: pt.x - HUD.x, dy: pt.y - HUD.y };
+    cv.setPointerCapture(e.pointerId);
+    cv.style.cursor = 'grabbing';
+    draw();
+  }
+});
+cv.addEventListener('pointermove', e => {
+  const pt = toCanvas(e);
+  if (HUD.drag){
+    HUD.x = pt.x - HUD.drag.dx;
+    HUD.y = pt.y - HUD.drag.dy;
+    hudClamp(); draw();
+  } else {
+    cv.style.cursor = hitPanel(pt) ? 'grab' : 'default';
+  }
+});
+function endDrag(e){
+  if (HUD.drag){
+    HUD.drag = null;
+    try { cv.releasePointerCapture(e.pointerId); } catch (err) {}
+    cv.style.cursor = 'grab'; draw();
+  }
+}
+cv.addEventListener('pointerup', endDrag);
+cv.addEventListener('pointercancel', endDrag);
+cv.addEventListener('pointerleave', () => { if (!HUD.drag){ HUD.hover = false; draw(); } });
+cv.addEventListener('wheel', e => {
+  const pt = toCanvas(e);
+  if (!hitPanel(pt)) return;
+  e.preventDefault();
+  HUD.op = Math.max(HUD.minOp, Math.min(HUD.maxOp, HUD.op - e.deltaY * 0.0012));
+  draw();
+}, { passive:false });
+window.addEventListener('resize', () => { hudClamp(); update(); });
+
+/* ═════════ 概念小測 ═════════ */
+const QUIZ = {
+  zh: [
+    { q:'小球由高處水平拋出，忽略空氣阻力。下列何者正確？',
+      o:['水平方向有淨力，所以加速','垂直方向初速度為零，加速度為 −9.81 m s⁻²','水平速率會逐漸減慢','飛行時間由水平初速度決定'], a:1,
+      e:'<b>水平 a = 0、垂直 a = −g。</b>水平拋出時 u<sub>y</sub> = 0，垂直方向由重力加速；水平方向無淨力，V<sub>x</sub> 全程不變。<br><b>陷阱：</b>誤以為水平初速度會影響飛行時間 —— 飛行時間只由 y 方向（高度、u<sub>y</sub>、g）決定。' },
+    { q:'從同一高度水平拋出兩球，初速度分別為 5 m s⁻¹ 與 15 m s⁻¹。兩球落地所需時間關係為？',
+      o:['5 m s⁻¹ 那球較快落地','15 m s⁻¹ 那球較快落地','兩球同時落地','無法判斷'], a:2,
+      e:'<b>兩球同時落地。</b>飛行時間由 <span style="font-family:monospace">s<sub>y</sub> = u<sub>y</sub>t + ½a<sub>y</sub>t²</span> 決定，兩球的 u<sub>y</sub>、h、g 完全相同（u<sub>y</sub> = 0）⇒ t 相同。<br><b>陷阱：</b>以為「飛得快啲就會早啲落地」；水平與垂直方向完全獨立。' },
+    { q:'拋體在最高點時，下列何者正確？',
+      o:['速率為零','垂直速度為零，水平速度不變','加速度為零','合速度與加速度方向相同'], a:1,
+      e:'<b>最高點 V<sub>y</sub> = 0，但 V<sub>x</sub> = u cosθ 仍然存在</b>，所以速率 ≠ 0，加速度仍是 g 向下。<br><b>陷阱：</b>答「速率為零」或「加速度為零」。' },
+    { q:'斜拋時把初速度分解為 u<sub>x</sub> 與 u<sub>y</sub>，則整個飛行過程中：',
+      o:['u<sub>x</sub> 不變，V<sub>y</sub> 隨時間以 g 遞減','u<sub>x</sub> 與 u<sub>y</sub> 都隨時間遞減','u<sub>x</sub> 遞減，u<sub>y</sub> 不變','兩者都不變'], a:0,
+      e:'<b>V<sub>x</sub> = u cosθ 恆定；V<sub>y</sub> = u sinθ − gt 線性遞減。</b><br><b>陷阱：</b>把「垂直速度遞減」誤推廣到水平分量。落地前 V<sub>y</sub> 會變成負值（向下）。' },
+    { q:'某拋體落地時水平速度 12 m s⁻¹、垂直速度 −16 m s⁻¹。落地速率與落地角度（與水平之夾角）為？',
+      o:['28 m s⁻¹、53°','20 m s⁻¹、53°','20 m s⁻¹、37°','4 m s⁻¹、53°'], a:1,
+      e:'<b>v = √(V<sub>x</sub>² + V<sub>y</sub>²) = √(12² + 16²) = 20 m s⁻¹。</b><br>角度：tanθ = 16/12 = 1.333 ⇒ θ = 53°（水平以下）。<br><b>陷阱：</b>直接把兩個分量相加（28）；用 tanθ = 12/16 得出 37°（分量搞反）。' }
+  ],
+  en: [
+    { q:'A ball is projected horizontally from a height, air resistance neglected. Which is correct?',
+      o:['There is a net force horizontally, so it accelerates','Initial vertical velocity is zero and acceleration is −9.81 m s⁻²','The horizontal speed gradually decreases','The time of flight depends on the initial horizontal speed'], a:1,
+      e:'<b>a<sub>x</sub> = 0, a<sub>y</sub> = −g.</b> For a horizontal launch u<sub>y</sub> = 0 and gravity drives the vertical motion; with no net horizontal force V<sub>x</sub> stays constant.<br><b>Trap:</b> assuming the horizontal speed affects the time of flight.' },
+    { q:'Two balls are thrown horizontally from the same height with u = 5 m s⁻¹ and 15 m s⁻¹. Their times of flight are:',
+      o:['The 5 m s⁻¹ one lands first','The 15 m s⁻¹ one lands first','Both land at the same time','Cannot be determined'], a:2,
+      e:'<b>Both land together.</b> Time of flight comes from <span style="font-family:monospace">s<sub>y</sub> = u<sub>y</sub>t + ½a<sub>y</sub>t²</span>: u<sub>y</sub>, h and g are identical ⇒ same t.<br><b>Trap:</b> thinking a faster horizontal speed means an earlier landing.' },
+    { q:'At the highest point of a projectile trajectory:',
+      o:['The speed is zero','Vertical velocity is zero while horizontal velocity is unchanged','The acceleration is zero','Velocity and acceleration are in the same direction'], a:1,
+      e:'<b>At the top V<sub>y</sub> = 0 but V<sub>x</sub> = u cosθ remains</b>, so the speed is not zero and the acceleration is still g downwards.<br><b>Trap:</b> answering "speed is zero" or "acceleration is zero".' },
+    { q:'For an angled launch resolved into u<sub>x</sub> and u<sub>y</sub>, during the whole flight:',
+      o:['u<sub>x</sub> is constant and V<sub>y</sub> decreases at rate g','Both u<sub>x</sub> and u<sub>y</sub> decrease','u<sub>x</sub> decreases while u<sub>y</sub> is constant','Both stay constant'], a:0,
+      e:'<b>V<sub>x</sub> = u cosθ is constant; V<sub>y</sub> = u sinθ − gt decreases linearly.</b><br><b>Trap:</b> extending the "vertical velocity decreases" idea to the horizontal component.' },
+    { q:'A projectile lands with V<sub>x</sub> = 12 m s⁻¹ and V<sub>y</sub> = −16 m s⁻¹. Its impact speed and impact angle (to the horizontal) are:',
+      o:['28 m s⁻¹, 53°','20 m s⁻¹, 53°','20 m s⁻¹, 37°','4 m s⁻¹, 53°'], a:1,
+      e:'<b>v = √(V<sub>x</sub>² + V<sub>y</sub>²) = √(12² + 16²) = 20 m s⁻¹.</b><br>tanθ = 16/12 ⇒ θ = 53° below the horizontal.<br><b>Trap:</b> adding the components (28), or using tanθ = 12/16 which gives 37°.' }
+  ]
+};
+let quizState = { answered:{}, correct:0 };
+function buildQuiz(){
+  const list = money('qlist'), items = QUIZ[S.lang];
+  quizState = { answered:{}, correct:0 };
+  money('score').textContent = (S.lang === 'zh' ? '得分 0 / ' : 'Score 0 / ') + items.length;
+  list.innerHTML = items.map((it, qi) =>
+    '<div class="qitem"><div class="qno">Question ' + (qi + 1) + '</div>' +
+    '<div class="qtext">' + it.q + '</div><div class="qopts">' +
+    it.o.map((t, oi) => '<button class="qopt" type="button" data-q="' + qi + '" data-o="' + oi + '">' +
+      '<span class="key">' + 'ABCD'[oi] + '</span><span>' + t + '</span></button>').join('') +
+    '</div><div class="qexp" id="exp-' + qi + '"></div></div>').join('');
+}
+money('qlist').addEventListener('click', e => {
+  const btn = e.target.closest('.qopt'); if (!btn) return;
+  const qi = +btn.dataset.q, oi = +btn.dataset.o, it = QUIZ[S.lang][qi];
+  if (quizState.answered[qi] !== undefined) return;
+  quizState.answered[qi] = oi;
+  const ok = oi === it.a;
+  if (ok) quizState.correct++;
+  money('score').textContent = (S.lang === 'zh' ? '得分 ' : 'Score ') +
+    quizState.correct + ' / ' + QUIZ[S.lang].length;
+  money('qlist').querySelectorAll('.qopt[data-q="' + qi + '"]').forEach(b => {
+    b.disabled = true;
+    if (+b.dataset.o === it.a) b.classList.add('right');
+    else if (+b.dataset.o === oi) b.classList.add('wrong');
+  });
+  const ex = money('exp-' + qi);
+  ex.innerHTML = '<span class="verdict ' + (ok ? 'ok' : 'no') + '">' +
+    (ok ? (S.lang === 'zh' ? '正確' : 'Correct')
+        : (S.lang === 'zh' ? '正確答案：' : 'Correct answer: ') + 'ABCD'[it.a]) + '</span>' + it.e;
+  ex.classList.add('show');
+});
+money('qreset').addEventListener('click', buildQuiz);
+
+/* ═════════ 嵌入模式 / URL 參數 / postMessage ═════════ */
+const QS = new URLSearchParams(location.search);
+if (QS.get('embed') === '1' || QS.get('embed') === 'true') document.body.classList.add('embed');
+
+function applyQuery(){
+  const num = (k, min, max) => {
+    const v = parseFloat(QS.get(k));
+    if (!isFinite(v)) return null;
+    return Math.max(min, Math.min(max, v));
+  };
+  const u = num('u', 5, 40), th = num('th', 0, 90), h = num('h', 5, 60), g = num('g', 1.6, 12);
+  if (u !== null) P.u = u;
+  if (th !== null) P.th = Math.round(th);
+  if (h !== null) P.h = h;
+  if (g !== null) P.g = g;
+  const demo = QS.get('demo');
+  if (demo && DEMO_DEF[+demo - 1]){
+    const d = DEMO_DEF[+demo - 1];
+    P.u = d.u; P.th = d.th; P.h = d.h; P.g = d.g;
+  }
+  const lang = QS.get('lang');
+  if (lang === 'en' || lang === 'zh') S.lang = lang;
+  money('su').value = P.u;  money('vu').textContent  = P.u.toFixed(2);
+  money('sth').value = P.th; money('vth').textContent = P.th;
+  money('sh').value = P.h;  money('vh').textContent  = P.h.toFixed(2);
+  money('sg').value = P.g;  money('vg').textContent  = P.g.toFixed(2);
+}
+applyQuery();
+if (QS.toString()){
+  /* 套用深層連結參數後，重整介面語言、軌跡同數值，確保完全一致 */
+  S.run = false;
+  trailReset();
+  applyLang();
+}
+
+function snapshot(){
+  const k = calc(), cur = state(S.t);
+  return {
+    type:'projectile-motion:state',
+    u:P.u, th:P.th, h:P.h, g:P.g, lang:S.lang, running:S.run,
+    t:cur.t, timeOfFlight:k.t, maxHeight:k.H, range:k.R,
+    vx:k.ux, vyInitial:k.uy, vyEnd:k.vyEnd,
+    impactSpeed:k.vEnd, impactAngle:k.angEnd
+  };
+}
+function postState(){
+  if (window.parent === window) return;
+  try { window.parent.postMessage(snapshot(), '*'); } catch (e) {}
+}
+window.addEventListener('message', ev => {
+  const d = ev.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === 'projectile-motion:pause'){ S.run = false; money('play').textContent = T('btn.play'); }
+  else if (d.type === 'projectile-motion:play'){ S.run = true; money('play').textContent = T('btn.pause'); }
+  else if (d.type === 'projectile-motion:reset'){ S.t = 0; trailReset(); update(); }
+  else if (d.type === 'projectile-motion:step'){ money('step').click(); }
+  else if (d.type === 'projectile-motion:lang'){ if (d.lang === 'zh' || d.lang === 'en'){ S.lang = d.lang; applyLang(); buildQuiz(); } }
+  else if (d.type === 'projectile-motion:demo'){ const dm = DEMO_DEF[+d.index - 1]; if (dm) applyDemo(dm); }
+  else if (d.type === 'projectile-motion:params'){
+    if (isFinite(+d.u)) P.u = Math.max(5, Math.min(40, +d.u));
+    if (isFinite(+d.th)) P.th = Math.max(0, Math.min(90, Math.round(+d.th)));
+    if (isFinite(+d.h)) P.h = Math.max(5, Math.min(60, +d.h));
+    if (isFinite(+d.g)) P.g = Math.max(1.6, Math.min(12, +d.g));
+    money('su').value = P.u;  money('vu').textContent  = P.u.toFixed(2);
+    money('sth').value = P.th; money('vth').textContent = P.th;
+    money('sh').value = P.h;  money('vh').textContent  = P.h.toFixed(2);
+    money('sg').value = P.g;  money('vg').textContent  = P.g.toFixed(2);
+    update();
+  }
+  else if (d.type === 'projectile-motion:get'){
+    try { ev.source.postMessage(snapshot(), '*'); } catch (e) {}
+  }
+});
+
+/* ═════════ 導航高亮（沿用全站） ═════════ */
+(function navHighlight(){
+  var key = document.body.dataset.nav || '';
+  document.querySelectorAll('#navLinks a').forEach(function (a) {
+    if (a.dataset.nav === key) a.classList.add('on');
+  });
+  var on = document.querySelector('#navLinks a.on');
+  if (on && on.scrollIntoView) on.scrollIntoView({ block:'nearest', inline:'center' });
+})();
+
+/* ───────── 啟動 ───────── */
+(function initCanvas(){
+  cv.width  = Math.round(W * DPR);
+  cv.height = Math.round(H * DPR);
+  cv.style.aspectRatio = W + ' / ' + H;
+  HUD.x = 12; HUD.y = 12; HUD.op = 1;
+})();
+applyLang();
+trailReset();
+update();
+requestAnimationFrame(loop);
+
+/* 啟動：小測渲染（語言切換時會重建，見 langBtn） */
+buildQuiz();
+</script>
 </body>
 </html>
