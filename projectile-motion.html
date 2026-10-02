@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Description" content="DSE Physics 拋體運動互動模擬：水平與垂直方向獨立計算、SUVAT 表格、速度向量與完整解題步驟。">
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2487.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.5px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.5px '.Apple Color Emoji UI'; color: #43434a; -webkit-text-stroke: #43434a}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.6px 'PingFang HK Semibold'; color: #43434a; -webkit-text-stroke: #43434a}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 11.5px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.6px 'PingFang HK'; color: #585860; -webkit-text-stroke: #585860}
+    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 15.0px 'Helvetica Neue'; color: #6d6d6d; -webkit-text-stroke: #6d6d6d; min-height: 18.0px}
+    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px '.SF NS'; color: #2e2d33; -webkit-text-stroke: #2e2d33; background-color: #ffffff}
+    p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px 'Helvetica Neue'; color: #2e2d33; -webkit-text-stroke: #2e2d33; background-color: #ffffff; min-height: 18.0px}
+    p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711}
+    p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.4px 'PingFang HK'; color: #585860; -webkit-text-stroke: #585860}
+    p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.4px 'Helvetica Neue'; color: #585860; -webkit-text-stroke: #585860}
+    p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.8px 'PingFang HK'; color: #585860; -webkit-text-stroke: #585860}
+    p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.2px 'Helvetica Neue'; color: #585860; -webkit-text-stroke: #585860}
+    p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.5px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711}
+    p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.8px '.SF NS'; color: #2e2d33; -webkit-text-stroke: #2e2d33; background-color: #ffffff; min-height: 15.0px}
+    p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px '.SF NS'; color: #ffffff; -webkit-text-stroke: #ffffff; background-color: #a8740d}
+    p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.6px 'Songti TC'; color: #585860; -webkit-text-stroke: #585860}
+    p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711; min-height: 16.0px}
+    p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711}
+    p.p21 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 10.4px '.SF NS'; color: #585860; -webkit-text-stroke: #585860}
+    p.p22 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.0px 'Helvetica Neue'; color: #585860; -webkit-text-stroke: #585860}
+    p.p23 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.0px 'PingFang HK Semibold'; color: #585860; -webkit-text-stroke: #585860}
+    p.p24 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px '.SF NS'; color: #2e2d33; -webkit-text-stroke: #2e2d33}
+    p.p25 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px '.SF NS'; color: #585860; -webkit-text-stroke: #585860}
+    p.p26 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.6px 'PingFang HK'; color: #585860; -webkit-text-stroke: #585860}
+    p.p27 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; color: #585860; -webkit-text-stroke: #585860}
+    p.p28 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.2px 'Helvetica Neue'; color: #185b84; -webkit-text-stroke: #185b84}
+    p.p29 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.2px 'Helvetica Neue'; color: #a12841; -webkit-text-stroke: #a12841}
+    p.p30 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.2px 'Helvetica Neue'; color: #2e2d33; -webkit-text-stroke: #2e2d33}
+    p.p31 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.2px 'Helvetica Neue'; color: #195a37; -webkit-text-stroke: #195a37}
+    p.p32 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.2px 'Helvetica Neue'; color: #765810; -webkit-text-stroke: #765810}
+    p.p34 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.6px 'Helvetica Neue'; color: #2e2d33; -webkit-text-stroke: #2e2d33; min-height: 16.0px}
+    p.p35 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.8px 'Helvetica Neue'; color: #7b3830; -webkit-text-stroke: #7b3830; background-color: #fcf2f1; min-height: 15.0px}
+    p.p36 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711}
+    p.p37 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.4px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711; background-color: #bc921e; background-color: rgba(188, 146, 30, 0.15)}
+    p.p38 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px 'Helvetica Neue'; color: #2e2d33; -webkit-text-stroke: #2e2d33; min-height: 18.0px}
+    p.p39 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.6px 'PingFang HK Semibold'; color: #775711; -webkit-text-stroke: #775711; background-color: #ffffff}
+    p.p40 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 11.0px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711}
+    p.p41 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.5px 'Helvetica Neue'; color: #6a6972; -webkit-text-stroke: #6a6972}
+    li.li33 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.9px 'Helvetica Neue'; color: #585860; min-height: 15.0px}
+    span.s1 {font-kerning: none; background-color: rgba(249, 249, 251, 0.9)}
+    span.s2 {font-kerning: none}
+    span.s3 {font: 13.5px '.Apple Color Emoji UI'; font-kerning: none; color: #43434a; -webkit-text-stroke: 0px #43434a}
+    span.s4 {font: 12.6px '.AppleHongKongChineseFont'; font-kerning: none; background-color: rgba(249, 249, 251, 0.9)}
+    span.s5 {font: 13.6px 'Helvetica Neue'; font-kerning: none}
+    span.s6 {font: 11.3px 'Helvetica Neue'; font-kerning: none}
+    span.s7 {font: 13.0px '.AppleHongKongChineseFont'; font-kerning: none}
+    span.s8 {font: 13.0px '.AppleHongKongChineseFont'; font-kerning: none; color: #2e2d33; background-color: #ffffff; -webkit-text-stroke: 0px #2e2d33}
+    span.s9 {font: 13.0px '.SF NS'; font-kerning: none; color: #2e2d33; background-color: #ffffff; -webkit-text-stroke: 0px #2e2d33}
+    span.s10 {font-kerning: none; background-color: #ffffff}
+    span.s11 {font: 12.4px 'Helvetica Neue'; font-kerning: none; background-color: #ffffff}
+    span.s12 {font: 13.2px 'PingFang HK'; font-kerning: none; background-color: #ffffff}
+    span.s13 {font: 12.0px '.AppleHongKongChineseFont'; font-kerning: none; background-color: #ffffff}
+    span.s14 {font: 11.6px 'Helvetica Neue'; font-kerning: none; background-color: #ffffff}
+    span.s15 {font: 13.0px 'PingFang HK'; font-kerning: none; background-color: #ffffff}
+    span.s16 {font: 12.4px '.AppleHongKongChineseFont'; font-kerning: none}
+    span.s17 {font: 12.6px '.AppleHongKongChineseFont'; font-kerning: none}
+    span.s18 {font: 11.0px 'PingFang HK'; font-kerning: none}
+    table.t1 {border-collapse: collapse; table-layout: fixed}
+    td.td1 {width: 40.0px; background-color: #fcf9ee; border-style: solid; border-width: 0.0px 0.0px 1.0px 0.0px; border-color: #775711 #775711 #eadebc #775711; padding: 7.0px 2.0px 7.0px 2.0px}
+    td.td2 {width: 135.6px; background-color: #fcf9ee; border-style: solid; border-width: 0.0px 0.0px 1.0px 0.0px; border-color: #775711 #775711 #eadebc #775711; padding: 7.0px 2.0px 7.0px 2.0px}
+    td.td3 {width: 40.0px; background-color: #fbfbfc; border-style: solid; border-width: 0.0px 0.0px 1.0px 0.0px; border-color: #585860 #585860 #eaeaef #585860; padding: 7.0px 2.0px 7.0px 2.0px}
+    td.td4 {width: 135.6px; border-style: solid; border-width: 0.0px 0.0px 1.0px 0.0px; border-color: #2e2d33 #2e2d33 #eaeaef #2e2d33; padding: 7.0px 2.0px 7.0px 2.0px}
+    td.td5 {width: 135.6px; border-style: solid; border-width: 0.0px 0.0px 1.0px 0.0px; border-color: #585860 #585860 #eaeaef #585860; padding: 7.0px 2.0px 7.0px 2.0px}
+    td.td6 {width: 40.0px; background-color: #fbfbfc; padding: 7.0px 2.0px 7.0px 2.0px}
+    td.td7 {width: 135.6px; padding: 7.0px 2.0px 7.0px 2.0px}
+    ul.ul1 {list-style-type: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/index.html"><b>最強 Physics by Jacky</b><span class="s2"><b></b></span></a></span></p>
+<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/index.html">🏠<span class="s3"></span></a></span></p>
+<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/index.html"><b>主頁</b><span class="s2"><b></b></span></a></span></p>
+<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/simulations.html">🧪<span class="s3"></span></a></span></p>
+<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/simulations.html"><b>互動模擬</b><span class="s2"><b></b></span></a></span></p>
+<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/exam-bank.html">📝<span class="s3"></span></a></span></p>
+<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/exam-bank.html"><b>試題庫</b><span class="s2"><b></b></span></a></span></p>
+<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/formula-sheet.html">📖<span class="s3"></span></a></span></p>
+<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/formula-sheet.html"><b>公式表</b><span class="s2"><b></b></span></a></span></p>
+<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/revision-notes.html">📚<span class="s3"></span></a></span></p>
+<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/revision-notes.html"><b>筆記</b><span class="s2"><b></b></span></a></span></p>
+<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/about.html">ℹ️<span class="s3"></span></a></span></p>
+<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/about.html"><b>關於</b><span class="s2"><b></b></span></a></span></p>
+<p class="p4"><span class="s2">SIMULATION · MECHANICS</span></p>
+<h1 style="margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 32.0px 'Songti TC'; color: #2e2d33; -webkit-text-stroke: #2e2d33"><span class="s2"><b>Projectile Motion 拋體運動</b></span></h1>
+<p class="p6"><span class="s2">水平與垂直運動互相獨立：</span><span class="s5">a</span><span class="s6"><sub>x</sub></span><span class="s5"> = 0</span><span class="s2">、</span><span class="s5">a</span><span class="s6"><sub>y</sub></span><span class="s5"> = −g</span><span class="s2">。全程唯一作用力係垂直向下嘅重量</span><span class="s5"> W</span><span class="s2">。拖動滑桿，所有數值同</span><span class="s5"> SUVAT </span><span class="s2">表即時更新。</span></p>
+<p class="p7"><span class="s2"></span><br></p>
+<p class="p8"><span class="s7"><b>中文</b></span><span class="s2"><b> / English</b></span></p>
+<p class="p8"><span class="s2"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/simulations.html"><b>← </b><span class="s8"><b>返回</b></span><span class="s9"><b> Simulations</b></span></a></span></p>
+<p class="p9"><span class="s2"></span><br></p>
+<p class="p10"><span class="s10"><b>圖例</b></span></p>
+<p class="p11"><span class="s10">軌跡（新</span><span class="s11"> → </span><span class="s10">淡出）</span></p>
+<p class="p12"><span class="s10">Vx</span></p>
+<p class="p12"><span class="s10">Vy</span></p>
+<p class="p11"><span class="s10">合速度</span><span class="s11"> v</span></p>
+<p class="p12"><span class="s10">W = mg</span></p>
+<p class="p13"><span class="s10">左上參數卡：按住拖動可移動位置；滾輪或雙指上下滑動可調透明度。</span></p>
+<p class="p10"><span class="s10"><b>參數</b></span></p>
+<p class="p14"><span class="s12">初速度</span><span class="s10"> / Initial Velocity</span></p>
+<p class="p15"><span class="s10"><b>15.00</b></span></p>
+<p class="p14"><span class="s12">發射角度</span><span class="s10"> / Launch Angle</span></p>
+<p class="p15"><span class="s10"><b>0</b></span></p>
+<p class="p14"><span class="s12">發射高度</span><span class="s10"> / Launch Height</span></p>
+<p class="p15"><span class="s10"><b>25.00</b></span></p>
+<p class="p14"><span class="s12">重力加速度</span><span class="s10"> / Gravitational Acceleration</span></p>
+<p class="p15"><span class="s10"><b>9.81</b></span></p>
+<p class="p10"><span class="s10"><b>示範 / Example</b></span></p>
+<p class="p16"><span class="s2"><b></b></span><br></p>
+<p class="p16"><span class="s2"><b></b></span><br></p>
+<p class="p16"><span class="s2"><b></b></span><br></p>
+<p class="p17"><span class="s7"><b>顯示示範</b></span><span class="s2"><b> / Show Example</b></span></p>
+<p class="p10"><span class="s10"><b>SUVAT Table</b></span></p>
+<p class="p18"><span class="s10">x / y 分開</span></p>
+<table cellspacing="0" cellpadding="0" class="t1">
+  <tbody>
+    <tr>
+      <td valign="middle" class="td1">
+        <p class="p19"><span class="s2"><b></b></span><br></p>
+      </td>
+      <td valign="middle" class="td2">
+        <p class="p20"><span class="s10"><b>s</b></span></p>
+        <p class="p21"><span class="s10">m</span></p>
+      </td>
+      <td valign="middle" class="td2">
+        <p class="p20"><span class="s10"><b>u</b></span></p>
+        <p class="p21"><span class="s10">m/s</span></p>
+      </td>
+      <td valign="middle" class="td2">
+        <p class="p20"><span class="s10"><b>v</b></span></p>
+        <p class="p21"><span class="s10">m/s</span></p>
+      </td>
+      <td valign="middle" class="td2">
+        <p class="p20"><span class="s10"><b>a</b></span></p>
+        <p class="p21"><span class="s10">m/s²</span></p>
+      </td>
+      <td valign="middle" class="td2">
+        <p class="p20"><span class="s10"><b>t</b></span></p>
+        <p class="p21"><span class="s10">s</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="middle" class="td3">
+        <p class="p22"><span class="s10"><b>x</b></span></p>
+        <p class="p23"><span class="s13"><b>水平</b></span></p>
+      </td>
+      <td valign="middle" class="td4">
+        <p class="p24"><span class="s10"><b>0.00</b></span></p>
+      </td>
+      <td valign="middle" class="td4">
+        <p class="p24"><span class="s10"><b>0.00</b></span></p>
+      </td>
+      <td valign="middle" class="td4">
+        <p class="p24"><span class="s10"><b>0.00</b></span></p>
+      </td>
+      <td valign="middle" class="td5">
+        <p class="p25"><span class="s10">0.00</span></p>
+      </td>
+      <td valign="middle" class="td4">
+        <p class="p24"><span class="s10"><b>0.00</b></span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="middle" class="td6">
+        <p class="p22"><span class="s10"><b>y</b></span></p>
+        <p class="p23"><span class="s13"><b>垂直</b></span></p>
+      </td>
+      <td valign="middle" class="td7">
+        <p class="p24"><span class="s10"><b>0.00</b></span></p>
+      </td>
+      <td valign="middle" class="td7">
+        <p class="p24"><span class="s10"><b>0.00</b></span></p>
+      </td>
+      <td valign="middle" class="td7">
+        <p class="p24"><span class="s10"><b>0.00</b></span></p>
+      </td>
+      <td valign="middle" class="td7">
+        <p class="p25"><span class="s10">-9.81</span></p>
+      </td>
+      <td valign="middle" class="td7">
+        <p class="p24"><span class="s10"><b>0.00</b></span></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p class="p26"><span class="s14">x </span><span class="s10">行</span><span class="s14"> a = 0</span><span class="s10">（無淨力，</span><span class="s14">Vx </span><span class="s10">不變）；</span><span class="s14">y </span><span class="s10">行</span><span class="s14"> a = −g</span><span class="s10">（只有重量）。數值保留</span><span class="s14"> 2 </span><span class="s10">位小數。</span></p>
+<p class="p10"><span class="s10"><b>計算結果 / Results</b></span></p>
+<p class="p27"><span class="s15">水平速度</span><span class="s10"> Horizontal Velocity (Vx)</span></p>
+<p class="p28"><span class="s10"><b>–</b></span></p>
+<p class="p27"><span class="s15">垂直速度</span><span class="s10"> Vertical Velocity (Vy)</span></p>
+<p class="p29"><span class="s10"><b>–</b></span></p>
+<p class="p27"><span class="s15">飛行時間</span><span class="s10"> Time of Flight</span></p>
+<p class="p30"><span class="s10"><b>–</b></span></p>
+<p class="p27"><span class="s15">最大高度</span><span class="s10"> Maximum Height</span></p>
+<p class="p31"><span class="s10"><b>–</b></span></p>
+<p class="p27"><span class="s15">水平射程</span><span class="s10"> Horizontal Range</span></p>
+<p class="p31"><span class="s10"><b>–</b></span></p>
+<p class="p27"><span class="s15">合速度</span><span class="s10"> Resultant Velocity (v)</span></p>
+<p class="p32"><span class="s10"><b>–</b></span></p>
+<p class="p27"><span class="s15">落地角度</span><span class="s10"> Impact Angle</span></p>
+<p class="p32"><span class="s10"><b>–</b></span></p>
+<p class="p27"><span class="s15">當前時間</span><span class="s10"> Current Time</span></p>
+<p class="p30"><span class="s10"><b>–</b></span></p>
+<p class="p10"><span class="s10"><b>播放 / Playback</b></span></p>
+<p class="p17"><span class="s7"><b>暫停</b></span><span class="s2"><b> / Pause</b></span></p>
+<p class="p8"><span class="s7"><b>單幀</b></span><span class="s2"><b> / Step</b></span></p>
+<p class="p8"><span class="s7"><b>重置</b></span><span class="s2"><b> / Reset</b></span></p>
+<p class="p14"><span class="s12">拖曳時間</span><span class="s10"> / Scrub Time</span></p>
+<p class="p15"><span class="s10"><b>0.00</b></span></p>
+<p class="p10"><span class="s10"><b>DSE 考試重點 / Exam Notes</b></span></p>
+<ul class="ul1">
+  <li class="li33"></li>
+</ul>
+<p class="p10"><span class="s10"><b>解題步驟 / Solution Walkthrough</b></span></p>
+<p class="p34"><span class="s2"></span><br></p>
+<p class="p35"><span class="s2"></span><br></p>
+<p class="p36"><span class="s10"><b>DSE 概念小測 · Projectile Motion</b></span></p>
+<p class="p13"><span class="s10">點選答案即時對答，附完整拆解</span></p>
+<p class="p37"><span class="s16"><b>得分</b></span><span class="s2"><b> 0 / 5</b></span></p>
+<p class="p38"><span class="s2"></span><br></p>
+<p class="p39"><span class="s17"><b>重做全部</b></span></p>
+<p class="p40"><span class="s18">最強</span><span class="s2"> PHYSICS BY JACKY</span></p>
+<p class="p41"><span class="s2">Projectile Motion Simulation · DSE Physics Interactive Simulation Lab</span></p>
+</body>
+</html>
