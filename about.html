@@ -3,20 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>About · 最強 Physics by Jacky</title>
+<title>關於 · 關俊佑 · 最強 Physics by Jacky</title>
+<meta name="description" content="關俊佑 —— DSE 物理導師、物理科代表、HKIMO 總決賽銅獎。DSE Physics Interactive Simulation Lab 創建人。">
 <style>
   *{box-sizing:border-box}
   :root{--gold:#b8860b;--gold-bright:#c9a227;--gold-deep:#8b6914;
-        --ink:#3c3c43;--ink-soft:#6b6b73;--line:#d4d4d8}
-  body{zoom:1.1}
-  body{margin:0;color:var(--ink);font-size:15px;line-height:1.85;
+        --ink:#3c3c43;--ink-soft:#6b6b73;--line:#d4d4d8;--line-2:#eeeef2}
+  body{margin:0;color:var(--ink);font-size:15px;line-height:1.8;
     font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",sans-serif;
     background:
       radial-gradient(1100px 620px at 50% -140px,rgba(255,255,255,.96),rgba(255,255,255,0) 70%),
       radial-gradient(760px 460px at 12% 108%,rgba(201,162,39,.09),rgba(201,162,39,0) 72%),
+      radial-gradient(760px 460px at 92% 4%,rgba(184,134,11,.07),rgba(184,134,11,0) 70%),
       linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
     background-attachment:fixed;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-  .wrap{max-width:985px;margin:0 auto;padding:0 24px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 44px}
+
+  /* ══ 頂部導航（沿用全站） ══ */
   .topnav{position:sticky;top:0;z-index:80;backdrop-filter:saturate(180%) blur(14px);
     -webkit-backdrop-filter:saturate(180%) blur(14px);
     background:rgba(250,250,252,.90);border-bottom:1px solid rgba(212,212,216,.9)}
@@ -41,24 +44,185 @@
   @media(max-width:760px){.brand b{font-size:13px}
     .navlinks a{padding:6px 7px;font-size:12px}
     .navlinks a .zh{display:none}.navlinks a em{font-size:15px}}
-  .page-head{padding:50px 0 24px;text-align:center}
-  .eyebrow{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:15px}
-  h1.title{margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
-    font-size:clamp(30px,5vw,46px);letter-spacing:.06em;
+
+  /* ══ 通用區塊標題 ══ */
+  .sec{margin-top:44px}
+  .sec-head{display:flex;align-items:baseline;gap:13px;padding-left:15px;position:relative;margin-bottom:20px}
+  .sec-head::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:3px;border-radius:2px;
+    background:linear-gradient(180deg,var(--gold-bright),var(--gold-deep));opacity:.9}
+  .sec-head h2{margin:0;font-size:19px;font-weight:650;letter-spacing:.05em;color:var(--gold-deep);
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif}
+  .sec-head span{font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em}
+  .sec-line{height:1px;margin:-8px 0 22px;
+    background:linear-gradient(90deg,var(--gold-bright) 0%,var(--line) 40%,transparent 100%);opacity:.5}
+
+  /* ══ 卡片 ══ */
+  .card{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;box-shadow:0 1px 2px rgba(60,60,67,.05),0 10px 26px rgba(60,60,67,.06)}
+  .card::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;
+    border-radius:14px 14px 0 0;opacity:.9;
+    background:linear-gradient(90deg,var(--gold-bright),transparent 90%)}
+
+  /* ══ 1. 頂部個人卡 ══ */
+  .hero{display:grid;grid-template-columns:260px minmax(0,1fr);gap:34px;align-items:center;
+    margin-top:34px;padding:30px 32px}
+  @media(max-width:840px){.hero{grid-template-columns:1fr;gap:24px;padding:24px 20px;text-align:center}}
+
+  /* 頭像 / 圖片：未上載時自動顯示灰色佔位符 */
+  .figure{position:relative;margin:0;border-radius:14px;overflow:hidden;
+    background:linear-gradient(135deg,#f2f2f5 0%,#e9e9ee 100%);
+    border:1px solid var(--line);box-shadow:0 1px 2px rgba(60,60,67,.05),0 10px 24px rgba(60,60,67,.08)}
+  .figure img{position:relative;z-index:2;display:block;width:100%;height:auto;
+    border-radius:13px;opacity:0;transition:opacity .5s ease}
+  .figure img.loaded{opacity:1}
+  .figure::after{content:"";position:absolute;inset:0;
+    background:
+      linear-gradient(135deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 45%),
+      repeating-linear-gradient(45deg,rgba(0,0,0,.028) 0 10px,rgba(0,0,0,0) 10px 20px)}
+  .figure .ph{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:9px;text-align:center;padding:14px}
+  .figure .ph .icon{width:38px;height:38px;border-radius:11px;border:1.6px solid var(--gold-bright);
+    display:flex;align-items:center;justify-content:center;color:var(--gold-deep);
+    font-size:16px;font-weight:800;background:rgba(255,255,255,.72)}
+  .figure .ph .txt{font-size:11.6px;line-height:1.55;color:#8c8c93;letter-spacing:.02em}
+  .figure .ph code{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--gold-deep);
+    background:rgba(201,162,39,.12);border:1px solid rgba(184,134,11,.3);border-radius:5px;padding:1px 6px}
+  .figure img.loaded ~ .ph{display:none}
+
+  .avatar .figure{border-radius:50%;aspect-ratio:1/1}
+  .avatar .figure img{height:100%;object-fit:cover;border-radius:50%}
+  .avatar .figure::after{border-radius:50%}
+  .avatar .figure .ph .icon{border-radius:50%}
+
+  .id h1{margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
+    font-size:clamp(30px,5vw,42px);letter-spacing:.08em;
     background:linear-gradient(180deg,#a97c0f 0%,#c9a227 62%,#8b6914 100%);
     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-  .lede{margin:15px auto 0;max-width:620px;font-size:14px;color:var(--ink-soft)}
-  .divider{width:132px;height:1px;margin:24px auto 0;border:0;
+  .id .role{margin:10px 0 0;font-size:14.5px;font-weight:650;color:var(--gold-deep);letter-spacing:.03em}
+  .id .slogan{margin:14px 0 0;font-size:15px;color:var(--ink-soft);line-height:1.85}
+  .pills{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+  @media(max-width:840px){.pills{justify-content:center}}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12.4px;font-weight:650;
+    color:var(--gold-deep);background:rgba(201,162,39,.11);
+    border:1px solid rgba(184,134,11,.32);border-radius:20px;padding:6px 14px}
+  .pill em{font-style:normal;font-size:11px;color:var(--ink-soft);font-weight:500}
+
+  /* ══ 2. 個人簡介正文 ══ */
+  .bio p{margin:0 0 16px}
+  .bio p:last-child{margin-bottom:0}
+  .bio-lead{font-size:15.5px;line-height:2.05;color:var(--ink)}
+  .bio-body{font-size:14.6px;line-height:2.05;color:#4a4a52}
+  .bio-body b{color:var(--gold-deep);font-weight:700}
+  .bio-note{font-size:14.6px;line-height:2.05;color:#4a4a52;
+    background:#fdfaf1;border:1px solid #f0e8cf;border-radius:11px;padding:16px 18px}
+
+  /* ══ 3. 獎項（左右交替） ══ */
+  .award{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:26px;align-items:center;
+    margin-bottom:22px}
+  .award.rev{grid-template-columns:300px minmax(0,1fr)}
+  .award.rev .award-fig{order:-1}
+  @media(max-width:860px){
+    .award,.award.rev{grid-template-columns:1fr;gap:18px}
+    .award.rev .award-fig{order:0}
+  }
+  .award-fig{margin:0}
+  .award-fig .figure{aspect-ratio:4/3}
+  .award-fig .figure img{height:100%;object-fit:cover}
+  .award-body .tag{display:inline-block;font-size:10.8px;font-weight:800;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--gold-deep);background:rgba(201,162,39,.13);
+    border:1px solid rgba(184,134,11,.3);border-radius:6px;padding:3px 10px;margin-bottom:11px}
+  .award-body h3{margin:0 0 10px;font-size:16.5px;font-weight:650;color:#2b2b30;line-height:1.5;
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif}
+  .award-body p{margin:0;font-size:14.2px;line-height:1.95;color:#4a4a52}
+
+  /* ══ 4. 專長與興趣 + 網站截圖 ══ */
+  .skill-text{font-size:14.4px;line-height:2.0;color:#4a4a52;margin:0 0 16px}
+  .shot{position:relative;cursor:zoom-in}
+  .shot .figure{aspect-ratio:16/10}
+  .shot .figure img{height:100%;object-fit:cover;object-position:top center}
+  .shot .zoom{position:absolute;right:12px;bottom:12px;z-index:3;font-size:11.6px;font-weight:700;
+    color:var(--gold-deep);background:rgba(255,255,255,.92);border:1px solid rgba(184,134,11,.35);
+    border-radius:20px;padding:5px 13px;box-shadow:0 2px 8px rgba(60,60,67,.10)}
+  .shotcap{margin-top:10px;font-size:12.4px;color:var(--ink-soft);text-align:center}
+
+  /* 燈箱 */
+  .lb{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
+    background:rgba(28,26,24,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    padding:26px;cursor:zoom-out}
+  .lb.open{display:flex}
+  .lb img{max-width:min(1200px,94vw);max-height:88vh;border-radius:12px;
+    border:1px solid rgba(255,255,255,.35);box-shadow:0 20px 60px rgba(0,0,0,.45);background:#fff}
+  .lb .lbx{position:absolute;top:18px;right:22px;font-size:13px;font-weight:700;color:#fff;
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);
+    border-radius:9px;padding:7px 14px}
+
+  /* ══ 5. 升學目標：金色強調卡 ══ */
+  .goal{position:relative;border:1.5px solid rgba(184,134,11,.5);border-radius:16px;
+    background:linear-gradient(180deg,#fffdf7 0%,#fff 60%);padding:0;overflow:hidden;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 14px 34px rgba(184,134,11,.13)}
+  .goal-grid{display:grid;grid-template-columns:230px minmax(0,1fr);gap:26px;align-items:center;
+    padding:26px 28px}
+  @media(max-width:820px){.goal-grid{grid-template-columns:1fr;gap:20px;padding:22px 20px}}
+  .goal-code{text-align:center;padding:20px 14px;border-radius:13px;
+    background:linear-gradient(180deg,#fdf6e3,#fdfaf1);border:1px solid rgba(184,134,11,.38)}
+  .goal-code .code{font-family:ui-monospace,Menlo,monospace;font-size:30px;font-weight:800;
+    letter-spacing:.06em;color:var(--gold-deep);line-height:1.2}
+  .goal-code .uni{margin-top:8px;font-size:12.4px;font-weight:650;color:var(--ink-soft);letter-spacing:.04em}
+  .goal-code .badge{margin-top:12px;display:inline-block;font-size:10.8px;font-weight:800;
+    letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--gold);
+    border-radius:20px;padding:4px 12px}
+  .goal-body h3{margin:0 0 12px;font-size:17px;font-weight:650;color:var(--gold-deep);
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif;line-height:1.5}
+  .goal-body p{margin:0 0 12px;font-size:14.3px;line-height:2.0;color:#4a4a52}
+  .goal-body p:last-child{margin-bottom:0}
+  .goal-body b{color:var(--gold-deep)}
+  .goal-fig{margin:0 0 14px}
+  .goal-fig .figure{aspect-ratio:16/9}
+
+  /* ══ 6. 座右銘 ══ */
+  .motto{position:relative;text-align:center;padding:38px 30px;
+    background:linear-gradient(180deg,#fffdf7,#fff 65%);
+    border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 12px 30px rgba(60,60,67,.06)}
+  .motto::before,.motto::after{content:"";position:absolute;width:120px;height:120px;
+    border:1.5px solid rgba(184,134,11,.28);border-radius:50%}
+  .motto::before{left:-52px;top:-52px}
+  .motto::after{right:-52px;bottom:-52px}
+  .motto q{display:block;quotes:none;font-family:"Songti TC","Noto Serif TC",Georgia,serif;
+    font-style:italic;font-weight:600;font-size:clamp(18px,3vw,25px);line-height:1.95;
+    letter-spacing:.05em;color:var(--gold-deep);max-width:780px;margin:0 auto}
+  .motto .src{display:block;margin-top:16px;font-size:13.4px;font-style:normal;font-weight:650;
+    letter-spacing:.22em;color:var(--gold);font-family:-apple-system,"PingFang TC",sans-serif}
+  .motto .mline{width:96px;height:1px;margin:22px auto;border:0;
     background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
-  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px 24px;margin-bottom:15px;
-    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05)}
-  .card h2{margin:0 0 10px;font-size:16px;font-weight:650;color:var(--gold-deep);
-    font-family:"Songti TC","Noto Serif TC",Georgia,serif;letter-spacing:.04em}
-  .card p{margin:9px 0;font-size:14px;color:#4a4a52}
-  .card ul{margin:9px 0;padding-left:22px;font-size:14px;color:#4a4a52}
-  .card li{margin:4px 0}
-  .card b{color:#8b6914}
-  footer{margin-top:20px;padding:32px 0 46px;text-align:center;border-top:1px solid var(--line)}
+  .motto .mnote{margin:0 auto;max-width:760px;font-size:14.2px;line-height:2.0;color:#4a4a52;text-align:left}
+
+  /* ══ 7. 聯絡方式 ══ */
+  .contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:820px){.contact-grid{grid-template-columns:1fr}}
+  .contact{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:12px;
+    background:#fff;border:1px solid var(--line);text-decoration:none;
+    box-shadow:0 1px 2px rgba(60,60,67,.05);transition:.18s}
+  .contact:hover{border-color:var(--gold-bright);background:#fdfaf1;transform:translateY(-2px);
+    box-shadow:0 4px 14px rgba(184,134,11,.14)}
+  .contact .ic{flex:0 0 40px;height:40px;border-radius:11px;display:flex;align-items:center;
+    justify-content:center;background:rgba(201,162,39,.13);border:1px solid rgba(184,134,11,.3)}
+  .contact .ic svg{width:19px;height:19px;stroke:var(--gold-deep);fill:none;stroke-width:1.7;
+    stroke-linecap:round;stroke-linejoin:round}
+  .contact .tx{min-width:0}
+  .contact .tx b{display:block;font-size:13.6px;font-weight:700;color:#2b2b30}
+  .contact .tx span{display:block;font-size:12.2px;color:var(--ink-soft);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* ══ 8. 捲動淡入 ══ */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .62s cubic-bezier(.22,.61,.36,1),
+    transform .62s cubic-bezier(.22,.61,.36,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+  }
+
+  footer{margin-top:40px;padding:32px 0 46px;text-align:center;border-top:1px solid var(--line)}
   footer .mark{display:inline-block;margin-bottom:11px;font-size:11px;letter-spacing:.3em;
     text-transform:uppercase;color:var(--gold-deep)}
   footer p{margin:0;font-size:12.5px;color:#7d7d85}
@@ -81,47 +245,176 @@
 </nav>
 
 <div class="wrap">
-  <header class="page-head">
-    <div class="eyebrow">About</div>
-    <h1 class="title">關於本站</h1>
-    <p class="lede">DSE Physics Interactive Simulation Lab</p>
-    <hr class="divider">
-  </header>
 
-  <main>
-    <div class="card">
-      <h2>網站目的</h2>
-      <p>把 DSE Physics 課程中抽象的物理概念，變成可以拖參數、即時見到反應的動態模型。目標唔係取代課本，而係補上課本做唔到嘅一步：<b>親眼見到變量之間的關係</b>——例如 v 加倍時向心力點解會變四倍、圓錐擺加重之後角度點解完全唔變。</p>
+  <!-- ══════════ 1. 頂部：頭像 + 姓名 + 頭銜 + 標語 ══════════ -->
+  <section class="card hero reveal">
+    <div class="avatar">
+      <figure class="figure">
+        <img id="imgProfile" src="images/profile.jpg" alt="關俊佑個人照片">
+        <figcaption class="ph">
+          <span class="icon">照</span>
+          <span class="txt">個人照片<br><code>images/profile.jpg</code></span>
+        </figcaption>
+      </figure>
     </div>
-    <div class="card">
-      <h2>內容結構</h2>
-      <ul>
-        <li><b>Simulations 互動模擬</b>：每個課題一個可調參數的動態模型，頁底附對應概念小測。</li>
-        <li><b>Exam Bank 試題庫</b>：按課題與難度（基礎／DSE 標準／挑戰）分類，每題附逐步解與扣分位。</li>
-        <li><b>Formula Sheet 公式速記表</b>：公式連適用條件與 DSE 常見陷阱。</li>
-        <li><b>Revision Notes 溫書筆記</b>：專門拆解學生最常錯嘅概念誤解。</li>
-      </ul>
+    <div class="id">
+      <h1>關俊佑</h1>
+      <p class="role">DSE物理導師｜物理科代表｜HKIMO總決賽銅獎</p>
+      <p class="slogan">把抽象物理，變成睇得見、摸得到、可以親手調參數嘅模型。</p>
+      <div class="pills">
+        <span class="pill">連續兩年全級第二名 <em>Form 4 &amp; Form 5</em></span>
+        <span class="pill">HKIMO 總決賽銅獎</span>
+        <span class="pill">班級物理科代表</span>
+        <span class="pill">DSE Physics Lab 創建人</span>
+      </div>
     </div>
-    <div class="card">
-      <h2>課程覆蓋</h2>
-      <p>依據香港中學文憑試物理科課程編排：必修部分包括 <b>Mechanics</b>、<b>Waves</b>、<b>Electricity and Magnetism</b>、<b>Heat and Gases</b>、<b>Radioactivity and Nuclear Energy</b>；選修部分包括 <b>Astronomy and Atomic World</b>。</p>
-      <p>現時已上線：Circular Motion 圓周運動。其餘課題陸續推出。</p>
+  </section>
+
+  <!-- ══════════ 2. 個人簡介正文 ══════════ -->
+  <section class="sec reveal">
+    <div class="sec-head"><h2>個人簡介</h2><span>Profile</span></div>
+    <div class="sec-line"></div>
+    <div class="card bio">
+      <p class="bio-lead">本人關俊佑，為彩虹邨天主教英文中學2026屆中五在校學生。現任學校1號學生會候選內閣外務副主席，同時擔任班級物理科代表。學業態度自律務實，長期保持穩定頂尖成績，連續兩年取得全級第二名，具備扎實理科思維與自主研究能力。</p>
+      <p class="bio-body">學術獎項與榮譽</p>
+      <p class="bio-body">• 香港國際數學奧林匹克總決賽銅獎（HKIMO, Hong Kong International Mathematical Olympiad）<br>通過多輪篩選晉級總決賽，在全港眾多參賽者中脫穎而出，獲取總決賽銅獎，數理邏輯與解題能力獲官方認可。</p>
+      <p class="bio-body">• 多項校內頂尖學術獎學金<br>在校期間因整體學業成績優異、學術表現穩定，多次獲得學校頒發學業獎學金。</p>
+      <p class="bio-note">個人專長與興趣<br>熱衷物理建模、數理推導、工程思維與跨學科整合研究，擅長自主搭建科學模擬系統、前端交互設計與物理可視化實驗。<br>現自主搭建DSE Physics Lab 物理互動教學實驗網站，致力於將抽象物理概念轉化為直觀、可操作、可視化的互動教學資源。</p>
+      <p class="bio-note">升學目標<br>個人核心升學目標為香港科技大學HKUST JS5901 科技及管理學雙學位課程（T&amp;M-DDP）。<br>JS5901為香港首創、極具競爭力的頂尖跨學科雙學位課程，五年可同時取得工學士/理學士+工商管理學士雙學位，培育兼具科技研發能力與商業管理視野的頂尖人才，契合本人「理工硬核能力＋宏觀管理視野」的長遠發展路線。</p>
+      <p class="bio-note">個人座右銘<br>孔曰成仁，孟曰取義，惟其義盡，所以仁至。讀聖賢書，所學何事？從今往後，庶幾無愧。——文天祥<br>秉持剛正、自持、堅毅、無愧的處事原則，以高標準自律要求自身，學業、科研、服務並重，力求成為兼具學術實力、責任擔當與格局視野的學生。</p>
     </div>
+  </section>
+
+  <!-- ══════════ 3. 學術獎項與榮譽（左右交替） ══════════ -->
+  <section class="sec reveal">
+    <div class="sec-head"><h2>學術獎項與榮譽</h2><span>Awards &amp; Honours</span></div>
+    <div class="sec-line"></div>
+
+    <article class="award reveal">
+      <div class="award-body card">
+        <span class="tag">Mathematics Olympiad</span>
+        <h3>香港國際數學奧林匹克總決賽銅獎</h3>
+        <p>通過多輪篩選晉級總決賽，在全港眾多參賽者中脫穎而出，獲取總決賽銅獎，數理邏輯與解題能力獲官方認可。</p>
+      </div>
+      <figure class="award-fig figure">
+        <img id="imgHkimo" src="images/hkimo-award.jpg" alt="HKIMO 總決賽銅獎證書">
+        <figcaption class="ph">
+          <span class="icon">獎</span>
+          <span class="txt">HKIMO 銅獎證書<br><code>images/hkimo-award.jpg</code></span>
+        </figcaption>
+      </figure>
+    </article>
+
+    <article class="award rev reveal">
+      <div class="award-body card">
+        <span class="tag">Scholarship</span>
+        <h3>多項校內頂尖學術獎學金</h3>
+        <p>在校期間因整體學業成績優異、學術表現穩定，多次獲得學校頒發學業獎學金。</p>
+      </div>
+      <figure class="award-fig figure">
+        <img id="imgScholarship" src="images/scholarship.jpg" alt="學業獎學金證書">
+        <figcaption class="ph">
+          <span class="icon">獎</span>
+          <span class="txt">獎學金證書<br><code>images/scholarship.jpg</code></span>
+        </figcaption>
+      </figure>
+    </article>
+  </section>
+
+  <!-- ══════════ 4. 個人專長與興趣 + 網站截圖 ══════════ -->
+  <section class="sec reveal">
+    <div class="sec-head"><h2>個人專長與興趣</h2><span>Expertise &amp; Interests</span></div>
+    <div class="sec-line"></div>
     <div class="card">
-      <h2>使用建議</h2>
-      <ul>
-        <li>先用模擬建立「方向感」，再去做題；唔好一開始就背公式。</li>
-        <li>每改一次參數，先自己估下數值會點變，再睇面板對答。</li>
-        <li>做完頁底小測，如果答錯，睇解釋入面嘅「陷阱」一行，嗰句通常就係考試扣分位。</li>
-        <li>iPad 同電腦都支援；手機直向瀏覽時導覽欄會自動收起文字，只留圖示保持單排。</li>
-      </ul>
+      <p class="skill-text">熱衷物理建模、數理推導、工程思維與跨學科整合研究，擅長自主搭建科學模擬系統、前端交互設計與物理可視化實驗。<br>現自主搭建DSE Physics Lab 物理互動教學實驗網站，致力於將抽象物理概念轉化為直觀、可操作、可視化的互動教學資源。</p>
+      <div class="shot" id="shotWrap">
+        <figure class="figure">
+          <img id="imgWebsite" src="images/website-screenshot.jpg" alt="DSE Physics Lab 網站截圖">
+          <figcaption class="ph">
+            <span class="icon">圖</span>
+            <span class="txt">網站截圖<br><code>images/website-screenshot.jpg</code></span>
+          </figcaption>
+        </figure>
+        <span class="zoom">點擊放大</span>
+      </div>
+      <p class="shotcap">DSE Physics Lab · 互動模擬實驗室（點擊圖片可放大檢視）</p>
     </div>
-  </main>
+  </section>
+
+  <!-- ══════════ 5. 升學目標：金色強調卡 ══════════ -->
+  <section class="sec reveal">
+    <div class="sec-head"><h2>升學目標</h2><span>Academic Goal</span></div>
+    <div class="sec-line"></div>
+    <div class="goal">
+      <div class="goal-grid">
+        <div class="goal-code">
+          <figure class="goal-fig figure">
+            <img id="imgHkust" src="images/hkust.jpg" alt="香港科技大學校徽">
+            <figcaption class="ph">
+              <span class="icon">校</span>
+              <span class="txt">HKUST 校徽<br><code>images/hkust.jpg</code></span>
+            </figcaption>
+          </figure>
+          <div class="code">JS5901</div>
+          <div class="uni">HKUST · T&amp;M-DDP</div>
+          <span class="badge">First Choice</span>
+        </div>
+        <div class="goal-body">
+          <h3>香港科技大學 HKUST JS5901 科技及管理學雙學位課程（T&amp;M-DDP）</h3>
+          <p>JS5901為香港首創、極具競爭力的頂尖跨學科雙學位課程，五年可同時取得工學士/理學士+工商管理學士雙學位，培育兼具科技研發能力與商業管理視野的頂尖人才，契合本人「理工硬核能力＋宏觀管理視野」的長遠發展路線。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 6. 個人座右銘 ══════════ -->
+  <section class="sec reveal">
+    <div class="sec-head"><h2>個人座右銘</h2><span>Motto</span></div>
+    <div class="sec-line"></div>
+    <div class="motto">
+      <q>孔曰成仁，孟曰取義，惟其義盡，所以仁至。<br>讀聖賢書，所學何事？從今往後，庶幾無愧。</q>
+      <span class="src">—— 文天祥</span>
+      <hr class="mline">
+      <p class="mnote">秉持剛正、自持、堅毅、無愧的處事原則，以高標準自律要求自身，學業、科研、服務並重，力求成為兼具學術實力、責任擔當與格局視野的學生。</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 7. 聯絡方式 ══════════ -->
+  <section class="sec reveal">
+    <div class="sec-head"><h2>聯絡方式</h2><span>Contact</span></div>
+    <div class="sec-line"></div>
+    <div class="contact-grid">
+      <a class="contact" href="#" aria-label="WhatsApp 聯絡（待填）">
+        <span class="ic">
+          <svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L4 20l1.2-4.5A8.4 8.4 0 1 1 21 11.5z"/><path d="M8.8 8.4c.3-.6.6-.6.9-.6h.7c.2 0 .5 0 .8.6l.7 1.6c.1.3 0 .6-.2.8l-.5.6c-.1.2-.2.4 0 .7.3.5.9 1.2 1.5 1.6.7.5 1 .6 1.3.7.2 0 .4 0 .6-.2l.6-.7c.2-.2.5-.3.8-.2l1.5.7c.3.2.4.5.4.8 0 .3-.2 1.2-.8 1.5-.5.3-1.2.4-2 .2-1-.3-2.3-1-3.5-2.1-1.2-1.2-1.8-2.5-2-3.4-.2-.9-.1-1.6.2-2z"/></svg>
+        </span>
+        <span class="tx"><b>WhatsApp</b><span>待填（+852 xxxx xxxx）</span></span>
+      </a>
+      <a class="contact" href="#" aria-label="Email 聯絡（待填）">
+        <span class="ic">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.2"/><path d="M3.6 7.2 12 13l8.4-5.8"/></svg>
+        </span>
+        <span class="tx"><b>Email</b><span>待填（your@email.com）</span></span>
+      </a>
+      <a class="contact" href="#" aria-label="Instagram 聯絡（待填）">
+        <span class="ic">
+          <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4.6"/><circle cx="12" cy="12" r="3.7"/><circle cx="17.2" cy="6.9" r="1"/></svg>
+        </span>
+        <span class="tx"><b>Instagram</b><span>待填（@your_handle）</span></span>
+      </a>
+    </div>
+  </section>
 
   <footer>
     <span class="mark">最強 Physics by Jacky</span>
-    <p>DSE Physics Interactive Simulation Lab</p>
+    <p>關俊佑 · DSE Physics Interactive Simulation Lab</p>
   </footer>
+</div>
+
+<!-- 圖片燈箱 -->
+<div class="lb" id="lightbox" aria-hidden="true">
+  <span class="lbx">按 ESC 或點擊背景關閉</span>
+  <img id="lbImg" src="" alt="放大檢視">
 </div>
 
 <script>
@@ -132,6 +425,70 @@
     });
     var on = document.querySelector('#navLinks a.on');
     if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'center' });
+  })();
+
+  /* ── 圖片載入偵測：成功才淡入，未上載則保留灰色佔位符 ── */
+  (function () {
+    var ids = ['imgProfile', 'imgHkimo', 'imgScholarship', 'imgWebsite', 'imgHkust'];
+    ids.forEach(function (id) {
+      var img = document.getElementById(id);
+      if (!img) return;
+      var mark = function (ok) {
+        if (ok) { img.classList.add('loaded'); }
+        else { img.style.display = 'none'; }   /* 隱藏破圖，露出佔位符 */
+      };
+      img.addEventListener('load', function () {
+        mark(img.naturalWidth > 16 && img.naturalHeight > 16);
+      });
+      img.addEventListener('error', function () { mark(false); });
+      if (img.complete) mark(img.naturalWidth > 16 && img.naturalHeight > 16);
+    });
+  })();
+
+  /* ── 網站截圖點擊放大 ── */
+  (function () {
+    var wrap = document.getElementById('shotWrap');
+    var lb = document.getElementById('lightbox');
+    var lbImg = document.getElementById('lbImg');
+    var img = document.getElementById('imgWebsite');
+    if (!wrap || !lb || !img) return;
+    function openLb() {
+      if (!img.classList.contains('loaded')) return;   /* 未上載時不開啟 */
+      lbImg.src = img.src;
+      lb.classList.add('open');
+      lb.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLb() {
+      lb.classList.remove('open');
+      lb.setAttribute('aria-hidden', 'true');
+      lbImg.src = '';
+      document.body.style.overflow = '';
+    }
+    wrap.addEventListener('click', openLb);
+    lb.addEventListener('click', closeLb);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && lb.classList.contains('open')) closeLb();
+    });
+  })();
+
+  /* ── 捲動淡入（IntersectionObserver，唔支援時直接顯示） ── */
+  (function () {
+    var items = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window) ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      items.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    items.forEach(function (el) { io.observe(el); });
   })();
 </script>
 </body>
