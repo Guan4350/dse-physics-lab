@@ -1,345 +1,274 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>最強 Physics by Jacky · DSE Physics Interactive Simulation Lab</title>
-<meta name="description" content="DSE Physics 互動模擬實驗室：模擬、試題庫、公式速記表與溫書筆記。">
-<style>
-  *{box-sizing:border-box}
-  :root{--gold:#b8860b;--gold-bright:#c9a227;--gold-deep:#8b6914;
-        --ink:#3c3c43;--ink-soft:#6b6b73;--line:#d4d4d8}
-  body{zoom:1.1}                                   /* 全站字體 1.1 倍 */
-  body{margin:0;color:var(--ink);font-size:15px;line-height:1.75;
-    font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",sans-serif;
-    background:
-      radial-gradient(1100px 620px at 50% -140px,rgba(255,255,255,.96),rgba(255,255,255,0) 70%),
-      radial-gradient(760px 460px at 12% 108%,rgba(201,162,39,.09),rgba(201,162,39,0) 72%),
-      radial-gradient(760px 460px at 92% 4%,rgba(184,134,11,.07),rgba(184,134,11,0) 70%),
-      linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
-    background-attachment:fixed;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-  .wrap{max-width:1350px;margin:0 auto;padding:0 24px}
-
-  /* ── 頂部導航：永遠單排 ── */
-  .topnav{position:sticky;top:0;z-index:80;backdrop-filter:saturate(180%) blur(14px);
-    -webkit-backdrop-filter:saturate(180%) blur(14px);
-    background:rgba(250,250,252,.90);border-bottom:1px solid rgba(212,212,216,.9)}
-  .topnav .bar{max-width:1420px;margin:0 auto;padding:9px 16px;
-    display:flex;align-items:center;gap:12px;flex-wrap:nowrap}
-  .brand{display:flex;align-items:baseline;gap:7px;text-decoration:none;white-space:nowrap;flex:0 0 auto}
-  .brand b{font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-size:16px;font-weight:650;
-    letter-spacing:.03em;color:var(--gold-deep)}
-  .brand i{font-style:normal;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#9a9aa2}
-  .navlinks{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:flex-end;
-    gap:2px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
-    -webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;padding:2px 0}
-  .navlinks::-webkit-scrollbar{display:none}
-  .navlinks a{display:inline-flex;align-items:center;gap:5px;text-decoration:none;flex:0 0 auto;
-    font-size:12.6px;font-weight:600;color:#55555c;padding:7px 10px;border-radius:8px;
-    border:1px solid transparent;white-space:nowrap;transition:.16s}
-  .navlinks a:hover{color:var(--gold-deep);background:rgba(201,162,39,.10);border-color:rgba(184,134,11,.28)}
-  .navlinks a.on{color:var(--gold-deep);background:rgba(201,162,39,.15);border-color:rgba(184,134,11,.45);font-weight:700}
-  .navlinks a em{font-style:normal;font-size:13.5px;line-height:1}
-  @media(max-width:1180px){.brand b{font-size:14.5px}.brand i{display:none}
-    .navlinks a{padding:7px 8px;gap:4px}.navlinks a .en{display:none}}
-  @media(max-width:760px){.brand b{font-size:13px}
-    .navlinks a{padding:6px 7px;font-size:12px}
-    .navlinks a .zh{display:none}.navlinks a em{font-size:15px}}
-
-  .hero{text-align:center;padding:74px 0 38px}
-  .eyebrow{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:19px}
-  h1{margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
-    font-size:clamp(34px,6vw,58px);letter-spacing:.07em;
-    background:linear-gradient(180deg,#a97c0f 0%,#c9a227 62%,#8b6914 100%);
-    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-  .subtitle{margin:15px 0 0;font-size:clamp(12.5px,2.2vw,15px);letter-spacing:.2em;color:var(--ink-soft)}
-  .divider{width:132px;height:1px;margin:26px auto 0;border:0;
-    background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
-  .hero-note{margin:21px auto 0;max-width:700px;font-size:13.5px;color:var(--ink-soft)}
-  .quick{display:grid;gap:15px;grid-template-columns:repeat(2,1fr);margin:32px 0 8px}
-  @media(min-width:860px){.quick{grid-template-columns:repeat(4,1fr)}}
-  .qcard{display:block;text-decoration:none;background:#fff;border:1px solid var(--line);
-    border-radius:12px;padding:19px;text-align:center;transition:.2s;
-    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 20px rgba(60,60,67,.05)}
-  .qcard:hover{transform:translateY(-3px);border-color:var(--gold-bright);
-    box-shadow:0 2px 6px rgba(184,134,11,.14),0 14px 30px rgba(184,134,11,.16)}
-  .qcard em{display:block;font-style:normal;font-size:22px;margin-bottom:8px}
-  .qcard b{display:block;font-size:14.5px;color:#2b2b30}
-  .qcard span{display:block;font-size:12px;color:var(--ink-soft);margin-top:3px}
-  main{padding-bottom:24px}
-  .category{margin-bottom:48px}
-  .cat-head{display:flex;align-items:baseline;gap:14px;padding-left:15px;position:relative;margin-bottom:5px}
-  .cat-head::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:3px;border-radius:2px;
-    background:var(--acc,var(--gold));opacity:.85}
-  .cat-head h2{margin:0;font-size:18px;font-weight:650;letter-spacing:.05em;color:var(--gold-deep);
-    font-family:"Songti TC","Noto Serif TC",Georgia,serif}
-  .cat-head .zh{font-size:13px;color:var(--ink-soft);letter-spacing:.08em;font-weight:400}
-  .cat-line{height:1px;margin-bottom:19px;opacity:.5;
-    background:linear-gradient(90deg,var(--acc,var(--gold)) 0%,var(--line) 42%,transparent 100%)}
-  .grid{display:grid;gap:18px;grid-template-columns:1fr}
-  @media(min-width:680px){.grid{grid-template-columns:repeat(2,1fr)}}
-  @media(min-width:1080px){.grid{grid-template-columns:repeat(3,1fr)}}
-  .grid .card{zoom:0.9}                            /* 卡片 0.9 倍 */
-
-  .card{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;
-    padding:22px 22px 20px;display:flex;flex-direction:column;min-height:196px;
-    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05);
-    transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
-  .card::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;border-radius:12px 12px 0 0;
-    opacity:.9;background:linear-gradient(90deg,var(--acc,var(--gold)),transparent 90%)}
-  .card.live:hover{transform:translateY(-4px);border-color:var(--gold-bright);
-    box-shadow:0 2px 6px rgba(184,134,11,.14),0 16px 34px rgba(184,134,11,.17)}
-  .card-name{margin:10px 0 4px;font-size:16px;font-weight:650;color:#2b2b30}
-  .card-name span{display:block;font-size:12.5px;font-weight:400;color:var(--ink-soft);margin-top:3px}
-  .card-desc{margin:8px 0 17px;font-size:13px;line-height:1.68;color:var(--ink-soft);flex:1}
-  .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-    padding:3px 10px;border-radius:20px;border:1px solid}
-  .tag.live{color:var(--gold-deep);border-color:rgba(184,134,11,.45);background:rgba(201,162,39,.10)}
-  .tag.soon{color:#8c8c93;border-color:#dcdce0;background:#f4f4f6}
-  .btn{display:inline-block;font-size:13px;font-weight:650;letter-spacing:.04em;padding:8px 17px;
-    border-radius:7px;text-decoration:none;border:1px solid transparent;transition:.2s}
-  .btn.live{background:var(--gold);color:#fff;box-shadow:0 3px 10px rgba(184,134,11,.26)}
-  .btn.live:hover{background:#a3760a}
-  .btn.soon{background:#f0f0f2;color:#a0a0a7;border-color:#e0e0e3;cursor:not-allowed}
-  .card.soon{opacity:.78;background:#fcfcfd}.card.soon .card-name{color:#55555c}
-  footer{margin-top:20px;padding:32px 0 46px;text-align:center;border-top:1px solid var(--line)}
-  footer .mark{display:inline-block;margin-bottom:11px;font-size:11px;letter-spacing:.3em;
-    text-transform:uppercase;color:var(--gold-deep)}
-  footer p{margin:0 auto;max-width:800px;font-size:12.5px;line-height:1.85;color:#7d7d85}
-</style>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Description" content="DSE Physics 互動模擬實驗室：模擬、試題庫、公式速記表與溫書筆記。">
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2487.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.5px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.5px '.Apple Color Emoji UI'; color: #43434a; -webkit-text-stroke: #43434a}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.6px 'PingFang HK Semibold'; color: #43434a; -webkit-text-stroke: #43434a}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 11.5px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 15.0px 'Helvetica Neue'; color: #585860; -webkit-text-stroke: #585860}
+    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 15.0px 'Helvetica Neue'; color: #6d6d6d; -webkit-text-stroke: #6d6d6d; min-height: 18.0px}
+    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.5px 'PingFang HK'; color: #585860; -webkit-text-stroke: #585860}
+    p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 22.0px '.Apple Color Emoji UI'; color: #0000e9; -webkit-text-stroke: #0000e9}
+    p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 14.5px 'PingFang HK Semibold'; color: #202024; -webkit-text-stroke: #202024}
+    p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.0px 'Helvetica Neue'; color: #585860; -webkit-text-stroke: #585860}
+    p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; color: #585860; -webkit-text-stroke: #585860}
+    p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px 'Helvetica Neue'; color: #2e2d33; -webkit-text-stroke: #2e2d33; min-height: 18.0px}
+    p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.5px 'PingFang HK'; color: #585860; -webkit-text-stroke: #585860}
+    p.p17 {margin: 0.0px 0.0px 17.0px 0.0px; font: 13.0px 'PingFang HK'; color: #585860; -webkit-text-stroke: #585860}
+    p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711; background-color: #bc921e; background-color: rgba(188, 146, 30, 0.1)}
+    p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px '.SF NS'; color: #ffffff; -webkit-text-stroke: #ffffff; background-color: #a8740d}
+    p.p21 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; color: #797981; -webkit-text-stroke: #797981; background-color: #f1f1f4}
+    p.p22 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px '.SF NS'; color: #8f8e96; -webkit-text-stroke: #8f8e96; background-color: #ececef}
+    p.p23 {margin: 0.0px 0.0px 17.0px 0.0px; font: 13.0px 'Helvetica Neue'; color: #585860; -webkit-text-stroke: #585860}
+    p.p24 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'PingFang HK'; color: #585860; -webkit-text-stroke: #585860}
+    p.p25 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 11.0px 'Helvetica Neue'; color: #775711; -webkit-text-stroke: #775711}
+    p.p26 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.5px 'Helvetica Neue'; color: #6a6972; -webkit-text-stroke: #6a6972}
+    span.s1 {font-kerning: none; background-color: rgba(249, 249, 251, 0.9)}
+    span.s2 {font-kerning: none}
+    span.s3 {font: 13.5px '.Apple Color Emoji UI'; font-kerning: none; color: #43434a; -webkit-text-stroke: 0px #43434a}
+    span.s4 {font: 12.6px '.AppleHongKongChineseFont'; font-kerning: none; background-color: rgba(249, 249, 251, 0.9)}
+    span.s5 {font: 13.5px 'Helvetica Neue'; font-kerning: none}
+    span.s6 {font-kerning: none; background-color: #ffffff}
+    span.s7 {font: 14.5px '.AppleHongKongChineseFont'; font-kerning: none; background-color: #ffffff}
+    span.s8 {font: 12.0px 'Helvetica Neue'; font-kerning: none; color: #585860; -webkit-text-stroke: 0px #585860}
+    span.s9 {font: 13.0px 'PingFang HK'; font-kerning: none}
+    span.s10 {font: 13.0px 'Helvetica Neue'; font-kerning: none; background-color: #ffffff}
+    span.s11 {font: 13.0px '.AppleHongKongChineseFont'; font-kerning: none}
+    span.s12 {font: 13.0px '.SF NS'; font-kerning: none}
+    span.s13 {font-kerning: none; background-color: #fbfbfc}
+    span.s14 {font: 13.0px 'Helvetica Neue'; font-kerning: none; background-color: #fbfbfc}
+    span.s15 {font: 13.0px 'PingFang HK'; font-kerning: none; background-color: #fbfbfc}
+    span.s16 {font: 13.0px 'Helvetica Neue'; font-kerning: none}
+    span.s17 {font: 11.0px 'PingFang HK'; font-kerning: none}
+    span.s18 {font: 12.5px 'PingFang HK'; font-kerning: none}
+  </style>
 </head>
-<body data-nav="home">
-
-<nav class="topnav">
-  <div class="bar">
-    <a class="brand" href="index.html"><b>最強 Physics by Jacky</b><i>DSE Lab</i></a>
-    <div class="navlinks" id="navLinks">
-      <a href="index.html"          data-nav="home"><em>🏠</em><span class="en">Home</span><span class="zh">主頁</span></a>
-      <a href="simulations.html"    data-nav="sim"><em>🧪</em><span class="en">Simulations</span><span class="zh">互動模擬</span></a>
-      <a href="exam-bank.html"      data-nav="exam"><em>📝</em><span class="en">Exam Bank</span><span class="zh">試題庫</span></a>
-      <a href="formula-sheet.html"  data-nav="formula"><em>📖</em><span class="en">Formula</span><span class="zh">公式表</span></a>
-      <a href="revision-notes.html" data-nav="notes"><em>📚</em><span class="en">Notes</span><span class="zh">筆記</span></a>
-      <a href="about.html"          data-nav="about"><em>ℹ️</em><span class="en">About</span><span class="zh">關於</span></a>
-    </div>
-  </div>
-</nav>
-
-<div class="wrap">
-
-  <header class="hero">
-    <div class="eyebrow">DSE Physics</div>
-    <h1>最強 Physics by Jacky</h1>
-    <p class="subtitle">DSE Physics Interactive Simulation Lab</p>
-    <hr class="divider">
-    <p class="hero-note">按香港中學文憑試物理科課程編排：互動模擬、概念小測、試題拆解、公式速記與溫書筆記。所有模擬均以可調參數的動態模型呈現，對應 DSE 考試重點。</p>
-  </header>
-
-  <section class="quick">
-    <a class="qcard" href="simulations.html"><em>🧪</em><b>互動模擬</b><span>Simulations</span></a>
-    <a class="qcard" href="exam-bank.html"><em>📝</em><b>試題庫</b><span>Exam Bank</span></a>
-    <a class="qcard" href="formula-sheet.html"><em>📖</em><b>公式速記表</b><span>Formula Sheet</span></a>
-    <a class="qcard" href="revision-notes.html"><em>📚</em><b>溫書筆記</b><span>Revision Notes</span></a>
-  </section>
-
-  <main>
-
-    <section class="category" style="--acc:#b8860b">
-      <div class="cat-head"><h2>Mechanics</h2><span class="zh">力學</span></div>
-      <div class="cat-line"></div>
-      <div class="grid">
-        <article class="card live" style="--acc:#b8860b">
-          <h3 class="card-name">Circular Motion<span>圓周運動</span></h3>
-          <p class="card-desc">向心加速度與向心力：水平圓周、conical pendulum、banked track、鉛垂圓周，含實時向量與頁底概念小測。</p>
-          <div class="row"><span class="tag live">Live</span>
-            <a class="btn live" href="dse-physics-lab.html" target="_blank" rel="noopener">打開 →</a></div>
-        </article>
-        <article class="card live" style="--acc:#b8860b">
-          <h3 class="card-name">Projectile Motion<span>拋體運動</span></h3>
-          <p class="card-desc">水平拋射與斜拋：初速度分解、飛行時間、射程、最高點，附 SUVAT 表格與概念小測。</p>
-          <div class="row"><span class="tag live">Live</span>
-            <a class="btn live" href="projectile-motion.html" target="_blank" rel="noopener">打開 →</a></div>
-        </article>
-        <article class="card soon" style="--acc:#b8860b">
-          <h3 class="card-name">Simple Harmonic Motion<span>簡諧運動</span></h3>
-          <p class="card-desc">彈簧振子與單擺：位移、速度、加速度相位關係與週期。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#b8860b">
-          <h3 class="card-name">Force and Momentum<span>力與動量</span></h3>
-          <p class="card-desc">Newton's laws、動量守恆與碰撞、impulse 與淨力圖解。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#b8860b">
-          <h3 class="card-name">Work, Energy and Power<span>功、能量與功率</span></h3>
-          <p class="card-desc">動能與勢能互換、conservation of energy、功率計算。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#b8860b">
-          <h3 class="card-name">Gravitation<span>萬有引力</span></h3>
-          <p class="card-desc">引力場、衛星軌道與 Kepler's laws、重力勢能。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-      </div>
-    </section>
-
-    <section class="category" style="--acc:#c2a34a">
-      <div class="cat-head"><h2>Waves</h2><span class="zh">波動</span></div>
-      <div class="cat-line"></div>
-      <div class="grid">
-        <article class="card soon" style="--acc:#c2a34a">
-          <h3 class="card-name">Wave Motion<span>波動</span></h3>
-          <p class="card-desc">橫波傳播、wavelength 與 frequency、粒子振動與波形圖的分別。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#c2a34a">
-          <h3 class="card-name">Reflection and Refraction<span>反射與折射</span></h3>
-          <p class="card-desc">Snell's law、total internal reflection 與臨界角計算。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#c2a34a">
-          <h3 class="card-name">Interference and Diffraction<span>干涉與繞射</span></h3>
-          <p class="card-desc">雙縫干涉、path difference 條件、光柵與繞射圖樣。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#c2a34a">
-          <h3 class="card-name">Stationary Waves<span>駐波</span></h3>
-          <p class="card-desc">弦線與空氣柱的節點、波腹與共振頻率。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#c2a34a">
-          <h3 class="card-name">Lens Imaging<span>透鏡成像</span></h3>
-          <p class="card-desc">凸透鏡成像作圖、放大率與實像虛像判斷。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-      </div>
-    </section>
-
-    <section class="category" style="--acc:#a8821f">
-      <div class="cat-head"><h2>Electricity and Magnetism</h2><span class="zh">電學與磁學</span></div>
-      <div class="cat-line"></div>
-      <div class="grid">
-        <article class="card soon" style="--acc:#a8821f">
-          <h3 class="card-name">Electrostatics<span>靜電學</span></h3>
-          <p class="card-desc">電場強度與場線、點電荷與平行板電場、electric potential。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#a8821f">
-          <h3 class="card-name">Circuit<span>電路</span></h3>
-          <p class="card-desc">串並聯、內電阻與 terminal voltage、功率分配與電錶接法。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#a8821f">
-          <h3 class="card-name">Magnetic Field<span>磁場</span></h3>
-          <p class="card-desc">長直導線與螺線管的磁場、帶電粒子受 magnetic force 的圓周運動。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#a8821f">
-          <h3 class="card-name">EM Induction<span>電磁感應</span></h3>
-          <p class="card-desc">磁通量變化、Lenz's law 方向判斷與 induced e.m.f. 計算。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#a8821f">
-          <h3 class="card-name">AC and Transformer<span>交流電與變壓器</span></h3>
-          <p class="card-desc">r.m.s. 值、turns ratio、transmission of electricity 功率損耗。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-      </div>
-    </section>
-
-    <section class="category" style="--acc:#cbb26a">
-      <div class="cat-head"><h2>Heat and Gases</h2><span class="zh">熱與氣體</span></div>
-      <div class="cat-line"></div>
-      <div class="grid">
-        <article class="card soon" style="--acc:#cbb26a">
-          <h3 class="card-name">Temperature and Heat<span>溫度與熱</span></h3>
-          <p class="card-desc">temperature 與 internal energy、heat capacity 與 specific heat capacity。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#cbb26a">
-          <h3 class="card-name">Change of State<span>物態變化</span></h3>
-          <p class="card-desc">latent heat of fusion 與 vaporisation、加熱曲線與潛熱平台。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#cbb26a">
-          <h3 class="card-name">Transfer Processes<span>傳熱過程</span></h3>
-          <p class="card-desc">conduction、convection 與 radiation 的機制與影響因素。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#cbb26a">
-          <h3 class="card-name">Gas Laws<span>氣體定律</span></h3>
-          <p class="card-desc">Boyle's law、Charles' law、pressure law 與 ideal gas equation。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-      </div>
-    </section>
-
-    <section class="category" style="--acc:#8b6914">
-      <div class="cat-head"><h2>Radioactivity and Nuclear Energy</h2><span class="zh">放射性與核能</span></div>
-      <div class="cat-line"></div>
-      <div class="grid">
-        <article class="card soon" style="--acc:#8b6914">
-          <h3 class="card-name">Nuclear Decay<span>核衰變</span></h3>
-          <p class="card-desc">alpha / beta / gamma 衰變方程、penetrating power 與電離能力。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#8b6914">
-          <h3 class="card-name">Half-life and Decay Curve<span>半衰期與衰變曲線</span></h3>
-          <p class="card-desc">half-life 計算、隨機性與 background count 扣除。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#8b6914">
-          <h3 class="card-name">Nuclear Energy<span>核能</span></h3>
-          <p class="card-desc">mass defect 與 E = mc²、fission 與 fusion 的能量釋放。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-      </div>
-    </section>
-
-    <section class="category" style="--acc:#9c7a12">
-      <div class="cat-head"><h2>Astronomy and Atomic World</h2><span class="zh">選修：天文學與原子世界</span></div>
-      <div class="cat-line"></div>
-      <div class="grid">
-        <article class="card soon" style="--acc:#9c7a12">
-          <h3 class="card-name">Gravity and Orbits<span>引力與軌道</span></h3>
-          <p class="card-desc">Kepler's laws、同步衛星、逃逸速度與軌道能量。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#9c7a12">
-          <h3 class="card-name">Stars and Universe<span>恒星與宇宙</span></h3>
-          <p class="card-desc">光度與距離、Hertzsprung-Russell diagram、redshift 與 Hubble's law。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#9c7a12">
-          <h3 class="card-name">Photoelectric Effect<span>光電效應</span></h3>
-          <p class="card-desc">photoelectric equation、work function 與 stopping potential。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#9c7a12">
-          <h3 class="card-name">Atomic Model and Spectra<span>原子模型與光譜</span></h3>
-          <p class="card-desc">Bohr model、energy level 躍遷與 line spectrum。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-      </div>
-    </section>
-
-  </main>
-
-  <footer>
-    <span class="mark">最強 Physics by Jacky</span>
-    <p>DSE Physics Interactive Simulation Lab｜新增模擬：複製卡片結構，改連結與名稱即可</p>
-  </footer>
-</div>
-
-<script>
-  (function () {
-    var key = document.body.dataset.nav || '';
-    document.querySelectorAll('#navLinks a').forEach(function (a) {
-      if (a.dataset.nav === key) a.classList.add('on');
-    });
-    var on = document.querySelector('#navLinks a.on');
-    if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'center' });
-  })();
-</script>
+<body>
+<p class="p1"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/index.html"><b>最強 Physics by Jacky</b><span class="s2"><b></b></span></a></span></p>
+<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/index.html">🏠<span class="s3"></span></a></span></p>
+<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/index.html"><b>主頁</b><span class="s2"><b></b></span></a></span></p>
+<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/simulations.html">🧪<span class="s3"></span></a></span></p>
+<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/simulations.html"><b>互動模擬</b><span class="s2"><b></b></span></a></span></p>
+<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/exam-bank.html">📝<span class="s3"></span></a></span></p>
+<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/exam-bank.html"><b>試題庫</b><span class="s2"><b></b></span></a></span></p>
+<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/formula-sheet.html">📖<span class="s3"></span></a></span></p>
+<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/formula-sheet.html"><b>公式表</b><span class="s2"><b></b></span></a></span></p>
+<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/revision-notes.html">📚<span class="s3"></span></a></span></p>
+<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/revision-notes.html"><b>筆記</b><span class="s2"><b></b></span></a></span></p>
+<p class="p2"><span class="s1"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/about.html">ℹ️<span class="s3"></span></a></span></p>
+<p class="p3"><span class="s4"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/about.html"><b>關於</b><span class="s2"><b></b></span></a></span></p>
+<p class="p4"><span class="s2">DSE PHYSICS</span></p>
+<h1 style="margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 48.0px 'Songti TC'; color: #2e2d33; -webkit-text-stroke: #2e2d33"><span class="s2"><b>最強 Physics by Jacky</b></span></h1>
+<p class="p6"><span class="s2">DSE Physics Interactive Simulation Lab</span></p>
+<p class="p7"><span class="s2"></span><br></p>
+<p class="p8"><span class="s2">按香港中學文憑試物理科課程編排：互動模擬、概念小測、試題拆解、公式速記與溫書筆記。所有模擬均以可調參數的動態模型呈現，對應</span><span class="s5"> DSE </span><span class="s2">考試重點。</span></p>
+<p class="p9"><span class="s6"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/simulations.html">🧪<span class="s2"></span></a></span></p>
+<p class="p10"><span class="s7"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/simulations.html"><b>互動模擬</b><span class="s2"><b></b></span></a></span></p>
+<p class="p11"><span class="s6"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/simulations.html">Simulations<span class="s8"></span></a></span></p>
+<p class="p9"><span class="s6"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/exam-bank.html">📝<span class="s2"></span></a></span></p>
+<p class="p10"><span class="s7"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/exam-bank.html"><b>試題庫</b><span class="s2"><b></b></span></a></span></p>
+<p class="p11"><span class="s6"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/exam-bank.html">Exam Bank<span class="s8"></span></a></span></p>
+<p class="p9"><span class="s6"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/formula-sheet.html">📖<span class="s2"></span></a></span></p>
+<p class="p10"><span class="s7"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/formula-sheet.html"><b>公式速記表</b><span class="s2"><b></b></span></a></span></p>
+<p class="p11"><span class="s6"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/formula-sheet.html">Formula Sheet<span class="s8"></span></a></span></p>
+<p class="p9"><span class="s6"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/revision-notes.html">📚<span class="s2"></span></a></span></p>
+<p class="p10"><span class="s7"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/revision-notes.html"><b>溫書筆記</b><span class="s2"><b></b></span></a></span></p>
+<p class="p11"><span class="s6"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/revision-notes.html">Revision Notes<span class="s8"></span></a></span></p>
+<h2 style="margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711"><span class="s2"><b>Force and Motion</b></span></h2>
+<p class="p13"><span class="s9">力與運動</span><span class="s2"> · 50 </span><span class="s9">小時</span></p>
+<p class="p14"><span class="s2"></span><br></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #202024; -webkit-text-stroke: #202024"><span class="s6"><b>Uniform Circular Motion</b></span></h3>
+<p class="p16"><span class="s6">勻速圓周運動</span></p>
+<p class="p17"><span class="s6">向心加速度與向心力：水平圓周、</span><span class="s10">conical pendulum</span><span class="s6">、</span><span class="s10">banked track</span><span class="s6">、鉛垂圓周，含實時向量、拖尾與概念小測。</span></p>
+<p class="p18"><span class="s2"><b>LIVE</b></span></p>
+<p class="p19"><span class="s11"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/dse-physics-lab.html"><b>打開</b><span class="s12"><b> →</b></span></a></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #202024; -webkit-text-stroke: #202024"><span class="s6"><b>Projectile Motion</b></span></h3>
+<p class="p16"><span class="s6">拋體運動</span></p>
+<p class="p17"><span class="s6">水平與垂直方向獨立計算：</span><span class="s10">SUVAT </span><span class="s6">表格、速度向量、軌跡淡出、雙語切換與概念小測。</span></p>
+<p class="p18"><span class="s2"><b>LIVE</b></span></p>
+<p class="p19"><span class="s11"><a href="file:///Users/JACKY/Documents/deepseek-harness/DSE/%E4%B8%8A%E5%82%B3%E7%94%A8/projectile-motion.html"><b>打開</b><span class="s12"><b> →</b></span></a></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Position and Movement</b></span></h3>
+<p class="p16"><span class="s13">位置與運動</span></p>
+<p class="p17"><span class="s13">位置、距離與位移、速率與速度、加速度；勻加速運動方程與</span><span class="s14"> v-t </span><span class="s13">圖。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Force and Motion</b></span></h3>
+<p class="p16"><span class="s13">力與運動</span></p>
+<p class="p17"><span class="s14">Newton's laws</span><span class="s13">、質量與重量、力的合成與分解、摩擦力與力矩平衡。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Work, Energy and Power</b></span></h3>
+<p class="p16"><span class="s13">功、能量與功率</span></p>
+<p class="p23"><span class="s15">動能與勢能互換、</span><span class="s13">conservation of energy</span><span class="s15">、功率計算與效率。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Momentum</b></span></h3>
+<p class="p16"><span class="s13">動量</span></p>
+<p class="p23"><span class="s13">linear momentum</span><span class="s15">、</span><span class="s13">impulse </span><span class="s15">與淨力圖解、動量守恆與碰撞。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Gravitation</b></span></h3>
+<p class="p16"><span class="s13">萬有引力</span></p>
+<p class="p17"><span class="s13">引力場、衛星軌道與</span><span class="s14"> Kepler's laws</span><span class="s13">、重力勢能。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h2 style="margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711"><span class="s2"><b>Wave Motion</b></span></h2>
+<p class="p13"><span class="s9">波動</span><span class="s2"> · 47 </span><span class="s9">小時</span></p>
+<p class="p14"><span class="s2"></span><br></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Nature and Properties of Waves</b></span></h3>
+<p class="p16"><span class="s13">波的性質</span></p>
+<p class="p17"><span class="s13">橫波傳播、</span><span class="s14">wavelength </span><span class="s13">與</span><span class="s14"> frequency</span><span class="s13">、粒子振動與波形圖的分別；反射、折射與繞射。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Light</b></span></h3>
+<p class="p16"><span class="s13">光</span></p>
+<p class="p23"><span class="s15">光的波動說：干涉與繞射、</span><span class="s13">path difference </span><span class="s15">條件、</span><span class="s13">stationary waves</span><span class="s15">、透鏡成像與全內反射。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Sound</b></span></h3>
+<p class="p16"><span class="s13">聲</span></p>
+<p class="p17"><span class="s13">聲波的性質與傳播、空氣柱與弦線的駐波、共振與頻率。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h2 style="margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711"><span class="s2"><b>Electricity and Magnetism</b></span></h2>
+<p class="p24"><span class="s2">電學與磁學</span><span class="s16"> · 48 </span><span class="s2">小時</span></p>
+<p class="p14"><span class="s2"></span><br></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Electrostatics</b></span></h3>
+<p class="p16"><span class="s13">靜電學</span></p>
+<p class="p17"><span class="s13">電場強度與場線、點電荷與平行板電場、</span><span class="s14">electric potential</span><span class="s13">。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Circuits and Domestic Electricity</b></span></h3>
+<p class="p16"><span class="s13">電路與家居用電</span></p>
+<p class="p17"><span class="s13">串並聯、內電阻與</span><span class="s14"> terminal voltage</span><span class="s13">、功率與電能、家居電路與安全用電。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Electromagnetism</b></span></h3>
+<p class="p16"><span class="s13">電磁學</span></p>
+<p class="p23"><span class="s15">磁場與</span><span class="s13"> magnetic force</span><span class="s15">、</span><span class="s13">Faraday's law </span><span class="s15">與</span><span class="s13"> Lenz's law</span><span class="s15">、變壓器與交流電。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h2 style="margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711"><span class="s2"><b>Heat and Gases</b></span></h2>
+<p class="p13"><span class="s9">熱與氣體</span><span class="s2"> · 23 </span><span class="s9">小時</span></p>
+<p class="p14"><span class="s2"></span><br></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Temperature, Heat and Internal Energy</b></span></h3>
+<p class="p16"><span class="s13">溫度、熱與內能</span></p>
+<p class="p23"><span class="s13">temperature </span><span class="s15">與</span><span class="s13"> internal energy</span><span class="s15">、</span><span class="s13">heat capacity </span><span class="s15">與</span><span class="s13"> specific heat capacity</span><span class="s15">。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Transfer Process</b></span></h3>
+<p class="p16"><span class="s13">傳熱過程</span></p>
+<p class="p23"><span class="s13">conduction</span><span class="s15">、</span><span class="s13">convection </span><span class="s15">與</span><span class="s13"> radiation </span><span class="s15">的機制與影響因素。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Change of State</b></span></h3>
+<p class="p16"><span class="s13">物態變化</span></p>
+<p class="p23"><span class="s13">latent heat of fusion </span><span class="s15">與</span><span class="s13"> vaporisation</span><span class="s15">、加熱曲線與潛熱平台。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Gases</b></span></h3>
+<p class="p16"><span class="s13">氣體</span></p>
+<p class="p23"><span class="s13">Boyle's law</span><span class="s15">、</span><span class="s13">Charles' law</span><span class="s15">、</span><span class="s13">pressure law </span><span class="s15">與</span><span class="s13"> ideal gas equation</span><span class="s15">、</span><span class="s13">kinetic theory</span><span class="s15">。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h2 style="margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711"><span class="s2"><b>Radioactivity and Nuclear Energy</b></span></h2>
+<p class="p24"><span class="s2">放射性與核能</span><span class="s16"> · 16 </span><span class="s2">小時</span></p>
+<p class="p14"><span class="s2"></span><br></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Radiation and Radioactivity</b></span></h3>
+<p class="p16"><span class="s13">輻射與放射性</span></p>
+<p class="p23"><span class="s13">X-rays</span><span class="s15">、</span><span class="s13">alpha / beta / gamma </span><span class="s15">衰變方程、</span><span class="s13">half-life </span><span class="s15">與衰變曲線、背景輻射。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Atomic Structure</b></span></h3>
+<p class="p16"><span class="s13">原子結構</span></p>
+<p class="p17"><span class="s13">原子模型與能階、</span><span class="s14">line spectrum</span><span class="s13">、電離輻射與物質的相互作用。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Nuclear Energy</b></span></h3>
+<p class="p16"><span class="s13">核能</span></p>
+<p class="p23"><span class="s13">mass defect </span><span class="s15">與</span><span class="s13"> E = mc²</span><span class="s15">、</span><span class="s13">fission </span><span class="s15">與</span><span class="s13"> fusion </span><span class="s15">的能量釋放。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h2 style="margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711"><span class="s2"><b>Astronomy and Space Science</b></span></h2>
+<p class="p24"><span class="s2">選修：天文與太空科學</span><span class="s16"> · 25 </span><span class="s2">小時</span></p>
+<p class="p14"><span class="s2"></span><br></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Gravity and Orbits</b></span></h3>
+<p class="p16"><span class="s13">引力與軌道</span></p>
+<p class="p17"><span class="s14">Kepler's laws</span><span class="s13">、同步衛星、逃逸速度與軌道能量。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h2 style="margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711"><span class="s2"><b>Atomic World</b></span></h2>
+<p class="p24"><span class="s2">選修：原子世界</span><span class="s16"> · 25 </span><span class="s2">小時</span></p>
+<p class="p14"><span class="s2"></span><br></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Rutherford's Atomic Model</b></span></h3>
+<p class="p16"><span class="s13">盧瑟福原子模型</span></p>
+<p class="p17"><span class="s13">原子結構、</span><span class="s14">alpha </span><span class="s13">散射實驗與核式模型的建立。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Photoelectric Effect</b></span></h3>
+<p class="p16"><span class="s13">光電效應</span></p>
+<p class="p23"><span class="s13">photoelectric equation</span><span class="s15">、</span><span class="s13">work function </span><span class="s15">與</span><span class="s13"> stopping potential</span><span class="s15">。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Bohr's Atomic Model and Spectra</b></span></h3>
+<p class="p16"><span class="s13">玻爾原子模型與光譜</span></p>
+<p class="p23"><span class="s13">Bohr model </span><span class="s15">的假設、</span><span class="s13">energy level </span><span class="s15">躍遷與</span><span class="s13"> line spectrum</span><span class="s15">。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Particles or Waves</b></span></h3>
+<p class="p16"><span class="s13">粒子還是波</span></p>
+<p class="p23"><span class="s15">光的波粒二象性、</span><span class="s13">de Broglie wavelength </span><span class="s15">與物質波。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Probing into Nano Scale</b></span></h3>
+<p class="p16"><span class="s13">納米尺度探索</span></p>
+<p class="p17"><span class="s13">納米材料的物理性質、表面效應與其應用。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h2 style="margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711"><span class="s2"><b>Energy and Use of Energy</b></span></h2>
+<p class="p24"><span class="s2">選修：能源與能源使用</span><span class="s16"> · 25 </span><span class="s2">小時</span></p>
+<p class="p14"><span class="s2"></span><br></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Electricity at Home</b></span></h3>
+<p class="p16"><span class="s13">家居用電</span></p>
+<p class="p17"><span class="s13">家居電器耗能、</span><span class="s14">energy label </span><span class="s13">與用電成本計算。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Energy Efficiency</b></span></h3>
+<p class="p16"><span class="s13">能源效益</span></p>
+<p class="p17"><span class="s13">建築物與交通工具的能源效益、</span><span class="s14">COP </span><span class="s13">與節能措施。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Renewable and Non-renewable Energy</b></span></h3>
+<p class="p16"><span class="s13">可再生能源</span></p>
+<p class="p17"><span class="s13">化石燃料與可再生能源的比較、發電方式與環境影響。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h2 style="margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px 'Songti TC'; color: #775711; -webkit-text-stroke: #775711"><span class="s2"><b>Medical Physics</b></span></h2>
+<p class="p24"><span class="s2">選修：醫療物理</span><span class="s16"> · 25 </span><span class="s2">小時</span></p>
+<p class="p14"><span class="s2"></span><br></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Eye and Ear</b></span></h3>
+<p class="p16"><span class="s13">眼與耳</span></p>
+<p class="p23"><span class="s15">視覺與聽覺的物理原理、透鏡矯正視力與</span><span class="s13"> sound intensity level</span><span class="s15">。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Medical Imaging — Non-ionizing</b></span></h3>
+<p class="p16"><span class="s13">非電離輻射成像</span></p>
+<p class="p23"><span class="s15">超聲波成像、</span><span class="s13">piezoelectric transducer</span><span class="s15">、</span><span class="s13">Doppler effect </span><span class="s15">與光纖內窺鏡。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<h3 style="margin: 0.0px 0.0px 4.0px 0.0px; font: 16.0px '.SF NS'; color: #43434a; -webkit-text-stroke: #43434a"><span class="s13"><b>Medical Imaging — Ionizing</b></span></h3>
+<p class="p16"><span class="s13">電離輻射成像</span></p>
+<p class="p23"><span class="s13">X-ray </span><span class="s15">放射攝影、</span><span class="s13">linear attenuation coefficient</span><span class="s15">、</span><span class="s13">CT </span><span class="s15">與</span><span class="s13"> gamma camera</span><span class="s15">。</span></p>
+<p class="p21"><span class="s2"><b>COMING SOON</b></span></p>
+<p class="p22"><span class="s2"><b>Coming Soon</b></span></p>
+<p class="p25"><span class="s17">最強</span><span class="s2"> PHYSICS BY JACKY</span></p>
+<p class="p26"><span class="s2">DSE Physics Interactive Simulation Lab</span><span class="s18">｜新增模擬：複製卡片結構，改連結與名稱即可</span></p>
 </body>
 </html>
