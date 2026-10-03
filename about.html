@@ -3,12 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>關於 · 關俊佑 · 最強 Physics by Jacky</title>
+<title>About 關於 · 最強 Physics by Jacky</title>
 <meta name="description" content="關俊佑 —— DSE 物理導師、物理科代表、HKIMO 總決賽銅獎。DSE Physics Interactive Simulation Lab 創建人。">
+<link href="access-style.css" rel="stylesheet">
 <style>
-  *{box-sizing:border-box}
-  :root{--gold:#b8860b;--gold-bright:#c9a227;--gold-deep:#8b6914;
-        --ink:#3c3c43;--ink-soft:#6b6b73;--line:#d4d4d8;--line-2:#eeeef2}
   body{margin:0;color:var(--ink);font-size:15px;line-height:1.8;
     font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",sans-serif;
     background:
@@ -18,32 +16,6 @@
       linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
     background-attachment:fixed;-webkit-font-smoothing:antialiased;overflow-x:hidden}
   .wrap{max-width:1080px;margin:0 auto;padding:0 24px 44px}
-
-  /* ══ 頂部導航（沿用全站） ══ */
-  .topnav{position:sticky;top:0;z-index:80;backdrop-filter:saturate(180%) blur(14px);
-    -webkit-backdrop-filter:saturate(180%) blur(14px);
-    background:rgba(250,250,252,.90);border-bottom:1px solid rgba(212,212,216,.9)}
-  .topnav .bar{max-width:1420px;margin:0 auto;padding:9px 16px;
-    display:flex;align-items:center;gap:12px;flex-wrap:nowrap}
-  .brand{display:flex;align-items:baseline;gap:7px;text-decoration:none;white-space:nowrap;flex:0 0 auto}
-  .brand b{font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-size:16px;font-weight:650;
-    letter-spacing:.03em;color:var(--gold-deep)}
-  .brand i{font-style:normal;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#9a9aa2}
-  .navlinks{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:flex-end;
-    gap:2px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
-    -webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;padding:2px 0}
-  .navlinks::-webkit-scrollbar{display:none}
-  .navlinks a{display:inline-flex;align-items:center;gap:5px;text-decoration:none;flex:0 0 auto;
-    font-size:12.6px;font-weight:600;color:#55555c;padding:7px 10px;border-radius:8px;
-    border:1px solid transparent;white-space:nowrap;transition:.16s}
-  .navlinks a:hover{color:var(--gold-deep);background:rgba(201,162,39,.10);border-color:rgba(184,134,11,.28)}
-  .navlinks a.on{color:var(--gold-deep);background:rgba(201,162,39,.15);border-color:rgba(184,134,11,.45);font-weight:700}
-  .navlinks a em{font-style:normal;font-size:13.5px;line-height:1}
-  @media(max-width:1180px){.brand b{font-size:14.5px}.brand i{display:none}
-    .navlinks a{padding:7px 8px;gap:4px}.navlinks a .en{display:none}}
-  @media(max-width:760px){.brand b{font-size:13px}
-    .navlinks a{padding:6px 7px;font-size:12px}
-    .navlinks a .zh{display:none}.navlinks a em{font-size:15px}}
 
   /* ══ 通用區塊標題 ══ */
   .sec{margin-top:44px}
@@ -57,10 +29,10 @@
     background:linear-gradient(90deg,var(--gold-bright) 0%,var(--line) 40%,transparent 100%);opacity:.5}
 
   /* ══ 卡片 ══ */
-  .card{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;
+  .card{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;
     padding:22px 24px;box-shadow:0 1px 2px rgba(60,60,67,.05),0 10px 26px rgba(60,60,67,.06)}
   .card::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;
-    border-radius:14px 14px 0 0;opacity:.9;
+    border-radius:12px 12px 0 0;opacity:.9;
     background:linear-gradient(90deg,var(--gold-bright),transparent 90%)}
 
   /* ══ 1. 頂部個人卡 ══ */
@@ -262,7 +234,7 @@
       <p class="role">DSE物理導師｜物理科代表｜HKIMO總決賽銅獎</p>
       <p class="slogan">把抽象物理，變成睇得見、摸得到、可以親手調參數嘅模型。</p>
       <div class="pills">
-        <span class="pill">連續兩年全級第二名 <em>Form 3 &amp; Form 4</em></span>
+        <span class="pill">連續兩年全級第二名 <em>Form 4 &amp; Form 5</em></span>
         <span class="pill">HKIMO 總決賽銅獎</span>
         <span class="pill">班級物理科代表</span>
         <span class="pill">DSE Physics Lab 創建人</span>
@@ -394,7 +366,7 @@
         <span class="ic">
           <svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.2"/><path d="M3.6 7.2 12 13l8.4-5.8"/></svg>
         </span>
-        <span class="tx"><b>Email</b><span>（Jackyyouyou0704@outlook.com）</span></span>
+        <span class="tx"><b>Email</b><span>待填（your@email.com）</span></span>
       </a>
       <a class="contact" href="#" aria-label="Instagram 聯絡（待填）">
         <span class="ic">

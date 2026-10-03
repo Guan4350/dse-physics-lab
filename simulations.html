@@ -4,10 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Simulations 互動模擬 · 最強 Physics by Jacky</title>
+<link href="access-style.css" rel="stylesheet">
 <style>
-  *{box-sizing:border-box}
-  :root{--gold:#b8860b;--gold-bright:#c9a227;--gold-deep:#8b6914;
-        --ink:#3c3c43;--ink-soft:#6b6b73;--line:#d4d4d8}
   body{zoom:1.1}
   body{margin:0;color:var(--ink);font-size:15px;line-height:1.75;
     font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",sans-serif;
@@ -17,32 +15,7 @@
       linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
     background-attachment:fixed;-webkit-font-smoothing:antialiased;overflow-x:hidden}
   .wrap{max-width:1350px;margin:0 auto;padding:0 24px}
-  .topnav{position:sticky;top:0;z-index:80;backdrop-filter:saturate(180%) blur(14px);
-    -webkit-backdrop-filter:saturate(180%) blur(14px);
-    background:rgba(250,250,252,.90);border-bottom:1px solid rgba(212,212,216,.9)}
-  .topnav .bar{max-width:1420px;margin:0 auto;padding:9px 16px;
-    display:flex;align-items:center;gap:12px;flex-wrap:nowrap}
-  .brand{display:flex;align-items:baseline;gap:7px;text-decoration:none;white-space:nowrap;flex:0 0 auto}
-  .brand b{font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-size:16px;font-weight:650;
-    letter-spacing:.03em;color:var(--gold-deep)}
-  .brand i{font-style:normal;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#9a9aa2}
-  .navlinks{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:flex-end;
-    gap:2px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
-    -webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;padding:2px 0}
-  .navlinks::-webkit-scrollbar{display:none}
-  .navlinks a{display:inline-flex;align-items:center;gap:5px;text-decoration:none;flex:0 0 auto;
-    font-size:12.6px;font-weight:600;color:#55555c;padding:7px 10px;border-radius:8px;
-    border:1px solid transparent;white-space:nowrap;transition:.16s}
-  .navlinks a:hover{color:var(--gold-deep);background:rgba(201,162,39,.10);border-color:rgba(184,134,11,.28)}
-  .navlinks a.on{color:var(--gold-deep);background:rgba(201,162,39,.15);border-color:rgba(184,134,11,.45);font-weight:700}
-  .navlinks a em{font-style:normal;font-size:13.5px;line-height:1}
-  @media(max-width:1180px){.brand b{font-size:14.5px}.brand i{display:none}
-    .navlinks a{padding:7px 8px;gap:4px}.navlinks a .en{display:none}}
-  @media(max-width:760px){.brand b{font-size:13px}
-    .navlinks a{padding:6px 7px;font-size:12px}
-    .navlinks a .zh{display:none}.navlinks a em{font-size:15px}}
   .page-head{padding:50px 0 26px;text-align:center}
-  .eyebrow{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:15px}
   h1.title{margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
     font-size:clamp(30px,5vw,46px);letter-spacing:.06em;
     background:linear-gradient(180deg,#a97c0f 0%,#c9a227 62%,#8b6914 100%);
