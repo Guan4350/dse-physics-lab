@@ -23,23 +23,28 @@
   .lede{margin:15px auto 0;max-width:700px;font-size:14px;color:var(--ink-soft)}
   .divider{width:132px;height:1px;margin:24px auto 0;border:0;
     background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
-  main{padding-bottom:30px}
-  .category{margin-bottom:46px}
+
+  /* ══ 分類與版面：與 index.html 首頁完全一致 ══ */
+  main{padding-bottom:24px}
+  .category{margin-bottom:48px}
   .cat-head{display:flex;align-items:baseline;gap:14px;padding-left:15px;position:relative;margin-bottom:5px}
   .cat-head::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:3px;border-radius:2px;
     background:var(--acc,var(--gold));opacity:.85}
-  .cat-head h2{margin:0;font-size:18px;font-weight:650;color:var(--gold-deep);
-    font-family:"Songti TC","Noto Serif TC",Georgia,serif;letter-spacing:.05em}
+  .cat-head h2{margin:0;font-size:18px;font-weight:650;letter-spacing:.05em;color:var(--gold-deep);
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif}
   .cat-head .zh{font-size:13px;color:var(--ink-soft);letter-spacing:.08em;font-weight:400}
   .cat-line{height:1px;margin-bottom:19px;opacity:.5;
     background:linear-gradient(90deg,var(--acc,var(--gold)) 0%,var(--line) 42%,transparent 100%)}
   .grid{display:grid;gap:18px;grid-template-columns:1fr}
   @media(min-width:680px){.grid{grid-template-columns:repeat(2,1fr)}}
   @media(min-width:1080px){.grid{grid-template-columns:repeat(3,1fr)}}
-  .grid .card{zoom:0.9}
-  .card{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;
-    display:flex;flex-direction:column;min-height:196px;
-    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05);transition:.22s}
+  .grid .card{zoom:0.9}      /* 卡片 0.9 倍 */
+
+  /* ══ 卡片：與 access-style.css 嘅 .card 定義逐字相同 ══ */
+  .card{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:22px 22px 20px;display:flex;flex-direction:column;min-height:196px;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05);
+    transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
   .card::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;border-radius:12px 12px 0 0;
     opacity:.9;background:linear-gradient(90deg,var(--acc,var(--gold)),transparent 90%)}
   .card.live:hover{transform:translateY(-4px);border-color:var(--gold-bright);
@@ -52,12 +57,14 @@
     padding:3px 10px;border-radius:20px;border:1px solid}
   .tag.live{color:var(--gold-deep);border-color:rgba(184,134,11,.45);background:rgba(201,162,39,.10)}
   .tag.soon{color:#8c8c93;border-color:#dcdce0;background:#f4f4f6}
-  .btn{display:inline-block;font-size:13px;font-weight:650;padding:8px 17px;border-radius:7px;
-    text-decoration:none;border:1px solid transparent;transition:.2s}
+  .btn{display:inline-block;font-size:13px;font-weight:650;letter-spacing:.04em;padding:8px 17px;
+    border-radius:7px;text-decoration:none;border:1px solid transparent;transition:.2s}
   .btn.live{background:var(--gold);color:#fff;box-shadow:0 3px 10px rgba(184,134,11,.26)}
   .btn.live:hover{background:#a3760a}
   .btn.soon{background:#f0f0f2;color:#a0a0a7;border-color:#e0e0e3;cursor:not-allowed}
-  .card.soon{opacity:.78;background:#fcfcfd}.card.soon .card-name{color:#55555c}
+  .card.soon{opacity:.78;background:#fcfcfd}
+  .card.soon .card-name{color:#55555c}
+
   footer{margin-top:20px;padding:32px 0 46px;text-align:center;border-top:1px solid var(--line)}
   footer .mark{display:inline-block;margin-bottom:11px;font-size:11px;letter-spacing:.3em;
     text-transform:uppercase;color:var(--gold-deep)}
@@ -89,35 +96,42 @@
   </header>
 
   <main>
+
+    <!-- ══════════ 1. Force and Motion 力與運動 (50h) ══════════ -->
     <section class="category" style="--acc:#b8860b">
-      <div class="cat-head"><h2>Mechanics</h2><span class="zh">力學</span></div>
+      <div class="cat-head"><h2>Force and Motion</h2><span class="zh">力與運動 · 50 小時</span></div>
       <div class="cat-line"></div>
       <div class="grid">
         <article class="card live" style="--acc:#b8860b">
-          <h3 class="card-name">Circular Motion<span>圓周運動</span></h3>
-          <p class="card-desc">向心加速度與向心力：水平圓周、conical pendulum、banked track、鉛垂圓周。</p>
+          <h3 class="card-name">Uniform Circular Motion<span>勻速圓周運動</span></h3>
+          <p class="card-desc">向心加速度與向心力：水平圓周、conical pendulum、banked track、鉛垂圓周，含實時向量、拖尾與概念小測。</p>
           <div class="row"><span class="tag live">Live</span>
             <a class="btn live" href="dse-physics-lab.html" target="_blank" rel="noopener">打開 →</a></div>
         </article>
         <article class="card live" style="--acc:#b8860b">
           <h3 class="card-name">Projectile Motion<span>拋體運動</span></h3>
-          <p class="card-desc">水平拋射與斜拋：初速度分解、飛行時間、射程、最高點，附 SUVAT 表格與概念小測。</p>
+          <p class="card-desc">水平與垂直方向獨立計算：SUVAT 表格、速度向量、軌跡淡出、雙語切換與概念小測。</p>
           <div class="row"><span class="tag live">Live</span>
             <a class="btn live" href="projectile-motion.html" target="_blank" rel="noopener">打開 →</a></div>
         </article>
         <article class="card soon" style="--acc:#b8860b">
-          <h3 class="card-name">Simple Harmonic Motion<span>簡諧運動</span></h3>
-          <p class="card-desc">彈簧振子與單擺：位移、速度、加速度相位關係與週期。</p>
+          <h3 class="card-name">Position and Movement<span>位置與運動</span></h3>
+          <p class="card-desc">位置、距離與位移、速率與速度、加速度；勻加速運動方程與 v-t 圖。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
         <article class="card soon" style="--acc:#b8860b">
-          <h3 class="card-name">Force and Momentum<span>力與動量</span></h3>
-          <p class="card-desc">Newton's laws、動量守恆與碰撞、impulse 與淨力圖解。</p>
+          <h3 class="card-name">Force and Motion<span>力與運動</span></h3>
+          <p class="card-desc">Newton's laws、質量與重量、力的合成與分解、摩擦力與力矩平衡。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
         <article class="card soon" style="--acc:#b8860b">
           <h3 class="card-name">Work, Energy and Power<span>功、能量與功率</span></h3>
-          <p class="card-desc">動能與勢能互換、conservation of energy、功率計算。</p>
+          <p class="card-desc">動能與勢能互換、conservation of energy、功率計算與效率。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#b8860b">
+          <h3 class="card-name">Momentum<span>動量</span></h3>
+          <p class="card-desc">linear momentum、impulse 與淨力圖解、動量守恆與碰撞。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
         <article class="card soon" style="--acc:#b8860b">
@@ -128,40 +142,32 @@
       </div>
     </section>
 
+    <!-- ══════════ 2. Wave Motion 波動 (47h) ══════════ -->
     <section class="category" style="--acc:#c2a34a">
-      <div class="cat-head"><h2>Waves</h2><span class="zh">波動</span></div>
+      <div class="cat-head"><h2>Wave Motion</h2><span class="zh">波動 · 47 小時</span></div>
       <div class="cat-line"></div>
       <div class="grid">
         <article class="card soon" style="--acc:#c2a34a">
-          <h3 class="card-name">Wave Motion<span>波動</span></h3>
-          <p class="card-desc">橫波傳播、wavelength 與 frequency、粒子振動與波形圖的分別。</p>
+          <h3 class="card-name">Nature and Properties of Waves<span>波的性質</span></h3>
+          <p class="card-desc">橫波傳播、wavelength 與 frequency、粒子振動與波形圖的分別；反射、折射與繞射。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
         <article class="card soon" style="--acc:#c2a34a">
-          <h3 class="card-name">Reflection and Refraction<span>反射與折射</span></h3>
-          <p class="card-desc">Snell's law、total internal reflection 與臨界角計算。</p>
+          <h3 class="card-name">Light<span>光</span></h3>
+          <p class="card-desc">光的波動說：干涉與繞射、path difference 條件、stationary waves、透鏡成像與全內反射。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
         <article class="card soon" style="--acc:#c2a34a">
-          <h3 class="card-name">Interference and Diffraction<span>干涉與繞射</span></h3>
-          <p class="card-desc">雙縫干涉、path difference 條件、光柵與繞射圖樣。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#c2a34a">
-          <h3 class="card-name">Stationary Waves<span>駐波</span></h3>
-          <p class="card-desc">弦線與空氣柱的節點、波腹與共振頻率。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#c2a34a">
-          <h3 class="card-name">Lens Imaging<span>透鏡成像</span></h3>
-          <p class="card-desc">凸透鏡成像作圖、放大率與實像虛像判斷。</p>
+          <h3 class="card-name">Sound<span>聲</span></h3>
+          <p class="card-desc">聲波的性質與傳播、空氣柱與弦線的駐波、共振與頻率。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
       </div>
     </section>
 
+    <!-- ══════════ 3. Electricity and Magnetism 電學與磁學 (48h) ══════════ -->
     <section class="category" style="--acc:#a8821f">
-      <div class="cat-head"><h2>Electricity and Magnetism</h2><span class="zh">電學與磁學</span></div>
+      <div class="cat-head"><h2>Electricity and Magnetism</h2><span class="zh">電學與磁學 · 48 小時</span></div>
       <div class="cat-line"></div>
       <div class="grid">
         <article class="card soon" style="--acc:#a8821f">
@@ -170,35 +176,31 @@
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
         <article class="card soon" style="--acc:#a8821f">
-          <h3 class="card-name">Circuit<span>電路</span></h3>
-          <p class="card-desc">串並聯、內電阻與 terminal voltage、功率分配與電錶接法。</p>
+          <h3 class="card-name">Circuits and Domestic Electricity<span>電路與家居用電</span></h3>
+          <p class="card-desc">串並聯、內電阻與 terminal voltage、功率與電能、家居電路與安全用電。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
         <article class="card soon" style="--acc:#a8821f">
-          <h3 class="card-name">Magnetic Field<span>磁場</span></h3>
-          <p class="card-desc">長直導線與螺線管的磁場、帶電粒子受 magnetic force 的圓周運動。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#a8821f">
-          <h3 class="card-name">EM Induction<span>電磁感應</span></h3>
-          <p class="card-desc">磁通量變化、Lenz's law 方向判斷與 induced e.m.f. 計算。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#a8821f">
-          <h3 class="card-name">AC and Transformer<span>交流電與變壓器</span></h3>
-          <p class="card-desc">r.m.s. 值、turns ratio、transmission of electricity 功率損耗。</p>
+          <h3 class="card-name">Electromagnetism<span>電磁學</span></h3>
+          <p class="card-desc">磁場與 magnetic force、Faraday's law 與 Lenz's law、變壓器與交流電。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
       </div>
     </section>
 
+    <!-- ══════════ 4. Heat and Gases 熱與氣體 (23h) ══════════ -->
     <section class="category" style="--acc:#cbb26a">
-      <div class="cat-head"><h2>Heat and Gases</h2><span class="zh">熱與氣體</span></div>
+      <div class="cat-head"><h2>Heat and Gases</h2><span class="zh">熱與氣體 · 23 小時</span></div>
       <div class="cat-line"></div>
       <div class="grid">
         <article class="card soon" style="--acc:#cbb26a">
-          <h3 class="card-name">Temperature and Heat<span>溫度與熱</span></h3>
+          <h3 class="card-name">Temperature, Heat and Internal Energy<span>溫度、熱與內能</span></h3>
           <p class="card-desc">temperature 與 internal energy、heat capacity 與 specific heat capacity。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#cbb26a">
+          <h3 class="card-name">Transfer Process<span>傳熱過程</span></h3>
+          <p class="card-desc">conduction、convection 與 radiation 的機制與影響因素。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
         <article class="card soon" style="--acc:#cbb26a">
@@ -207,30 +209,26 @@
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
         <article class="card soon" style="--acc:#cbb26a">
-          <h3 class="card-name">Transfer Processes<span>傳熱過程</span></h3>
-          <p class="card-desc">conduction、convection 與 radiation 的機制與影響因素。</p>
-          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
-        </article>
-        <article class="card soon" style="--acc:#cbb26a">
-          <h3 class="card-name">Gas Laws<span>氣體定律</span></h3>
-          <p class="card-desc">Boyle's law、Charles' law、pressure law 與 ideal gas equation。</p>
+          <h3 class="card-name">Gases<span>氣體</span></h3>
+          <p class="card-desc">Boyle's law、Charles' law、pressure law 與 ideal gas equation、kinetic theory。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
       </div>
     </section>
 
+    <!-- ══════════ 5. Radioactivity and Nuclear Energy 放射性與核能 (16h) ══════════ -->
     <section class="category" style="--acc:#8b6914">
-      <div class="cat-head"><h2>Radioactivity and Nuclear Energy</h2><span class="zh">放射性與核能</span></div>
+      <div class="cat-head"><h2>Radioactivity and Nuclear Energy</h2><span class="zh">放射性與核能 · 16 小時</span></div>
       <div class="cat-line"></div>
       <div class="grid">
         <article class="card soon" style="--acc:#8b6914">
-          <h3 class="card-name">Nuclear Decay<span>核衰變</span></h3>
-          <p class="card-desc">alpha / beta / gamma 衰變方程、penetrating power 與電離能力。</p>
+          <h3 class="card-name">Radiation and Radioactivity<span>輻射與放射性</span></h3>
+          <p class="card-desc">X-rays、alpha / beta / gamma 衰變方程、half-life 與衰變曲線、背景輻射。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
         <article class="card soon" style="--acc:#8b6914">
-          <h3 class="card-name">Half-life and Decay Curve<span>半衰期與衰變曲線</span></h3>
-          <p class="card-desc">half-life 計算、隨機性與 background count 扣除。</p>
+          <h3 class="card-name">Atomic Structure<span>原子結構</span></h3>
+          <p class="card-desc">原子模型與能階、line spectrum、電離輻射與物質的相互作用。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
         <article class="card soon" style="--acc:#8b6914">
@@ -241,8 +239,9 @@
       </div>
     </section>
 
+    <!-- ══════════ 6. Astronomy and Space Science 選修 (25h) ══════════ -->
     <section class="category" style="--acc:#9c7a12">
-      <div class="cat-head"><h2>Astronomy and Atomic World</h2><span class="zh">選修：天文學與原子世界</span></div>
+      <div class="cat-head"><h2>Astronomy and Space Science</h2><span class="zh">選修：天文與太空科學 · 25 小時</span></div>
       <div class="cat-line"></div>
       <div class="grid">
         <article class="card soon" style="--acc:#9c7a12">
@@ -250,23 +249,88 @@
           <p class="card-desc">Kepler's laws、同步衛星、逃逸速度與軌道能量。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
-        <article class="card soon" style="--acc:#9c7a12">
-          <h3 class="card-name">Stars and Universe<span>恒星與宇宙</span></h3>
-          <p class="card-desc">光度與距離、Hertzsprung-Russell diagram、redshift 與 Hubble's law。</p>
+      </div>
+    </section>
+
+    <!-- ══════════ 7. Atomic World 選修 (25h) ══════════ -->
+    <section class="category" style="--acc:#a3760a">
+      <div class="cat-head"><h2>Atomic World</h2><span class="zh">選修：原子世界 · 25 小時</span></div>
+      <div class="cat-line"></div>
+      <div class="grid">
+        <article class="card soon" style="--acc:#a3760a">
+          <h3 class="card-name">Rutherford's Atomic Model<span>盧瑟福原子模型</span></h3>
+          <p class="card-desc">原子結構、alpha 散射實驗與核式模型的建立。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
-        <article class="card soon" style="--acc:#9c7a12">
+        <article class="card soon" style="--acc:#a3760a">
           <h3 class="card-name">Photoelectric Effect<span>光電效應</span></h3>
           <p class="card-desc">photoelectric equation、work function 與 stopping potential。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
-        <article class="card soon" style="--acc:#9c7a12">
-          <h3 class="card-name">Atomic Model and Spectra<span>原子模型與光譜</span></h3>
-          <p class="card-desc">Bohr model、energy level 躍遷與 line spectrum。</p>
+        <article class="card soon" style="--acc:#a3760a">
+          <h3 class="card-name">Bohr's Atomic Model and Spectra<span>玻爾原子模型與光譜</span></h3>
+          <p class="card-desc">Bohr model 的假設、energy level 躍遷與 line spectrum。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#a3760a">
+          <h3 class="card-name">Particles or Waves<span>粒子還是波</span></h3>
+          <p class="card-desc">光的波粒二象性、de Broglie wavelength 與物質波。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#a3760a">
+          <h3 class="card-name">Probing into Nano Scale<span>納米尺度探索</span></h3>
+          <p class="card-desc">納米材料的物理性質、表面效應與其應用。</p>
           <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
         </article>
       </div>
     </section>
+
+    <!-- ══════════ 8. Energy and Use of Energy 選修 (25h) ══════════ -->
+    <section class="category" style="--acc:#b8860b">
+      <div class="cat-head"><h2>Energy and Use of Energy</h2><span class="zh">選修：能源與能源使用 · 25 小時</span></div>
+      <div class="cat-line"></div>
+      <div class="grid">
+        <article class="card soon" style="--acc:#b8860b">
+          <h3 class="card-name">Electricity at Home<span>家居用電</span></h3>
+          <p class="card-desc">家居電器耗能、energy label 與用電成本計算。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#b8860b">
+          <h3 class="card-name">Energy Efficiency<span>能源效益</span></h3>
+          <p class="card-desc">建築物與交通工具的能源效益、COP 與節能措施。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#b8860b">
+          <h3 class="card-name">Renewable and Non-renewable Energy<span>可再生能源</span></h3>
+          <p class="card-desc">化石燃料與可再生能源的比較、發電方式與環境影響。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ══════════ 9. Medical Physics 選修 (25h) ══════════ -->
+    <section class="category" style="--acc:#a8821f">
+      <div class="cat-head"><h2>Medical Physics</h2><span class="zh">選修：醫療物理 · 25 小時</span></div>
+      <div class="cat-line"></div>
+      <div class="grid">
+        <article class="card soon" style="--acc:#a8821f">
+          <h3 class="card-name">Eye and Ear<span>眼與耳</span></h3>
+          <p class="card-desc">視覺與聽覺的物理原理、透鏡矯正視力與 sound intensity level。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#a8821f">
+          <h3 class="card-name">Medical Imaging — Non-ionizing<span>非電離輻射成像</span></h3>
+          <p class="card-desc">超聲波成像、piezoelectric transducer、Doppler effect 與光纖內窺鏡。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+        <article class="card soon" style="--acc:#a8821f">
+          <h3 class="card-name">Medical Imaging — Ionizing<span>電離輻射成像</span></h3>
+          <p class="card-desc">X-ray 放射攝影、linear attenuation coefficient、CT 與 gamma camera。</p>
+          <div class="row"><span class="tag soon">Coming Soon</span><span class="btn soon">Coming Soon</span></div>
+        </article>
+      </div>
+    </section>
+
   </main>
 
   <footer>
