@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exam Bank 隨機抽題溫習 · 最強 Physics by Jacky</title>
+<link href="access-style.css" rel="stylesheet">
+<style>
+  body{zoom:1.1}
+  body{margin:0;color:var(--ink);font-size:15px;line-height:1.75;
+    font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",sans-serif;
+    background:
+      radial-gradient(1100px 620px at 50% -140px,rgba(255,255,255,.96),rgba(255,255,255,0) 70%),
+      radial-gradient(760px 460px at 12% 108%,rgba(201,162,39,.09),rgba(201,162,39,0) 72%),
+      linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
+    background-attachment:fixed;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+
+  .page-head{padding:50px 0 22px;text-align:center}
+  h1.title{margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
+    font-size:clamp(30px,5vw,46px);letter-spacing:.06em;
+    background:linear-gradient(180deg,#a97c0f 0%,#c9a227 62%,#8b6914 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .lede{margin:15px auto 0;max-width:730px;font-size:14px;color:var(--ink-soft)}
+  .divider{width:132px;height:1px;margin:24px auto 0;border:0;
+    background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
+  .jump{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:22px 0 34px}
+  .jump a{text-decoration:none;font-size:12.5px;font-weight:650;color:#55555c;background:#fff;
+    border:1px solid var(--line);border-radius:20px;padding:7px 15px;transition:.18s}
+  .jump a:hover{border-color:var(--gold-bright);color:var(--gold-deep)}
+  .sec-head{text-align:center;padding:8px 0 6px}
+  .sec-head h2{margin:0;font-size:clamp(21px,3.4vw,28px);font-weight:650;color:var(--gold-deep);
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif;letter-spacing:.05em}
+  .sec-head p{margin:10px auto 0;max-width:700px;font-size:13.5px;color:var(--ink-soft)}
+  .sec-rule{width:110px;height:1px;margin:18px auto 30px;border:0;
+    background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
+
+  /* ── By Topic 試題（PDF） ── */
+  .pdf-grid{display:grid;gap:14px;grid-template-columns:1fr;margin-bottom:52px}
+  @media(min-width:760px){.pdf-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:1120px){.pdf-grid{grid-template-columns:repeat(3,1fr)}}
+  .pdf-topic{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:20px 22px 16px;box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05);
+    transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+  .pdf-topic::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;
+    border-radius:12px 12px 0 0;opacity:.9;
+    background:linear-gradient(90deg,var(--acc,var(--gold)),transparent 90%)}
+  .pdf-topic:hover{transform:translateY(-3px);border-color:var(--gold-bright);
+    box-shadow:0 2px 6px rgba(184,134,11,.14),0 14px 30px rgba(184,134,11,.16)}
+  .pdf-topic h3{margin:6px 0 3px;font-size:15.5px;font-weight:650;color:#2b2b30}
+  .pdf-topic h3 span{display:block;font-size:12.2px;font-weight:400;color:var(--ink-soft);margin-top:2px}
+  .pdf-sub{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--gold-deep);opacity:.85}
+  .pdf-list{margin-top:13px;border-top:1px solid #f0f0f3;padding-top:11px}
+  .pdf-item{display:flex;align-items:center;gap:11px;padding:7px 0}
+  .pdf-item+.pdf-item{border-top:1px solid #f6f6f8}
+  .icn{flex:0 0 auto;width:30px;height:36px;border-radius:5px;border:1.4px solid var(--gold);
+    background:#fbf8ef;position:relative;display:flex;align-items:flex-end;justify-content:center;
+    padding-bottom:3px;font-size:8.5px;font-weight:800;letter-spacing:.04em;color:var(--gold-deep)}
+  .icn::after{content:"";position:absolute;top:-1.4px;right:-1.4px;width:11px;height:11px;
+    background:#fff;border-left:1.4px solid var(--gold);border-bottom:1.4px solid var(--gold);
+    border-radius:0 4px 0 3px}
+  .pdf-meta{flex:1;min-width:0}
+  .pdf-meta b{display:block;font-size:13.2px;font-weight:650;color:#2b2b30;line-height:1.5}
+  .pdf-meta em{font-style:normal;font-size:11.4px;color:#9a9aa2}
+  .dl{flex:0 0 auto;text-decoration:none;font-size:12.4px;font-weight:700;white-space:nowrap;
+    color:var(--gold-deep);background:rgba(201,162,39,.12);border:1px solid rgba(184,134,11,.34);
+    border-radius:7px;padding:6px 12px;transition:.18s}
+  .dl:hover{background:var(--gold);border-color:var(--gold);color:#fff}
+  .pdf-empty{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    margin-top:13px;border-top:1px solid #f0f0f3;padding-top:11px;font-size:12.4px;color:#9a9aa2}
+  .pdf-empty span{background:#f4f4f6;border:1px solid #e4e4e8;border-radius:20px;
+    padding:3px 11px;font-size:11px;font-weight:700;letter-spacing:.06em;color:#8c8c93;white-space:nowrap}
+
+  /* ── 隨機抽題控制台 ── */
+  .console{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 10px 26px rgba(60,60,67,.06);margin-bottom:26px}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    padding-bottom:16px;border-bottom:1px solid #f0f0f3}
+  .stat{font-size:13.5px;color:var(--ink-soft)}
+  .stat b{color:var(--gold-deep);font-size:19px;font-variant-numeric:tabular-nums;margin:0 3px}
+  .acts{display:flex;gap:9px;flex-wrap:wrap}
+  .btn{cursor:pointer;font-family:inherit;font-size:13.2px;font-weight:700;border-radius:9px;
+    padding:10px 19px;border:1px solid transparent;transition:.18s}
+  .btn.primary{background:var(--gold);color:#fff;box-shadow:0 3px 10px rgba(184,134,11,.26)}
+  .btn.primary:hover{background:#a3760a}
+  .btn.ghost{background:#fff;border-color:var(--line);color:#55555c}
+  .btn.ghost:hover{border-color:var(--gold-bright);color:var(--gold-deep);background:rgba(201,162,39,.07)}
+  .filters{margin-top:16px}
+  .frow{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap;margin-bottom:10px}
+  .frow .fl{flex:0 0 auto;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--gold-deep);opacity:.85;min-width:66px}
+  .chk{display:inline-flex;align-items:center;gap:6px;font-size:12.6px;color:#55555c;cursor:pointer;
+    background:#fbfbfd;border:1px solid var(--line);border-radius:20px;padding:5px 13px;transition:.16s;
+    white-space:nowrap;user-select:none}
+  .chk:hover{border-color:var(--gold-bright)}
+  .chk input{accent-color:#b8860b;margin:0;cursor:pointer}
+  .chk.on{background:rgba(201,162,39,.14);border-color:rgba(184,134,11,.42);color:var(--gold-deep);font-weight:650}
+
+  /* ── 題目卡 ── */
+  #qlist{display:grid;gap:16px}
+  .qcard{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:20px 22px;box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05)}
+  .qcard::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;border-radius:12px 12px 0 0;
+    opacity:.9;background:linear-gradient(90deg,var(--acc,var(--gold)),transparent 92%)}
+  .qmeta{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .idx{font-size:11px;font-weight:800;letter-spacing:.14em;color:#b9b9c0}
+  .chip-lv{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:3px 10px;border-radius:20px;border:1px solid}
+  .chip-lv.b{color:#1f6b4a;border-color:rgba(47,158,111,.4);background:rgba(47,158,111,.10)}
+  .chip-lv.d{color:var(--gold-deep);border-color:rgba(184,134,11,.45);background:rgba(201,162,39,.12)}
+  .chip-lv.c{color:#a8443a;border-color:rgba(192,69,95,.4);background:rgba(192,69,95,.09)}
+  .chip-topic{font-size:11.5px;font-weight:650;color:#77777f;background:#f4f4f6;
+    border:1px solid #e6e6ea;border-radius:20px;padding:3px 11px}
+  .qbody{font-size:14.4px;line-height:1.88;color:#2b2b30;margin:11px 0 0}
+  .opts{margin:13px 0 0;padding:0;list-style:none;display:grid;gap:7px}
+  @media(min-width:860px){.opts{grid-template-columns:1fr 1fr}}
+  .opts li{display:flex;gap:9px;align-items:flex-start;font-size:13.4px;line-height:1.7;color:#4a4a52;
+    background:#fbfbfd;border:1px solid #e6e6ea;border-radius:9px;padding:9px 12px}
+  .opts li .k{flex:0 0 20px;height:20px;border-radius:50%;background:#efeff2;color:#77777f;
+    font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .qacts{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+  .aBtn{cursor:pointer;font-family:inherit;font-size:12.6px;font-weight:700;border-radius:8px;
+    padding:8px 16px;border:1px solid var(--gold);background:rgba(201,162,39,.12);color:var(--gold-deep);
+    transition:.18s}
+  .aBtn:hover{background:var(--gold);color:#fff}
+  .sBtn{cursor:pointer;font-family:inherit;font-size:12.6px;font-weight:700;border-radius:8px;
+    padding:8px 16px;border:1px solid var(--line);background:#fff;color:#55555c;transition:.18s}
+  .sBtn:hover{border-color:var(--gold-bright);color:var(--gold-deep)}
+  .reveal{display:none;margin-top:15px;border-top:1px dashed #e6e2d2;padding-top:14px}
+  .reveal.show{display:block}
+  .ansline{font-size:14.6px;font-weight:750;color:#1f6b4a;background:rgba(47,158,111,.09);
+    border-left:3px solid #2f9e6f;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:13px}
+  .blk{font-size:13.4px;line-height:1.9;color:#4a4a52;margin:0 0 13px}
+  .blk .ttl{display:block;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--gold-deep);margin-bottom:5px}
+  .first{background:#fbf8ef;border:1px solid #ece7d6;border-left:3px solid var(--gold);
+    border-radius:0 9px 9px 0;padding:11px 15px;font-size:13.6px;line-height:1.9;color:#5a4a10}
+  .first b{color:#8b6914}
+  .kw{margin-top:10px;font-size:12.8px;color:#6b5a1a;background:rgba(201,162,39,.09);
+    border:1px solid rgba(184,134,11,.26);border-radius:8px;padding:9px 13px;line-height:1.9}
+  .kw b{color:var(--gold-deep)}
+  .step{margin:6px 0;font-size:13.5px;line-height:1.95;color:#4a4a52}
+  .step .f{display:inline-block;background:#fff;border:1px solid #e6e2d2;border-radius:6px;
+    padding:2px 9px;margin:2px 0;font-family:ui-monospace,Menlo,monospace;font-size:12.8px;color:#7a5c10}
+  .trap{font-size:13px;line-height:1.85;color:#a8443a;background:rgba(192,69,95,.07);
+    border-left:3px solid #c0455f;border-radius:0 8px 8px 0;padding:10px 14px}
+  .trap b{color:#8f2f28}
+  .empty{text-align:center;font-size:13.5px;color:#9a9aa2;background:#fbfbfd;
+    border:1px dashed #dcdce0;border-radius:12px;padding:26px}
+  footer{margin-top:34px;padding:32px 0 46px;text-align:center;border-top:1px solid var(--line)}
+  footer .mark{display:inline-block;margin-bottom:11px;font-size:11px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--gold-deep)}
+  footer p{margin:0;font-size:12.5px;color:#7d7d85}
+</style>
+</head>
+<body data-nav="exam">
+
+<nav class="topnav">
+  <div class="bar">
+    <a class="brand" href="index.html"><b>最強 Physics by Jacky</b><i>DSE Lab</i></a>
+    <div class="navlinks" id="navLinks">
+      <a href="index.html"          data-nav="home"><em>🏠</em><span class="en">Home</span><span class="zh">主頁</span></a>
+      <a href="simulations.html"    data-nav="sim"><em>🧪</em><span class="en">Simulations</span><span class="zh">互動模擬</span></a>
+      <a href="exam-bank.html"      data-nav="exam"><em>📝</em><span class="en">Exam Bank</span><span class="zh">試題庫</span></a>
+      <a href="formula-sheet.html"  data-nav="formula"><em>📖</em><span class="en">Formula</span><span class="zh">公式表</span></a>
+      <a href="revision-notes.html" data-nav="notes"><em>📚</em><span class="en">Notes</span><span class="zh">筆記</span></a>
+      <a href="about.html"          data-nav="about"><em>ℹ️</em><span class="en">About</span><span class="zh">關於</span></a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header class="page-head">
+    <div class="eyebrow">Exam Bank · Random Drill</div>
+    <h1 class="title">隨機抽題溫習</h1>
+    <p class="lede">每次載入或按「換一批」都會重新洗牌，隨機抽出 8 題。每題附「見到題目第一步諗咩」、關鍵字對應公式、逐步解、答案同扣分位，適合快速自測。選項次序亦會隨機排列，避免背答案。</p>
+    <hr class="divider">
+  </header>
+
+  <nav class="jump">
+    <a href="#drill">隨機抽題自測</a>
+    <a href="#pdfs">By Topic 試題（PDF）</a>
+  </nav>
+
+  <main>
+
+    <!-- ══════════ 隨機抽題自測 ══════════ -->
+    <section id="drill">
+      <div class="sec-head">
+        <h2>隨機抽題自測</h2>
+        <p>先自己想答案，再撳「看答案」。每題第一格就係解題第一步應該諗嘅嘢。</p>
+      </div>
+      <hr class="sec-rule">
+
+      <div class="console">
+        <div class="bar">
+          <div class="stat">本批題目：<b id="cnt">0</b>題（題庫共 <b id="pool">0</b> 題｜已抽 <b id="drawn">0</b> 題）</div>
+          <div class="acts">
+            <button class="btn primary" id="newset">換一批（重新洗牌）</button>
+            <button class="btn ghost" id="revealAll">顯示全部解答</button>
+            <button class="btn ghost" id="hideAll">收起全部解答</button>
+          </div>
+        </div>
+        <div class="filters">
+          <div class="frow">
+            <span class="fl">Topic</span>
+            <span id="topicBox"></span>
+          </div>
+          <div class="frow">
+            <span class="fl">難度</span>
+            <span id="lvBox"></span>
+          </div>
+          <div class="frow">
+            <span class="fl">抽題數</span>
+            <span id="numBox"></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="qlist"></div>
+    </section>
+
+    <!-- ══════════ By Topic 試題（PDF） ══════════ -->
+    <section id="pdfs" style="margin-top:56px">
+      <div class="sec-head">
+        <h2>By Topic 試題</h2>
+        <p>按 DSE Physics 課程課題分門別類。每個課題提供試題卷與詳解卷 PDF，點擊即可下載。</p>
+      </div>
+      <hr class="sec-rule">
+
+      <div class="pdf-grid">
+
+        <article class="pdf-topic" style="--acc:#b8860b">
+          <div class="pdf-sub">Mechanics</div>
+          <h3>Mechanics<span>力學</span></h3>
+          <div class="pdf-list">
+            <div class="pdf-item">
+              <div class="icn">PDF</div>
+              <div class="pdf-meta"><b>Mechanics — 試題卷</b><em>題目卷｜PDF</em></div>
+              <a class="dl" href="pdfs/mechanics-questions.pdf" download>下載</a>
+            </div>
+            <div class="pdf-item">
+              <div class="icn">PDF</div>
+              <div class="pdf-meta"><b>Mechanics — 詳解卷</b><em>逐步解與扣分位｜PDF</em></div>
+              <a class="dl" href="pdfs/mechanics-solutions.pdf" download>下載</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pdf-topic" style="--acc:#c2a34a">
+          <div class="pdf-sub">Waves</div>
+          <h3>Waves<span>波動</span></h3>
+          <div class="pdf-list">
+            <div class="pdf-item">
+              <div class="icn">PDF</div>
+              <div class="pdf-meta"><b>Waves — 試題卷</b><em>題目卷｜PDF</em></div>
+              <a class="dl" href="pdfs/waves-questions.pdf" download>下載</a>
+            </div>
+            <div class="pdf-item">
+              <div class="icn">PDF</div>
+              <div class="pdf-meta"><b>Waves — 詳解卷</b><em>逐步解與扣分位｜PDF</em></div>
+              <a class="dl" href="pdfs/waves-solutions.pdf" download>下載</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pdf-topic" style="--acc:#a8821f">
+          <div class="pdf-sub">Electricity and Magnetism</div>
+          <h3>Electricity and Magnetism<span>電學與磁學</span></h3>
+          <div class="pdf-list">
+            <div class="pdf-item">
+              <div class="icn">PDF</div>
+              <div class="pdf-meta"><b>Electricity and Magnetism — 試題卷</b><em>題目卷｜PDF</em></div>
+              <a class="dl" href="pdfs/em-questions.pdf" download>下載</a>
+            </div>
+            <div class="pdf-item">
+              <div class="icn">PDF</div>
+              <div class="pdf-meta"><b>Electricity and Magnetism — 詳解卷</b><em>逐步解與扣分位｜PDF</em></div>
+              <a class="dl" href="pdfs/em-solutions.pdf" download>下載</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pdf-topic" style="--acc:#cbb26a">
+          <div class="pdf-sub">Heat and Gases</div>
+          <h3>Heat and Gases<span>熱與氣體</span></h3>
+          <div class="pdf-list">
+            <div class="pdf-item">
+              <div class="icn">PDF</div>
+              <div class="pdf-meta"><b>Heat and Gases — 試題卷</b><em>題目卷｜PDF</em></div>
+              <a class="dl" href="pdfs/heat-questions.pdf" download>下載</a>
+            </div>
+            <div class="pdf-item">
+              <div class="icn">PDF</div>
+              <div class="pdf-meta"><b>Heat and Gases — 詳解卷</b><em>逐步解與扣分位｜PDF</em></div>
+              <a class="dl" href="pdfs/heat-solutions.pdf" download>下載</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pdf-topic" style="--acc:#8b6914">
+          <div class="pdf-sub">Radioactivity and Nuclear Energy</div>
+          <h3>Radioactivity<span>放射性與核能</span></h3>
+          <div class="pdf-list">
+            <div class="pdf-empty">
+              <div>試題 PDF 準備中，上載到 <b>pdfs/</b> 後即會顯示。</div>
+              <span>Coming Soon</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="pdf-topic" style="--acc:#9c7a12">
+          <div class="pdf-sub">Elective</div>
+          <h3>Astronomy and Atomic World<span>選修：天文學與原子世界</span></h3>
+          <div class="pdf-list">
+            <div class="pdf-empty">
+              <div>試題 PDF 準備中，上載到 <b>pdfs/</b> 後即會顯示。</div>
+              <span>Coming Soon</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span class="mark">最強 Physics by Jacky</span>
+    <p>Exam Bank · 隨機抽題溫習｜每題附應試技巧與扣分位</p>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var key = document.body.dataset.nav || '';
+    document.querySelectorAll('#navLinks a').forEach(function (a) {
+      if (a.dataset.nav === key) a.classList.add('on');
+    });
+    var on = document.querySelector('#navLinks a.on');
+    if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'center' });
+  })();
+</script>
+
+<script>
+/* ══════════ 題庫：t=單元 l=難度 ci=正確答案索引
+   first=見到題目第一步諗咩　kw=關鍵字 → 公式　st=逐步解　tr=扣分位 ══════════ */
+const BANK = [
+/* ── Circular Motion ── */
+{t:'Circular Motion',l:'b',
+ q:'質量 2.0 kg 小球以 1.5 m 繩在光滑水平面作等速率圓周運動，速率 3.0 m s⁻¹。求向心加速度與繩張力。',
+ o:['a_c = 3.0 m s⁻²、T = 6.0 N','a_c = 6.0 m s⁻²、T = 12 N','a_c = 6.0 m s⁻²、T = 6.0 N','a_c = 12 m s⁻²、T = 24 N'],ci:1,
+ first:'見到「光滑水平面 + 繩 + 等速率圓周運動」→ 水平面上重力與法向力互相抵消，唯一水平力就係繩張力，佢就係 centripetal force 嘅全部來源。',
+ kw:'「光滑水平面」→ 忽略摩擦力；「繩張力」→ T = mv²/r 直接列式。',
+ st:['列徑向方程 <span class="f">T = mv²/r</span>。',
+     '先算加速度 <span class="f">a_c = v²/r = 3.0² / 1.5 = 6.0 m s⁻²</span>，方向指向圓心。',
+     '再算張力 <span class="f">T = m a_c = 2.0 × 6.0 = 12 N</span>。'],
+ tr:'只寫 "centripetal force" 而唔指出係繩張力 → 該分不給；忘記標明方向指向圓心。'},
+
+{t:'Circular Motion',l:'b',
+ q:'速率不變、半徑不變，把速率加倍，繩張力變為原本幾倍？',
+ o:['1/2 倍','2 倍','4 倍','不變'],ci:2,
+ first:'見到「加倍／減半」即比值題。第一步先問：邊個量固定？m 與 r 固定 ⇒ 用 T = mv²/r 判斷 ∝ 關係。',
+ kw:'「速率加倍」「半徑不變」→ T ∝ v² ⇒ 變 4 倍。',
+ st:['寫出 <span class="f">T = mv²/r</span>。',
+     'm、r 固定 ⇒ <span class="f">T ∝ v²</span>。',
+     'v → 2v ⇒ T → 4T。'],
+ tr:'答「2 倍」係把平方關係當線性；仲有 r 加倍（v 固定）時 F_c ∝ 1/r 亦常考。'},
+
+{t:'Circular Motion',l:'b',
+ q:'唱片以 33⅓ rpm 等速率轉動，邊緣半徑 0.15 m。求角速度與邊緣點的線速率。',
+ o:['ω = 3.49 rad s⁻¹、v = 0.52 m s⁻¹','ω = 209 rad s⁻¹、v = 31 m s⁻¹','ω = 33.3 rad s⁻¹、v = 5.0 m s⁻¹','ω = 0.55 rad s⁻¹、v = 0.08 m s⁻¹'],ci:0,
+ first:'見到 rpm 三個字 → 第一步唔係計數，係單位換算：ω = 2πn/60。',
+ kw:'「rpm / revolutions per minute」→ ω = 2πn/60；若題目俾直徑，先 ÷2 取半徑。',
+ st:['<span class="f">ω = 2πn/60 = 2π(33.33)/60 = 3.49 rad s⁻¹</span>。',
+     '取半徑 <span class="f">r = 0.15 m</span>（唔好用直徑）。',
+     '線速率 <span class="f">v = rω = 0.15 × 3.49 = 0.52 m s⁻¹</span>。'],
+ tr:'漏 ÷60；用直徑代 r；以為唱片上各點速率相同（只有 ω 相同，v = rω 隨 r 變）。'},
+
+{t:'Circular Motion',l:'d',
+ q:'半徑 60 m 彎道、路面與水平成 15°。求汽車剛好不需摩擦力時的速率（g = 9.81 m s⁻²）。',
+ o:['12.6 m s⁻¹','15.7 m s⁻¹','25.0 m s⁻¹','60.0 m s⁻¹'],ci:0,
+ first:'見到「斜坡 / banked + 不需摩擦力」→ 即 design speed。第一步：坐標取在斜面上，寫豎直與徑向兩條方程再相除。',
+ kw:'「不需摩擦」→ N cosθ = mg、N sinθ = mv²/r ⇒ v = √(rg tanθ)。',
+ st:['豎直（垂直斜面方向）：<span class="f">N cosθ = mg</span>。',
+     '徑向（水平指向圓心）：<span class="f">N sinθ = mv²/r</span>。',
+     '相除消去 N 與 m：<span class="f">tanθ = v²/(rg)</span> ⇒ <span class="f">v = √(rg tanθ)</span>。',
+     '代入 <span class="f">v = √(60 × 9.81 × tan15°) = 12.6 m s⁻¹</span>。'],
+ tr:'直接寫 N = mg（有斜面時 N ≠ mg）；把 design speed 與有摩擦極限速率混淆。'},
+
+{t:'Circular Motion',l:'d',
+ q:'同上彎道（r = 60 m、θ = 15°、m = 1200 kg），車速 25 m s⁻¹。求所需最低摩擦係數 μ。',
+ o:['0.31','0.45','0.62','0.90'],ci:2,
+ first:'見到「車速 ≠ design speed + 求 μ」→ 第二步要判斷車向外滑定向內滑：v > v_design ⇒ 需要向心方向（沿斜面向下）嘅摩擦力。',
+ kw:'「最低摩擦係數」→ μ_min = f / N，其中 f = (mv²/r)cosθ − mg sinθ、N = mg cosθ + (mv²/r)sinθ。',
+ st:['所需 <span class="f">F_c = mv²/r = 1200 × 625 / 60 = 12500 N</span>。',
+     '垂直斜面：<span class="f">N = mg cosθ + F_c sinθ = 11371 + 3235 = 14606 N</span>。',
+     '沿斜面：<span class="f">f = F_c cosθ − mg sinθ = 12073 − 3047 = 9026 N</span>。',
+     '取比值 <span class="f">μ_min = f/N = 9026/14606 = 0.62</span>。'],
+ tr:'漏掉 N 的徑向修正項；用離心力解釋打滑（DSE 不接受）。'},
+
+{t:'Circular Motion',l:'d',
+ q:'質量 1.5 kg 小球以 2.0 m 繩繫於固定點，在水平面作等速率圓周運動，繩與鉛垂線成 30°。求繩張力。',
+ o:['7.2 N','12.7 N','17.0 N','25.5 N'],ci:2,
+ first:'見到「繩與鉛垂線成角 + 水平圓周」→ 即 conical pendulum。第一步：分解張力，豎直方向無加速度 ⇒ 平衡。',
+ kw:'「string makes angle θ with the vertical」→ T cosθ = mg、T sinθ = mω²r。',
+ st:['豎直：<span class="f">T cosθ = mg</span>。',
+     '<span class="f">T = mg/cosθ = 1.5 × 9.81 / cos30° = 17.0 N</span>。',
+     '若要求 ω 或週期，再寫水平式 <span class="f">T sinθ = mω²r</span>，其中 r = L sinθ = 1.00 m。'],
+ tr:'誤以為 T = mg（只有 θ → 0 才近似成立）；用繩長 L 當半徑（r = L sinθ）。'},
+
+{t:'Circular Motion',l:'c',
+ q:'小球以 0.80 m 繩在鉛垂面作圓周運動。求能完成整圈時最高點的最低速率（g = 9.81 m s⁻²）。',
+ o:['1.40 m s⁻¹','2.80 m s⁻¹','3.43 m s⁻¹','6.26 m s⁻¹'],ci:1,
+ first:'見到「鉛垂面 + 完成整圈 / 剛好不失接觸」→ 第一步寫出最高點嘅徑向方程，並設臨界時張力（或法向力）為零。',
+ kw:'「just loses contact / string just slack / minimum speed」→ T = 0 ⇒ mg = mv²/r ⇒ v_min = √(gr)。',
+ st:['最高點徑向（向下指向圓心）：<span class="f">T + mg = mv²/r</span>。',
+     '臨界 T = 0 ⇒ <span class="f">mg = mv²/r</span>。',
+     '<span class="f">v_min = √(gr) = √(9.81 × 0.80) = 2.80 m s⁻¹</span>。'],
+ tr:'寫成 T − mg 而方向搞反；另外常見整題要求再求最低點，記住高度差係直徑 2r（v_bot² = v_top² + 4gr）。'},
+
+{t:'Circular Motion',l:'c',
+ q:'同一鉛垂圓周（m = 0.50 kg、r = 0.80 m）。最高點速率為 2.0 m s⁻¹，判斷能否完成整圈。',
+ o:['能，因速率足以維持圓周','不能，因 v_top < √(gr) = 2.80 m s⁻¹','不能，因重力不足提供向心力','能，只要繩夠短'],ci:1,
+ first:'見到「判斷能否完成整圈」→ 唔係計數先，係比較：v_top 與 √(gr) 邊個大。',
+ kw:'比較量 √(gr) = 2.80 m s⁻¹；若 v_top 較小，所需 mv²/r < mg，繩無法推球。',
+ st:['臨界值 <span class="f">√(gr) = √(9.81 × 0.80) = 2.80 m s⁻¹</span>。',
+     '題目 v_top = 2.0 m s⁻¹ &lt; 2.80 ⇒ 不足以完成整圈。',
+     '驗證：所需向心力 <span class="f">mv²/r = 0.50 × 4.0/0.80 = 2.5 N</span>，但重力 mg = 4.9 N，重力超過所需 ⇒ 小球未到最高點已離開圓軌跡。'],
+ tr:'直接用 v²/r 代入「同一個 v」計最低點（速率已變）；只答「不能」而無數字比較 → 唔夠分。'},
+
+/* ── Mechanics ── */
+{t:'Mechanics',l:'b',
+ q:'10 kg 物體受 40 N 淨力。求加速度。',
+ o:['0.25 m s⁻²','4.0 m s⁻²','40 m s⁻²','400 m s⁻²'],ci:1,
+ first:'見到「淨力 + 質量」→ 即 Newton\'s second law，一條式 F = ma 直出。',
+ kw:'「net force / resultant force」→ F = ma；注意單位 N 與 kg 對應 m s⁻²。',
+ st:['<span class="f">a = F/m</span>。',
+     '<span class="f">a = 40 / 10 = 4.0 m s⁻²</span>，方向與淨力相同。'],
+ tr:'把某一個力當成淨力（未先求合力）；質量單位用 g 而非 kg。'},
+
+{t:'Mechanics',l:'d',
+ q:'2 kg 石頭由 20 m 高靜止落下（g = 9.81 m s⁻²，忽略空氣阻力）。求落地速率。',
+ o:['14 m s⁻¹','19.8 m s⁻¹','31 m s⁻¹','392 m s⁻¹'],ci:1,
+ first:'見到「下落高度 + 求速率」→ 首選能量守恆或 v² = u² + 2as，避免先求時間。',
+ kw:'「由靜止落下」→ u = 0；「求速率不問時間」→ v² = u² + 2as 或 mgh = ½mv²。',
+ st:['能量法：<span class="f">mgh = ½mv²</span>，m 可消去。',
+     '<span class="f">v = √(2gh) = √(2 × 9.81 × 20) = 19.8 m s⁻¹</span>。',
+     '或運動方程：<span class="f">v² = 0 + 2(9.81)(20)</span>，結果相同。'],
+ tr:'忘記 u = 0 而多計一項；用 g = 10 但題目要求 9.81（依題目指定）。'},
+
+{t:'Mechanics',l:'d',
+ q:'動量守恆：2.0 kg 以 3.0 m s⁻¹ 向右撞靜止 1.0 kg，碰撞後黏在一起。求共同速率。',
+ o:['1.0 m s⁻¹','1.5 m s⁻¹','2.0 m s⁻¹','3.0 m s⁻¹'],ci:2,
+ first:'見到「碰撞 + 黏在一起」→ 即完全非彈性碰撞：動量守恆但動能唔守恆。第一步只寫動量守恆式。',
+ kw:'「collide and stick together」→ m₁u₁ + m₂u₂ = (m₁+m₂)v；切勿用能量守恆。',
+ st:['動量守恆：<span class="f">m₁u₁ + m₂u₂ = (m₁+m₂)v</span>。',
+     '<span class="f">2.0 × 3.0 + 1.0 × 0 = (3.0)v</span>。',
+     '<span class="f">v = 6.0 / 3.0 = 2.0 m s⁻¹</span>，方向同原本相同。'],
+ tr:'用能量守恆求解；忘記方向正負號（一維碰撞亦要定正方向）。'},
+
+{t:'Mechanics',l:'d',
+ q:'0.50 kg 球以 4.0 m s⁻¹ 垂直撞牆後以 3.0 m s⁻¹ 反彈。接觸時間 0.10 s。求牆對球的平均力（取原方向為正）。',
+ o:['5.0 N','20 N','35 N','70 N'],ci:2,
+ first:'見到「反彈 + 接觸時間」→ 即 impulse：力 = 動量變化率，而且動量有方向，符號係關鍵。',
+ kw:'「average force / impact time」→ F = Δp/Δt = m(v − u)/Δt，v 與 u 方向相反要異號。',
+ st:['取原方向為正：u = +4.0，v = −3.0。',
+     '<span class="f">Δp = m(v − u) = 0.50(−3.0 − 4.0) = −3.5 kg m s⁻¹</span>。',
+     '<span class="f">F = Δp/Δt = −3.5 / 0.10 = −35 N</span>，即大小 35 N、方向與原方向相反。'],
+ tr:'反彈速率當正號（會得 5 N）；只答大小唔講方向，DSE 通常要求指明方向。'},
+
+/* ── Waves ── */
+{t:'Waves',l:'b',
+ q:'繩波的 frequency 為 4.0 Hz、wavelength 1.5 m。求波速。',
+ o:['0.38 m s⁻¹','2.7 m s⁻¹','6.0 m s⁻¹','6.0 Hz m'],ci:2,
+ first:'見到「frequency + wavelength」→ 立即用 v = fλ，唔需要諗波形。',
+ kw:'「frequency / wavelength」→ v = fλ；波速單位必須 m s⁻¹。',
+ st:['<span class="f">v = fλ</span>。',
+     '<span class="f">v = 4.0 × 1.5 = 6.0 m s⁻¹</span>。'],
+ tr:'把 Hz 與 m 相乘後單位寫錯；把 v 與週期混淆（T = 1/f = 0.25 s）。'},
+
+{t:'Waves',l:'d',
+ q:'同一列波由深水到淺水，波速減半。下列何者正確？',
+ o:['frequency 減半、wavelength 減半','frequency 不變、wavelength 減半','frequency 減半、wavelength 不變','frequency 與 wavelength 都不變'],ci:1,
+ first:'見到「由一個介質到另一個介質」→ 第一步：frequency 由波源決定，永遠不變；只有 v 與 λ 一齊變。',
+ kw:'「refraction / 由深水到淺水」→ f 不變，v = fλ ⇒ v 與 λ 成正比。',
+ st:['波源不變 ⇒ <span class="f">f 不變</span>。',
+     '<span class="f">v = fλ</span>，f 固定 ⇒ v ∝ λ。',
+     'v 減半 ⇒ <span class="f">λ 亦減半</span>。'],
+ tr:'以為折射會改變頻率（最常見失分）；同時要知折射時波速改變係因為介質不同。'},
+
+{タイム:t:'Waves',l:'d',
+ q:'雙縫干涉：某點到兩狹縫的 path difference 為 3λ。該點出現甚麼？',
+ o:['亮紋（constructive）','暗紋（destructive）','半亮半暗','無法判斷'],ci:0,
+ first:'見到「雙縫 + path difference」→ 第一步把光程差寫成 mλ 或 (m+½)λ 的形式，整數倍即亮紋。',
+ kw:'「path difference = mλ」→ 加強（bright）；「= (m+½)λ」→ 抵消（dark）。',
+ st:['3λ = mλ，其中 m = 3（整數）。',
+     '整數倍波長 ⇒ 兩波同相 ⇒ <span class="f">constructive interference</span>，出現亮紋。',
+     '中央亮紋對應 m = 0（路徑差為零）。'],
+ tr:'把 3λ 誤判為 (m+½)λ；混淆亮暗條件，或忘記中央亮紋 m = 0。'},
+
+/* ── Electricity and Magnetism ── */
+{t:'Electricity and Magnetism',l:'b',
+ q:'兩電阻 3 Ω 與 6 Ω 串聯，接上 9 V 電池（內電阻忽略）。求電流。',
+ o:['0.5 A','1.0 A','1.5 A','3.0 A'],ci:1,
+ first:'見到「串聯」→ 第一步把電阻相加求總電阻，再用 V = IR。串聯電流處處相同。',
+ kw:'「in series」→ R_total = R₁ + R₂；「in parallel」→ 1/R = 1/R₁ + 1/R₂。',
+ st:['總電阻 <span class="f">R = 3 + 6 = 9 Ω</span>。',
+     '<span class="f">I = V/R = 9 / 9 = 1.0 A</span>。',
+     '兩電阻上電壓分別為 3 V 與 6 V，加起來等於 9 V（可作驗算）。'],
+ tr:'串聯誤用並聯公式；以為串聯各電阻電壓相同（實際只有電流相同）。'},
+
+{t:'Electricity and Magnetism',l:'d',
+ q:'電池 e.m.f. = 12 V、內電阻 0.50 Ω，接上 5.5 Ω 外電阻。求 terminal voltage。',
+ o:['10.5 V','11.0 V','11.5 V','12.0 V'],ci:1,
+ first:'見到「e.m.f. + 內電阻」→ 第一步先求電流，再用 V = ε − Ir 求 terminal voltage。',
+ kw:'「internal resistance」→ 總電阻 = 外電阻 + 內電阻；V = ε − Ir。',
+ st:['總電阻 <span class="f">R = 5.5 + 0.50 = 6.0 Ω</span>。',
+     '電流 <span class="f">I = ε/R = 12 / 6.0 = 2.0 A</span>。',
+     'Terminal voltage <span class="f">V = ε − Ir = 12 − (2.0)(0.50) = 11 V</span>。'],
+ tr:'直接把 ε 當成 terminal voltage；忘記內電阻「消耗」1 V 而答 12 V。'},
+
+{t:'Electricity and Magnetism',l:'d',
+ q:'0.80 m 長導線通 4.0 A 電流，置於 0.25 T 均勻磁場中，導線與磁場垂直。求所受磁力。',
+ o:['0.20 N','0.80 N','1.60 N','8.0 N'],ci:1,
+ first:'見到「電流 + 磁場 + 導線長度」→ 即 F = BIL sinθ；題目講「垂直」即 sinθ = 1。',
+ kw:'「perpendicular to the magnetic field」→ sinθ = 1；方向用 Fleming\'s left-hand rule。',
+ st:['<span class="f">F = BIL sinθ</span>，θ = 90°。',
+     '<span class="f">F = 0.25 × 4.0 × 0.80 × 1 = 0.80 N</span>。',
+     '方向：Fleming\'s left-hand rule（拇指＝力、食指＝磁場、中指＝電流）。'],
+ tr:'漏 sinθ 而亂假設角度；導線平行磁場時受力為零這一點常考。'},
+
+{t:'Electricity and Magnetism',l:'d',
+ q:'一個線圈置於磁場中，磁通量在 0.20 s 內由 0.60 Wb 均勻減至 0.20 Wb（線圈 50 匝）。求 induced e.m.f. 大小。',
+ o:['0.40 V','2.0 V','100 V','200 V'],ci:2,
+ first:'見到「磁通量變化 + 時間 + 線圈匝數」→ 即 Faraday\'s law；第一步抄低 ΔΦ 同 Δt，唔好漏 N。',
+ kw:'「flux changes / N turns」→ ε = N ΔΦ/Δt；方向用 Lenz\'s law（反抗原變化）。',
+ st:['<span class="f">ΔΦ = 0.60 − 0.20 = 0.40 Wb</span>。',
+     '<span class="f">ε = N ΔΦ/Δt = 50 × 0.40 / 0.20 = 100 V</span>。',
+     '方向：感應電流產生嘅磁場反抗磁通量減少 ⇒ 與原磁場同向。'],
+ tr:'漏乘 N（會得 2 V）；Lenz\'s law 方向答「同向」而無講明係反抗變化。'},
+
+/* ── Heat and Gases ── */
+{t:'Heat and Gases',l:'b',
+ q:'加熱 2.0 kg 水，比熱容量 4200 J kg⁻¹ K⁻¹，溫度由 20 °C 升至 60 °C。求所需能量。',
+ o:['8.4 × 10³ J','1.7 × 10⁵ J','3.4 × 10⁵ J','5.0 × 10⁵ J'],ci:2,
+ first:'見到「升溫 + 比熱容量」→ 即 Q = mcΔT。第一步只取溫度差 ΔT，唔好代入絕對溫度。',
+ kw:'「specific heat capacity c」→ Q = mcΔT；ΔT 用 °C 或 K 差值相同。',
+ st:['<span class="f">ΔT = 60 − 20 = 40 K</span>（或 40 °C）。',
+     '<span class="f">Q = mcΔT = 2.0 × 4200 × 40</span>。',
+     '<span class="f">Q = 3.36 × 10⁵ J ≈ 3.4 × 10⁵ J</span>。'],
+ tr:'把 60 °C 直接當 ΔT（會得 5.0 × 10⁵ J）；混淆 heat capacity C 與 specific heat capacity c。'},
+
+{t:'Heat and Gases',l:'d',
+ q:'0.50 kg 冰在 0 °C 完全熔化成 0 °C 水。冰的 specific latent heat of fusion = 3.34 × 10⁵ J kg⁻¹。求所需能量。',
+ o:['1.7 × 10⁵ J','3.3 × 10⁵ J','6.7 × 10⁵ J','0 J（溫度不變）'],ci:0,
+ first:'見到「熔化 / 沸騰 + 溫度不變」→ 即潛熱，用 Q = mℓ，唔可以用 mcΔT。',
+ kw:'「melts / boils at constant temperature」→ Q = mℓ（ℓ 為 specific latent heat）。',
+ st:['物質狀態改變期間溫度固定 ⇒ <span class="f">Q = mℓ</span>。',
+     '<span class="f">Q = 0.50 × 3.34 × 10⁵ = 1.67 × 10⁵ J ≈ 1.7 × 10⁵ J</span>。'],
+ tr:'用 mcΔT 而 ΔT = 0 得出 0 J；若題目包含「先升溫後熔化」，要兩段能量相加。'},
+
+{t:'Heat and Gases',l:'d',
+ q:'定量氣體在等壓下由 27 °C 加熱至 127 °C。體積變為原本幾倍？',
+ o:['1.21 倍','1.40 倍','4.70 倍','不變'],ci:0,
+ first:'見到「氣體 + 等壓 + 溫度」→ 即 Charles\' law，但第一步必須把 °C 換成 Kelvin。',
+ kw:'「constant pressure」→ V/T = 常數；「gas law」→ T 必須用 K（K = °C + 273）。',
+ st:['換算：<span class="f">T₁ = 300 K、T₂ = 400 K</span>。',
+     '<span class="f">V₁/T₁ = V₂/T₂</span> ⇒ <span class="f">V₂/V₁ = 400/300 = 1.33</span>。',
+     '（若用 °C 直接相除會得 127/27 = 4.70，完全錯誤。）'],
+ tr:'用 °C 代入氣體方程；把 gas law 與 mcΔT 混用。'},
+
+{t:'Heat and Gases',l:'d',
+ q:'下列關於 specific heat capacity 與內能的敘述，何者正確？',
+ o:['吸收熱能後，物體溫度必定上升','溫度相同的兩個物體，內能必定相同','內能包括分子隨機運動的動能與分子間勢能','熔化期間物體不吸收熱能'],ci:2,
+ first:'見到「概念判斷題」→ 逐個選項搵反例。關鍵字「必定」「相同」通常就係陷阱。',
+ kw:'「internal energy」→ 分子隨機動能 + 分子間勢能；「state change」→ 吸熱但溫度不變。',
+ st:['A 錯：熔化／沸騰期間吸熱但溫度不變。',
+     'B 錯：內能同時取決於質量、狀態與分子數，兩個溫度相同嘅物體可以內能差很遠。',
+     'C 對：內能係分子隨機動能與分子間勢能之和。',
+     'D 錯：潛熱正正就係狀態改變時吸收（或放出）嘅能量。'],
+ tr:'把「溫度」與「內能」當成同一回事；忽略狀態改變時嘅潛熱。'},
+
+/* ── Radioactivity ── */
+{t:'Radioactivity',l:'b',
+ q:'放射性樣本原有 8.0 × 10¹⁰ 個未衰變原子核，half-life 為 5.0 日。10 日後剩多少？',
+ o:['8.0 × 10⁹','2.0 × 10¹⁰','4.0 × 10¹⁰','0'],ci:1,
+ first:'見到「half-life + 時間」→ 第一步計「經過幾個半衰期」，n = t / t½，之後用 (½)ⁿ。',
+ kw:'「half-life」→ 經 n 個半衰期剩 (½)ⁿ；帶背景輻射嘅題目要先扣 background count。',
+ st:['<span class="f">n = 10 / 5.0 = 2</span> 個半衰期。',
+     '剩餘比例 <span class="f">(½)² = ¼</span>。',
+     '<span class="f">N = 8.0 × 10¹⁰ × ¼ = 2.0 × 10¹⁰</span>。'],
+ tr:'線性處理（以為 2 個半衰期剩 0）；忘記扣背景計數而把讀數直接當樣本衰變率。'},
+
+{t:'Radioactivity',l:'d',
+ q:'下列關於 alpha、beta、gamma 輻射的比較，何者正確？',
+ o:['alpha 電離能力最弱、穿透能力最強','beta 是氦原子核，帶 +2 電荷','gamma 是電磁波，不帶電、穿透能力最強','三者在磁場中都不會偏轉'],ci:2,
+ first:'見到「三種輻射比較」→ 記住一句口訣：電離能力 alpha > beta > gamma，穿透能力就完全相反。',
+ kw:'「penetrating power / ionising power」→ 兩者次序相反；帶電粒子在磁場中偏轉，gamma 不偏轉。',
+ st:['alpha = 氦核（+2e）：電離最強、穿透最弱（一張紙可擋）。',
+     'beta = 高速電子（−e）：中間，幾 mm 鋁可擋。',
+     'gamma = 高頻電磁波：不帶電，穿透最強，厚鉛才能明顯衰減。',
+     '因此只有 gamma 不帶電 ⇒ 在磁場中不偏轉，答案為 C。'],
+ tr:'把電離能力與穿透能力次序調轉；誤以為 beta 係質子或 alpha 唔帶電。'},
+
+{t:'Radioactivity',l:'d',
+ q:'某輻射源計數率 400 s⁻¹（已扣背景），背景計數率 20 s⁻¹。加上屏蔽後總計數率為 120 s⁻¹。屏蔽後樣本淨計數率為？',
+ o:['100 s⁻¹','120 s⁻¹','300 s⁻¹','380 s⁻¹'],ci:0,
+ first:'見到「計數率 + 背景」→ 第一步永遠係「先扣背景」。總讀數 = 樣本 + 背景。',
+ kw:'「background count rate」→ 樣本淨計數 = 總計數 − 背景。',
+ st:['屏蔽後總計數率 120 s⁻¹，其中背景佔 20 s⁻¹。',
+     '<span class="f">淨計數率 = 120 − 20 = 100 s⁻¹</span>。',
+     '若要比較衰減比例，應與原始淨值 400 − 20 = 380 s⁻¹ 比較。'],
+ tr:'唔扣背景（答 120 s⁻¹）；用未扣背景嘅 400 s⁻¹ 作分母計比例。'},
+
+/* ── Astronomy / Atomic（選修） ── */
+{t:'Astronomy',l:'d',
+ q:'地球公轉軌道半徑約 1.5 × 10¹¹ m，公轉週期約 3.15 × 10⁷ s。估算太陽質量（G = 6.67 × 10⁻¹¹ N m² kg⁻²）。',
+ o:['2.0 × 10³⁰ kg','6.0 × 10²⁴ kg','1.5 × 10¹¹ kg','3.3 × 10⁵ kg'],ci:0,
+ first:'見到「軌道半徑 + 週期 + 求中心天體質量」→ 第一步令萬有引力等於向心力，再用 T 消去 v。',
+ kw:'「orbital radius r、period T、central mass M」→ GMm/r² = mv²/r = mω²r，T = 2π/ω。',
+ st:['<span class="f">GMm/r² = m(2π/T)²r</span>。',
+     '整理：<span class="f">M = 4π²r³/(GT²)</span>。',
+     '代入 <span class="f">M = 4π²(1.5 × 10¹¹)³ / [(6.67 × 10⁻¹¹)(3.15 × 10⁷)²] ≈ 2.0 × 10³⁰ kg</span>。'],
+ tr:'用地球半徑當軌道半徑（r 必須量至地心）；忘記 T 要換成秒。'},
+
+{t:'Astronomy',l:'c',
+ q:'photoelectric effect：某金屬 work function 為 2.0 eV，以 3.0 eV 光子照射。求 emitted electron 的最大動能。',
+ o:['1.0 eV','2.0 eV','3.0 eV','5.0 eV'],ci:0,
+ first:'見到「work function + 光子能量」→ 即 photoelectric equation；第一步做減法，唔係加法。',
+ kw:'「work function / stopping potential」→ hf = Φ + K_max；K_max = hf − Φ。',
+ st:['<span class="f">K_max = hf − Φ</span>。',
+     '<span class="f">K_max = 3.0 − 2.0 = 1.0 eV</span>。',
+     '若光子能量小於 work function，則無論光強多大都不會發射電子（頻率必須足夠高）。'],
+ tr:'把兩者相加；誤以為增加光強可令低頻光產生光電流（唔可以）。'}
+];
+
+(function () {
+  var TOPIC_COLOR = {
+    'Circular Motion': '#b8860b',
+    'Mechanics': '#a8821f',
+    'Waves': '#c2a34a',
+    'Electricity and Magnetism': '#9c7a12',
+    'Heat and Gases': '#cbb26a',
+    'Radioactivity': '#8b6914',
+    'Astronomy': '#a3760a'
+  };
+  var LV_LABEL = { b: '基礎', d: 'DSE 標準', c: '挑戰' };
+  var LV_NAME = { b: 'Foundation', d: 'DSE Standard', c: 'Challenge' };
+  var LETTERS = 'ABCD';
+  var topics = [], lvs = ['b', 'd', 'c'];
+  BANK.forEach(function (x) { if (topics.indexOf(x.t) < 0) topics.push(x.t); });
+
+  var state = {
+    topics: topics.slice(),
+    lvs: lvs.slice(),
+    n: 8,
+    drawn: {},
+    cards: [],
+    seq: 0
+  };
+
+  var elList = document.getElementById('qlist');
+  var elCnt = document.getElementById('cnt');
+  var elPool = document.getElementById('pool');
+  var elDrawn = document.getElementById('drawn');
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  function filtered() {
+    return BANK.filter(function (x) {
+      return state.topics.indexOf(x.t) >= 0 && state.lvs.indexOf(x.l) >= 0;
+    });
+  }
+
+  function pick(pool, n) {
+    var shuffled = shuffle(pool.slice());
+    var out = shuffled.filter(function (x) {
+      var k = x.t + '|' + x.q;
+      if (state.drawn[k]) return false;
+      state.drawn[k] = 1; return true;
+    });
+    if (out.length < n) {                       /* 未抽過嘅唔夠 ⇒ 重設紀錄再抽 */
+      out = shuffled.slice();
+    }
+    return out.slice(0, Math.min(n, out.length));
+  }
+
+  /* 選項隨機重新排列，避免背答案 */
+  function scramble(item) {
+    var idx = shuffle(item.o.map(function (_, i) { return i; }));
+    return {
+      src: item,
+      opts: idx.map(function (i) { return item.o[i]; }),
+      ci: idx.indexOf(item.ci)
+    };
+  }
+
+  function buildControls() {
+    var tb = document.getElementById('topicBox'), lb = document.getElementById('lvBox'), nb = document.getElementById('numBox');
+    tb.innerHTML = '';
+    topics.forEach(function (t) {
+      var lab = document.createElement('label');
+      lab.className = 'chk on';
+      lab.innerHTML = '<input type="checkbox" checked value="' + t + '">' + t;
+      lab.querySelector('input').addEventListener('change', function (e) {
+        var v = e.target.value;
+        if (e.target.checked) { if (state.topics.indexOf(v) < 0) state.topics.push(v); }
+        else { state.topics = state.topics.filter(function (x) { return x !== v; }); }
+        lab.classList.toggle('on', e.target.checked);
+        refreshPool();
+      });
+      tb.appendChild(lab);
+    });
+    lb.innerHTML = '';
+    lvs.forEach(function (k) {
+      var lab = document.createElement('label');
+      lab.className = 'chk on';
+      lab.innerHTML = '<input type="checkbox" checked value="' + k + '">' + LV_LABEL[k];
+      lab.querySelector('input').addEventListener('change', function (e) {
+        var v = e.target.value;
+        if (e.target.checked) { if (state.lvs.indexOf(v) < 0) state.lvs.push(v); }
+        else { state.lvs = state.lvs.filter(function (x) { return x !== v; }); }
+        lab.classList.toggle('on', e.target.checked);
+        refreshPool();
+      });
+      lb.appendChild(lab);
+    });
+    nb.innerHTML = '';
+    [5, 8, 12, 20].forEach(function (n) {
+      var lab = document.createElement('label');
+      lab.className = 'chk' + (n === state.n ? ' on' : '');
+      lab.innerHTML = '<input type="radio" name="qnum" value="' + n + '"' + (n === state.n ? ' checked' : '') + '>' + n + ' 題';
+      lab.querySelector('input').addEventListener('change', function () {
+        state.n = n;
+        Array.prototype.forEach.call(nb.children, function (c) { c.classList.toggle('on', +c.querySelector('input').value === n); });
+        newSet();
+      });
+      nb.appendChild(lab);
+    });
+  }
+
+  function refreshPool() {
+    elPool.textContent = filtered().length;
+    newSet();
+  }
+
+  function newSet() {
+    var pool = filtered();
+    if (!pool.length) {
+      elList.innerHTML = '<div class="empty">目前篩選條件下冇題目，請至少揀選一個 Topic 同一個難度。</div>';
+      elCnt.textContent = 0; elPool.textContent = 0; elDrawn.textContent = 0;
+      return;
+    }
+    if (Object.keys(state.drawn).length > pool.length * 0.7) state.drawn = {};
+    state.cards = pick(pool, state.n).map(scramble);
+    state.seq = 0;
+    render();
+  }
+
+  function esc(s) { return s; }
+
+  function render() {
+    elCnt.textContent = state.cards.length;
+    elPool.textContent = filtered().length;
+    elDrawn.textContent = Object.keys(state.drawn).length;
+    elList.innerHTML = state.cards.map(function (c, i) {
+      var x = c.src;
+      var acc = TOPIC_COLOR[x.t] || '#b8860b';
+      var opts = c.opts.map(function (o, oi) {
+        return '<li><span class="k">' + LETTERS[oi] + '</span><span>' + o + '</span></li>';
+      }).join('');
+      return '<article class="qcard" style="--acc:' + acc + '">' +
+        '<div class="qmeta">' +
+          '<span class="idx">Q' + (i + 1) + '</span>' +
+          '<span class="chip-lv ' + x.l + '">' + LV_NAME[x.l] + '</span>' +
+          '<span class="chip-topic">' + x.t + '</span>' +
+        '</div>' +
+        '<p class="qbody">' + x.q + '</p>' +
+        '<ul class="opts">' + opts + '</ul>' +
+        '<div class="qacts">' +
+          '<button class="aBtn" data-act="ans" data-i="' + i + '">看答案</button>' +
+          '<button class="sBtn" data-act="sol" data-i="' + i + '">解題步驟與應試技巧</button>' +
+        '</div>' +
+        '<div class="reveal" data-rev="' + i + '">' +
+          '<div class="ansline">答案：' + LETTERS[c.ci] + '　' + c.opts[c.ci] + '</div>' +
+          '<p class="blk"><span class="ttl">第一步應該諗咩</span>' + x.first + '</p>' +
+          '<p class="kw"><b>關鍵字 → 公式：</b>' + x.kw + '</p>' +
+          '<p class="blk" style="margin-top:13px"><span class="ttl">逐步解</span>' +
+            x.st.map(function (s) { return '<span class="step">• ' + s + '</span>'; }).join('') + '</p>' +
+          '<div class="trap"><b>扣分位：</b>' + x.tr + '</div>' +
+        '</div>' +
+      '</article>';
+    }).join('');
+  }
+
+  elList.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-act]');
+    if (!b) return;
+    var i = b.dataset.i;
+    var rev = elList.querySelector('.reveal[data-rev="' + i + '"]');
+    if (!rev) return;
+    if (b.dataset.act === 'ans') {
+      rev.classList.add('show');
+      b.textContent = '隱藏答案';
+      var sol = elList.querySelector('button[data-act="sol"][data-i="' + i + '"]');
+      if (sol) sol.textContent = '收起步驟';
+    } else {
+      var open = rev.classList.toggle('show');
+      b.textContent = open ? '收起步驟' : '解題步驟與應試技巧';
+      var an = elList.querySelector('button[data-act="ans"][data-i="' + i + '"]');
+      if (an) an.textContent = open ? '隱藏答案' : '看答案';
+    }
+  });
+
+  document.getElementById('newset').addEventListener('click', newSet);
+  document.getElementById('revealAll').addEventListener('click', function () {
+    elList.querySelectorAll('.reveal').forEach(function (r) { r.classList.add('show'); });
+    elList.querySelectorAll('.aBtn').forEach(function (b) { b.textContent = '隱藏答案'; });
+    elList.querySelectorAll('.sBtn').forEach(function (b) { b.textContent = '收起步驟'; });
+  });
+  document.getElementById('hideAll').addEventListener('click', function () {
+    elList.querySelectorAll('.reveal').forEach(function (r) { r.classList.remove('show'); });
+    elList.querySelectorAll('.aBtn').forEach(function (b) { b.textContent = '看答案'; });
+    elList.querySelectorAll('.sBtn').forEach(function (b) { b.textContent = '解題步驟與應試技巧'; });
+  });
+
+  buildControls();
+  elPool.textContent = filtered().length;
+  newSet();
+})();
+</script>
+</body>
+</html>
