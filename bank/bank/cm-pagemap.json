@@ -1,0 +1,40 @@
+{
+  "note": "Circular Motion.pdf (dse.life FM7) 頁序對照表。呢份 PDF 嘅物理頁序同原檔頁碼完全唔同 —— 所有轉錄同編目必須按「原檔頁碼」，唔可以按 PDF 頁序。",
+  "pdf": "Circular Motion.pdf",
+  "pdf_pages": 19,
+  "verified_by": "逐頁頁首方框掃描核實（_work/headers.mjs 產出 _work/cm/_hdr_A.png / _hdr_B.png）",
+  "map": [
+    { "pdf_page": 1,  "left": "課程範圍頁（官方 syllabus 目錄，無頁碼方框）", "right": "M/01" },
+    { "pdf_page": 2,  "left": "M/02", "right": "M/03", "note": "左欄有 Q5 <HKAL 1989 Paper I-8>；右欄有 Q9 <HKAL 1997 Paper IIA-4>" },
+    { "pdf_page": 3,  "left": "M/04", "right": "M/05", "note": "左欄有 Q12 <HKAL 2000 Paper IIA-8>；右欄有 Q15 <HKAL 2010 Paper IIA-8>" },
+    { "pdf_page": 4,  "left": "M/06", "right": "M/07", "note": "M/06 有「Part B : Supplemental exercise」；M/07 有 Q24（時鐘分針角速度）" },
+    { "pdf_page": 5,  "left": "M/08", "right": "M/09", "note": "M/08 有「Part C : HKDSE examination questions」；M/09 有 Q31 <HKDSE 2016 Paper IA-13>" },
+    { "pdf_page": 6,  "left": "QS/03", "right": "QS/04", "note": "長題 MS" },
+    { "pdf_page": 7,  "left": "QS/01", "right": "QS/02", "note": "長題 MS；左欄有 HKEAA 免責聲明" },
+    { "pdf_page": 8,  "left": "Q/10 續（<HKDSE 2019 Paper IB-4>，無頁首方框）", "right": "（空白）" },
+    { "pdf_page": 9,  "left": "Q/08", "right": "Q/09", "note": "左欄 Q8 <HKDSE 2015 Paper IB-3>；右欄 Q9 <HKDSE 2017 Paper IB-5>" },
+    { "pdf_page": 10, "left": "Q/06", "right": "Q/07", "note": "左欄 Q6（飛機機翼傾斜 36°）；右欄有「Part C : HKDSE examination questions」" },
+    { "pdf_page": 11, "left": "Q/04", "right": "Q/05", "note": "左欄有「Part B : Supplemental exercise」；右欄 Q5（1800 kg 汽車轉彎）" },
+    { "pdf_page": 12, "left": "Q/02", "right": "Q/03", "note": "左欄 Q2 <HKAL 2003 Paper I-1>（0.5 kg 轉盤）；右欄 Q3 <HKAL 2008 Paper I-5>" },
+    { "pdf_page": 13, "left": "（空白）", "right": "Q/01", "note": "Q/01 = 公式表 + 數據表 + Part A 標題 + 長題 Q1" },
+    { "pdf_page": 14, "left": "MS/05", "right": "MS/06", "note": "MC 解法 Q19–Q26 / Q27–Q31" },
+    { "pdf_page": 15, "left": "MS/03", "right": "MS/04", "note": "MC 解法 Q9–Q13 / Q14–Q18" },
+    { "pdf_page": 16, "left": "MS/01", "right": "MS/02", "note": "左欄有 MC 答案表（1–34 題）+ 解法 Q1–Q3；右欄解法 Q4–Q8" },
+    { "pdf_page": 17, "left": "MC Q33 <HKDSE 2020 Paper IA-8>（正文缺失）", "right": "MC Q34 <HKDSE 2020 Paper IA-9>", "note": "無頁首方框，屬 M/09 之後嘅續頁" },
+    { "pdf_page": 18, "left": "QS/05", "right": "QS/06", "note": "長題 MS：Q6(d)(e)、Q7、Q8(a) / Q8(b)(c)、Q9" },
+    { "pdf_page": 19, "left": "Q/10 MS 續頁（HKDSE 1M/1A 格式）", "right": "（空白）" }
+  ],
+  "document_order": {
+    "MC_questions":  ["M/01","M/02","M/03","M/04","M/05","M/06","M/07","M/08","M/09","(p17 續頁)"],
+    "MC_solutions":  ["MS/01","MS/02","MS/03","MS/04","MS/05","MS/06"],
+    "long_questions":["Q/01","Q/02","Q/03","Q/04","Q/05","Q/06","Q/07","Q/08","Q/09","Q/10"],
+    "long_solutions":["QS/01","QS/02","QS/03","QS/04","QS/05","QS/06","(p19 續頁)"]
+  },
+  "mc_answer_key": {
+    "1":"C","2":"A","3":"D","4":"D","5":"C","6":"C","7":"C","8":"A","9":"C","10":"D",
+    "11":"C","12":"A","13":"A","14":"B","15":"A","16":"B","17":"D","18":"A","19":"B","20":"C",
+    "21":"A","22":"B","23":"C","24":"C","25":"B","26":"B","27":"C","28":"A","29":"C","30":"D",
+    "31":"B","32":"D","33":"D","34":"A"
+  },
+  "mc_answer_key_note": "取自 p16 左欄答案表。第 33 題為粗體（＝經修訂答案），且其題目正文缺失。"
+}
