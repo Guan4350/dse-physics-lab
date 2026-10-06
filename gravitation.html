@@ -1,0 +1,3233 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gravitation 萬有引力 · 最強 Physics by Jacky</title>
+<meta name="description" content="DSE Physics 萬有引力互動模擬：F = GMm/r²、引力場強度 g = F/m、星球上方 g = GM/r²、圓軌道速率 v = √(GM/r)。">
+<link href="access-style.css" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  /* ── 沿用網站全站變數（.topnav / .eyebrow 來自 access-style.css） ── */
+  :root{
+    --gold:#b8860b; --gold-bright:#c9a227; --gold-deep:#8b6914;
+    --ink:#3c3c43; --ink-soft:#6b6b73; --line:#d4d4d8;
+    --kg:#8a6a12; --kv:#1b6f96; --kf:#b23c52; --kt:#3c3c43; --ka:#4a7a5c;
+  }
+  html{background:#f5f5f7}
+  body{margin:0;padding:0;color:var(--ink);font-size:15px;line-height:1.75;
+    font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",sans-serif;
+    /* ── 與首頁／simulations.html 完全相同的銀白金漸層底 ── */
+    background:
+      radial-gradient(1100px 620px at 50% -140px,rgba(255,255,255,.96),rgba(255,255,255,0) 70%),
+      radial-gradient(760px 460px at 12% 108%,rgba(201,162,39,.09),rgba(201,162,39,0) 72%),
+      radial-gradient(760px 460px at 92% 4%,rgba(184,134,11,.07),rgba(184,134,11,0) 70%),
+      linear-gradient(180deg,#f5f5f7 0%,#eaeaef 55%,#e8e8ed 100%);
+    background-attachment:fixed;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden}
+  .wrap{max-width:1440px;margin:0 auto;padding:0 24px 40px}
+
+  /* ══ 頁首 ══ */
+  .page-head{padding:34px 0 22px;text-align:center}
+  h1.title{margin:0;font-family:"Songti TC","Noto Serif TC",Georgia,serif;font-weight:600;
+    font-size:clamp(26px,4vw,40px);letter-spacing:.05em;
+    background:linear-gradient(180deg,#a97c0f 0%,#c9a227 62%,#8b6914 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  h1.title .lt{display:block;margin-top:9px;font-size:.42em;letter-spacing:.16em;
+    text-transform:uppercase;font-weight:500;color:var(--ink-soft);
+    background:none;-webkit-text-fill-color:currentColor}
+  .lede{margin:14px auto 0;max-width:860px;font-size:13.6px;color:var(--ink-soft)}
+  .divider{width:132px;height:1px;margin:22px auto 0;border:0;
+    background:linear-gradient(90deg,transparent,var(--gold-bright),transparent)}
+  .toolbar{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:18px}
+  .btn.langbtn{border-color:var(--gold-bright);color:var(--gold-deep);font-weight:700}
+  .btn.langbtn:hover{background:#fdf8ea;border-color:var(--gold)}
+
+  /* ══ 版面：左 3 : 右 2 ══ */
+  .layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);
+    gap:18px;align-items:start}
+  .stage{min-width:0}
+  .sidebar{display:flex;flex-direction:column;gap:13px;min-width:0;
+    max-height:calc(100vh - 92px);overflow-y:auto;overscroll-behavior:contain;
+    padding-right:5px;scrollbar-width:thin;scrollbar-color:#ddd8ca transparent}
+  .sidebar::-webkit-scrollbar{width:9px}
+  .sidebar::-webkit-scrollbar-thumb{background:#ddd8ca;border-radius:9px}
+  .sidebar::-webkit-scrollbar-track{background:transparent}
+  @media(max-width:1200px){
+    .layout{grid-template-columns:minmax(0,1fr)}
+    .sidebar{max-height:none;overflow:visible;display:grid;
+      grid-template-columns:1fr 1fr;gap:13px}
+  }
+  @media(max-width:820px){.sidebar{grid-template-columns:1fr}}
+
+  /* ══ 卡片 ══ */
+  .card{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:15px 16px;min-width:0;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05)}
+  .card::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;
+    border-radius:12px 12px 0 0;opacity:.9;
+    background:linear-gradient(90deg,var(--gold-bright),transparent 90%)}
+  .card h2{margin:0 0 11px;font-size:13px;letter-spacing:.04em;color:var(--gold-deep);
+    font-weight:700;display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif}
+  .card h2 span.sub{font-size:11.8px;color:var(--ink-soft);font-weight:500;letter-spacing:0}
+  .card h2.clickable{cursor:pointer;user-select:none}
+  /* 分組開合箭頭：真元素（可點擊／可聚焦），只出現在分組代表卡 */
+  .fold-chevron{margin-left:auto;font-size:11px;color:var(--ink-soft);cursor:pointer;
+    padding:0 4px;line-height:1;border-radius:4px;transition:transform .18s;flex:0 0 auto}
+  .fold-chevron::before{content:"▾"}
+  .fold-chevron:hover{color:var(--gold-deep);background:rgba(201,162,39,.14)}
+  .fold-chevron:focus-visible{outline:2px solid var(--gold-bright);outline-offset:1px}
+  .card.folded .fold-chevron::before{content:"▸"}
+  /* 摺疊內容：只用 :not(.folded) 針對 .cardbody，
+     避免覆蓋 .ebar / .awnote / .mnote 自己有嘅 display 值。
+     實際開關由 inline style（display:none / 還原）負責，唔新增外部依賴。 */
+  .card:not(.folded) > .cardbody{display:block}
+  /* 原本 inline style="display:flex/grid" 嘅 cardbody 需要保留其 display 值 */
+  .card:not(.folded) > .cardbody[data-disp="flex"]{display:flex}
+  .card:not(.folded) > .cardbody[data-disp="grid"]{display:grid}
+
+  canvas{display:block;width:100%;height:auto;max-width:100%;border-radius:12px;
+    background:#fff;border:1px solid var(--line);touch-action:none;cursor:default;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05)}
+  #cv{aspect-ratio:1020 / 672}
+  #cv2{aspect-ratio:1020 / 440}
+  #cv3{aspect-ratio:1020 / 620}
+
+  /* ══ 表觀視重（全寬區塊） ══ */
+  .awsec{margin-top:18px}
+  .awlede{margin:0 0 15px;font-size:12.9px;line-height:1.74;color:var(--ink-soft)}
+  .awlede b{color:var(--gold-deep)}
+  .awgrid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);
+    gap:18px;align-items:start}
+  @media(max-width:1040px){.awgrid{grid-template-columns:minmax(0,1fr)}}
+  .awpanel{min-width:0}
+
+  /* ══ 控制項 ══ */
+  .ctl{margin:13px 0 0}
+  .ctl:first-of-type{margin-top:2px}
+  .ctl .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+    font-size:13.2px;color:var(--ink-soft)}
+  .ctl .top b{color:var(--gold-deep);font-size:15.5px;font-weight:700;
+    font-variant-numeric:tabular-nums;white-space:nowrap}
+  input[type=range]{width:100%;accent-color:#c9a227;background:none;cursor:pointer;
+    margin:5px 0 0;height:17px}
+  .btns{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{cursor:pointer;font-family:inherit;font-size:13.2px;font-weight:650;border-radius:9px;
+    padding:9px 14px;border:1px solid var(--line);background:#fff;color:var(--ink);
+    transition:.16s;letter-spacing:.01em}
+  .btn:hover{border-color:var(--gold-bright);background:#fdfaf1;color:var(--gold-deep)}
+  .btn.live{background:var(--gold);border-color:var(--gold);color:#fff;
+    box-shadow:0 3px 10px rgba(184,134,11,.26)}
+  .btn.live:hover{background:#a3760a;border-color:#a3760a;color:#fff}
+  .btn.demo{display:block;width:100%;text-align:left;font-size:12.9px;line-height:1.5;
+    font-weight:600;margin-bottom:8px}
+  .btn.demo:last-of-type{margin-bottom:0}
+  .btn.demo.on{border-color:var(--gold-bright);background:rgba(201,162,39,.12);color:var(--gold-deep)}
+  .btn.demo small{display:block;font-weight:500;font-size:11.6px;color:var(--ink-soft);
+    margin-top:2px;line-height:1.5}
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{cursor:pointer;font-family:inherit;font-size:12.4px;font-weight:650;border-radius:8px;
+    padding:8px 12px;border:1px solid var(--line);background:#fff;color:var(--ink-soft);
+    transition:.16s;letter-spacing:.01em}
+  .chip:hover{border-color:var(--gold-bright);background:#fdfaf1;color:var(--gold-deep)}
+  .chip.on{background:rgba(201,162,39,.15);border-color:rgba(184,134,11,.45);
+    color:var(--gold-deep);font-weight:700}
+  .sw{display:flex;align-items:center;gap:8px;margin-top:11px;font-size:12.8px;
+    color:var(--ink-soft);cursor:pointer;user-select:none}
+  .sw input{accent-color:#c9a227;width:15px;height:15px;cursor:pointer;flex:0 0 auto}
+
+  /* ══ 範圍徽章（本頁新增：必修 / 輔助 / 選修延伸） ══ */
+  .scope{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.08em;
+    padding:2px 8px;border-radius:20px;white-space:nowrap;font-family:inherit}
+  .scope.req{color:var(--gold-deep);background:rgba(201,162,39,.12);
+    border:1px dashed rgba(184,134,11,.55)}
+  .scope.aux{color:#6b6b73;background:#f4f4f6;border:1px solid #e2e2e6}
+  .scope.ext{color:#8f4a3f;background:#fdf5f4;border:1px dashed rgba(192,69,95,.5)}
+
+  /* ══ 數據 ══ */
+  .out{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+    font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line);cursor:help}
+  .out:last-child{border-bottom:0}
+  .out k{color:var(--ink-soft);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .out b{font-weight:700;font-variant-numeric:tabular-nums;font-size:14px;white-space:nowrap}
+  .gh{margin:15px 0 6px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:#9a9aa2;font-weight:700;border-bottom:1px solid #f0eee8;padding-bottom:4px}
+  .gh:first-of-type{margin-top:0}
+  .kg{color:var(--kg)}.kv{color:var(--kv)}.kf{color:var(--kf)}
+  .kt{color:var(--kt)}.ka{color:var(--ka)}
+  .mnote{margin-top:11px;font-size:12.1px;line-height:1.72;color:#4a4a52;background:#fbf8ef;
+    border-left:3px solid var(--gold-bright);border-radius:0 8px 8px 0;padding:10px 13px}
+  .mnote b{color:var(--gold-deep)}
+  .mnote.ext{background:#fdf5f4;border-left-color:#c0455f;color:#8f4a3f}
+  .mnote.ext b{color:#7d3a30}
+  .mnote[hidden]{display:none}
+
+  /* ══ 能量條（本頁新增） ══ */
+  .ebar{margin-top:4px}
+  .ebar .erow{margin-bottom:9px}
+  .ebar .etop{display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+    font-size:12.4px;color:var(--ink-soft)}
+  .ebar .etop b{font-size:13.4px;font-weight:700;font-variant-numeric:tabular-nums;
+    color:var(--gold-deep);white-space:nowrap}
+  .ebar .track{height:9px;border-radius:6px;background:#f2f2f4;margin-top:4px;overflow:hidden;
+    position:relative}
+  .ebar .fill{height:100%;border-radius:6px;transition:width .18s ease}
+  .ebar .zero{position:absolute;top:-2px;bottom:-2px;width:1px;background:#c9c9d0}
+  .ebar .fke{background:linear-gradient(90deg,#7fb0c9,var(--kv))}
+  .ebar .fpe{background:linear-gradient(90deg,#e2a9a0,var(--kf))}
+  .ebar .fet{background:linear-gradient(90deg,#cbb878,var(--gold-deep))}
+  .ebar .fixed{float:right;font-size:11px;font-weight:700;color:#1c6b47;
+    background:#f1f8f4;border:1px solid #d4e9de;border-radius:20px;padding:1px 8px}
+  .ebar.folded{display:none}
+
+  /* ══ 圖例 / 提示 ══ */
+  .lgd{display:flex;gap:15px;flex-wrap:wrap;font-size:12.4px;color:var(--ink-soft)}
+  .lgd span{white-space:nowrap}
+  .lgd i{display:inline-block;width:16px;height:3px;border-radius:2px;margin-right:5px;
+    vertical-align:middle}
+  .lgd i.dot{width:9px;height:9px;border-radius:50%}
+  .hint{font-size:11.8px;color:var(--ink-soft);margin-top:9px;line-height:1.62}
+  .plotwrap{margin-top:18px}
+
+  /* ══ 公式 / 步驟 / 提示 ══ */
+  .tips{list-style:none;margin:0;padding:0;font-size:12.9px;line-height:1.72;color:var(--ink-soft)}
+  .tips li{padding:5px 0 5px 15px;position:relative}
+  .tips li::before{content:"";position:absolute;left:2px;top:12px;width:4.5px;height:4.5px;
+    border-radius:50%;background:var(--gold-bright)}
+  .tips b{color:var(--gold-deep)}
+  .sol{font-size:13.4px;line-height:1.9;color:var(--ink)}
+  .sol .q{background:#fdfaf1;border:1px solid #f0e8cf;border-radius:10px;padding:12px 15px;
+    margin-bottom:13px;font-size:13.2px;color:var(--gold-deep)}
+  .sol .sp{margin:10px 0;padding-left:12px;border-left:2px solid #f0e8cf}
+  .sol .sp b{color:var(--gold-deep)}
+  .f{display:inline-block;background:#fcfcfd;border:1px solid #ececf0;border-radius:6px;
+    padding:1px 9px;margin:1px 0;font-family:ui-monospace,Menlo,monospace;font-size:12.6px;
+    color:var(--gold-deep)}
+  .ans{display:inline-block;font-weight:700;color:#1c6b47;background:#f1f8f4;
+    border:1px solid #d4e9de;border-radius:7px;padding:1px 10px;margin:2px 0}
+  .fml{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px}
+  .fcard{flex:1 1 46%;min-width:150px;background:#fcfcfd;border:1px solid #ececf0;
+    border-radius:9px;padding:9px 11px}
+  .fcard .ff{font-family:ui-monospace,Menlo,monospace;font-size:13.4px;font-weight:700;
+    color:var(--gold-deep);display:block}
+  .fcard .fu{font-size:11.4px;color:var(--ink-soft);display:block;margin-top:2px}
+  .fcard .fx{font-size:11.6px;color:var(--ink-soft);display:block;margin-top:4px;line-height:1.55}
+
+  /* ══ 表格 ══ */
+  .tablewrap{width:100%;max-width:100%;overflow:hidden}
+  table{width:100%;max-width:100%;table-layout:fixed;border-collapse:collapse;
+    font-size:12.6px;font-variant-numeric:tabular-nums}
+  th,td{padding:7px 3px;text-align:center;border-bottom:1px solid var(--line);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  thead th{background:#fdfaf1;color:var(--gold-deep);font-weight:700;font-size:12.4px;
+    line-height:1.3;border-bottom:1px solid #eee4c8}
+  thead th em{display:block;font-style:normal;font-size:10.2px;color:var(--ink-soft);
+    font-weight:500;letter-spacing:0;margin-top:2px}
+  tbody th{background:#fcfcfd;color:var(--ink-soft);font-weight:700;font-size:11.8px;line-height:1.3}
+  tbody td{color:var(--ink);font-weight:600;font-size:12.4px}
+  tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+
+  /* ══ 計算練習 ══ */
+  .calcrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:11px}
+  .calcrow input[type=number]{font-family:inherit;font-size:13.4px;padding:9px 11px;
+    border:1px solid var(--line);border-radius:9px;width:150px;color:var(--ink);
+    font-variant-numeric:tabular-nums;background:#fff}
+  .calcrow input[type=number]:focus{outline:none;border-color:var(--gold-bright);
+    box-shadow:0 0 0 3px rgba(201,162,39,.14)}
+  .calcunit{font-size:12.6px;color:var(--ink-soft);font-weight:700}
+  .calcfeed{margin-top:12px;display:none}
+  .calcfeed.show{display:block}
+  .cf{margin-top:11px;font-size:12.8px;line-height:1.85;border-radius:0 8px 8px 0;
+    padding:11px 14px;border-left:3px solid var(--gold-bright);background:#fbf8ef;color:#4a4a52}
+  .cf.ok{border-left-color:#2f9e6f;background:#f1f8f4;color:#1f6b4a}
+  .cf.no{border-left-color:#c0455f;background:#fdf5f4;color:#8f4a3f}
+  .cf b{color:var(--gold-deep)}
+  .cf.ok b{color:#1f6b4a}.cf.no b{color:#7d3a30}
+  #score{font-size:12.4px;font-weight:700;color:var(--gold-deep);background:rgba(201,162,39,.15);
+    border:1px solid rgba(184,134,11,.35);border-radius:20px;padding:4px 13px}
+  .lgd i.line{height:0;background:none;border-top:2px dashed currentColor;border-radius:0;
+    width:16px;vertical-align:middle;display:inline-block;margin-right:5px}
+  #quiz h2{margin:0;font-size:16px;font-weight:650;color:var(--gold-deep);
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif;letter-spacing:.04em}
+  .qhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .qsub{font-size:11.8px;color:var(--ink-soft)}
+
+  /* ══ 概念小測 ══ */
+  .quizbox{margin-top:15px}
+  .qitem{background:#fff;border:1px solid var(--line);border-radius:11px;padding:16px 18px;margin-top:12px;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 6px 16px rgba(60,60,67,.05)}
+  .qno{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#9a9aa2}
+  .qtext{font-size:13.6px;line-height:1.8;color:#2b2b30;margin:6px 0 12px}
+  .qopts{display:flex;flex-direction:column;gap:7px}
+  .qopt{display:flex;gap:10px;align-items:flex-start;text-align:left;cursor:pointer;background:#fbfbfd;
+    border:1px solid #e2e2e6;border-radius:9px;padding:10px 13px;font-size:13.2px;line-height:1.7;
+    color:var(--ink);font-family:inherit;transition:.16s}
+  .qopt:hover{border-color:var(--gold-bright);background:rgba(201,162,39,.07)}
+  .qopt .key{flex:0 0 21px;height:21px;border-radius:50%;border:1.5px solid #c9c9d0;color:#77777f;
+    font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .qopt.right{border-color:#2f9e6f;background:rgba(47,158,111,.10)}
+  .qopt.right .key{border-color:#2f9e6f;background:#2f9e6f;color:#fff}
+  .qopt.wrong{border-color:#c0455f;background:rgba(192,69,95,.09)}
+  .qopt.wrong .key{border-color:#c0455f;background:#c0455f;color:#fff}
+  .qopt[disabled]{cursor:default}
+  .qexp{margin-top:11px;font-size:12.8px;line-height:1.9;color:#4a4a52;background:#fbf8ef;
+    border-left:3px solid var(--gold-bright);border-radius:0 8px 8px 0;padding:12px 15px;display:none}
+  .qexp.show{display:block}
+  .qexp b{color:var(--gold-deep)}
+  .qexp .verdict{font-weight:700;display:block;margin-bottom:5px}
+  .qexp .verdict.ok{color:#1f6b4a}.qexp .verdict.no{color:#a8443a}
+  .qreset{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:8px;
+    color:var(--gold-deep);font-size:12.6px;font-weight:650;padding:8px 16px;cursor:pointer;font-family:inherit}
+  .qreset:hover{border-color:var(--gold-bright);background:rgba(201,162,39,.08)}
+
+  /* ══ 頁腳 ══ */
+  footer{margin-top:24px;padding:30px 0 46px;text-align:center;border-top:1px solid var(--line)}
+  footer .mark{display:inline-block;margin-bottom:11px;font-size:11px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--gold-deep)}
+  footer p{margin:0;font-size:12.5px;color:#7d7d85}
+
+  /* ══ 嵌入模式（?embed=1）／精簡模式（&compact=1） ══ */
+  body.embed .topnav{display:none}
+  body.embed .wrap{max-width:100%;padding:14px 16px 20px}
+  body.embed .page-head{padding:6px 0 14px;text-align:left}
+  body.embed .page-head .lede{margin-left:0;max-width:100%}
+  body.embed .divider{margin-left:0}
+  body.embed .toolbar{justify-content:flex-start;margin-top:12px}
+  body.embed .sidebar{max-height:none}
+</style>
+</head>
+<body data-nav="sim">
+
+<nav class="topnav">
+  <div class="bar">
+    <a class="brand" href="index.html"><b>最強 Physics by Jacky</b><i>DSE Lab</i></a>
+    <div class="navlinks" id="navLinks">
+      <a href="index.html"          data-nav="home"><em>🏠</em><span class="en">Home</span><span class="zh">主頁</span></a>
+      <a href="simulations.html"    data-nav="sim"><em>🧪</em><span class="en">Simulations</span><span class="zh">互動模擬</span></a>
+      <a href="exam-bank.html"      data-nav="exam"><em>📝</em><span class="en">Exam Bank</span><span class="zh">試題庫</span></a>
+      <a href="formula-sheet.html"  data-nav="formula"><em>📖</em><span class="en">Formula</span><span class="zh">公式表</span></a>
+      <a href="revision-notes.html" data-nav="notes"><em>📚</em><span class="en">Notes</span><span class="zh">筆記</span></a>
+      <a href="about.html"          data-nav="about"><em>ℹ️</em><span class="en">About</span><span class="zh">關於</span></a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="page-head">
+    <div class="eyebrow">Simulation · Gravitation</div>
+    <h1 class="title">
+      <span data-i18n="title.main">萬有引力 互動模擬</span>
+      <span class="lt" data-i18n="title.sub">Gravitation &amp; Circular Orbits</span>
+    </h1>
+    <p class="lede" data-i18n="lede">萬有引力定律 <b>F = GMm/r²</b>、引力場強度定義 <b>g = F/m</b>、星球上方 <b>g = GM/r²</b>、圓軌道速率 <b>v = √(GM/r)</b>。拖動滑桿，所有數值、向量同圖表即時更新。</p>
+    <hr class="divider">
+    <div class="toolbar">
+      <button class="btn langbtn" id="langBtn" type="button"><span id="langLabel">中文 / English</span></button>
+      <a class="btn" href="simulations.html">← 返回 Simulations</a>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- ═══ 左（3 份）：Canvas 主場景 ═══ -->
+    <div class="stage">
+      <canvas id="cv" width="1020" height="672"></canvas>
+
+      <div class="card" style="margin-top:13px">
+        <h2 class="clickable" data-fold="legend"><span data-i18n="legend">圖例</span><span class="scope req" data-i18n="scope.req">必修</span></h2>
+        <div class="cardbody">
+          <div class="lgd">
+            <span><i style="background:#c9a227"></i><span data-i18n="lg.g">g = GM/r²（引力場強度）</span></span>
+            <span><i style="background:#b23c52"></i><span data-i18n="lg.f">F = GMm/r²（萬有引力）</span></span>
+            <span><i style="background:#1b6f96"></i><span data-i18n="lg.v">v = √(GM/r)（圓軌道速率）</span></span>
+            <span><i style="background:#4a7a5c"></i><span data-i18n="lg.a">a = v²/r（向心加速度）</span></span>
+            <span><i class="dot" style="background:#3c3c43;box-shadow:0 0 0 2px #c9a227"></i><span data-i18n="lg.sat">衛星</span></span>
+            <span><i class="line" style="color:#4a7a5c"></i><span data-i18n="lg.trail">軌跡 ＋ 圈數標記</span></span>
+            <span><i style="background:rgba(74,122,92,.55)"></i><span data-i18n="lg.field">引力場線（單一天體）</span></span>
+            <span><i class="line" style="color:rgba(74,122,92,.85)"></i><span data-i18n="lg.equip">等勢面（同心圓）</span></span>
+          </div>
+          <div class="hint" data-i18n="hud.hint">左上資訊卡：按住拖動可移動位置，滾輪或雙指上下滑動可調透明度。徑向比例預設為「壓縮視圖」，令近地軌道同遠距離軌道可以同時顯示；向量長度經對數壓縮，只表示方向同相對大小。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 右（2 份）：所有面板 ═══ -->
+    <aside class="sidebar">
+
+      <div class="card" id="cardBody">
+        <h2 class="clickable" data-fold="body"><span data-i18n="h.body">中心天體</span><span class="sub" data-i18n="h.body.sub">M 決定一切</span><span class="scope req" data-i18n="scope.req">必修</span><span class="fold-chevron" role="button" tabindex="0" aria-label="整組開合"></span></h2>
+        <div class="cardbody">
+          <div class="chips" id="bodyChips">
+            <button class="chip on" type="button" data-body="earth" data-i18n="b.earth">地球</button>
+            <button class="chip" type="button" data-body="moon" data-i18n="b.moon">月球</button>
+            <button class="chip" type="button" data-body="mars" data-i18n="b.mars">火星</button>
+            <button class="chip" type="button" data-body="custom" data-i18n="b.custom">自訂</button>
+          </div>
+          <div id="customBox" hidden>
+            <div class="ctl">
+              <div class="top"><span data-i18n="p.M">天體質量 M</span><b id="vM">—</b></div>
+              <input type="range" id="sM" min="0" max="1" step="0.001" value="0.53">
+            </div>
+            <div class="ctl">
+              <div class="top"><span data-i18n="p.R">天體半徑 R</span><b id="vR">—</b></div>
+              <input type="range" id="sR" min="0" max="1" step="0.001" value="0.6">
+            </div>
+          </div>
+          <div class="out"><k data-i18n="r.M">天體質量 M</k><b class="kg" id="oM">—</b></div>
+          <div class="out"><k data-i18n="r.R">天體半徑 R</k><b class="kg" id="oR">—</b></div>
+          <div class="out"><k data-i18n="r.g0">表面引力場強度 g₀ = GM/R²</k><b class="kg" id="oG0">—</b></div>
+        </div>
+      </div>
+
+      <div class="card" id="cardParams">
+        <h2 class="clickable" data-fold="params"><span data-i18n="h.params">參數</span><span class="scope req" data-i18n="scope.req">必修</span></h2>
+        <div class="cardbody">
+          <div class="ctl">
+            <div class="top"><span data-i18n="p.h">軌道高度 / Altitude h</span><b id="vh">400 km</b></div>
+            <input type="range" id="sh" min="0" max="1" step="0.0005" value="0.3">
+            <div class="hint" id="hRangeNote"></div>
+          </div>
+          <div class="ctl">
+            <div class="top"><span data-i18n="p.m">衛星質量 / Satellite Mass m</span><b id="vm">1,000 kg</b></div>
+            <input type="range" id="sm" min="0" max="1" step="0.001" value="0.15">
+          </div>
+          <div class="ctl" id="m2Ctl" hidden>
+            <div class="top"><span data-i18n="p.m2">第二衛星質量 m₂（同軌道）</span><b id="vm2">2,000 kg</b></div>
+            <input type="range" id="sm2" min="0" max="1" step="0.001" value="0.3">
+          </div>
+          <div class="ctl">
+            <div class="top"><span data-i18n="p.vr">軌道速率比 v_actual / v_orbit</span><b id="vvr">100%</b></div>
+            <input type="range" id="svr" min="70" max="130" step="1" value="100">
+            <div class="hint" data-i18n="vr.hint">100% = 穩定圓軌道。低於 100% 引力大於所需向心力，半徑單調收縮；高於 100% 則單調擴張。只示範半徑恆定嘅圓軌道。</div>
+          </div>
+          <label class="sw"><input type="checkbox" id="cTwin"><span data-i18n="p.twin">雙衛星對照（同軌道、不同 m）</span></label>
+        </div>
+      </div>
+
+      <div class="card" id="cardMode">
+        <h2 class="clickable" data-fold="mode"><span data-i18n="h.mode">軌道模式</span><span class="scope req" data-i18n="scope.req">必修</span><span class="scope ext" data-i18n="scope.ext">選修延伸</span></h2>
+        <div class="cardbody">
+          <div class="chips" id="modeChips">
+            <button class="chip on" type="button" data-mode="circular" data-i18n="m.circular">圓軌道</button>
+            <button class="chip" type="button" data-mode="ellipse" data-i18n="m.ellipse">橢圓軌道</button>
+            <button class="chip" type="button" data-mode="hohmann" data-i18n="m.hohmann">霍曼轉移</button>
+          </div>
+          <div id="eccBox" hidden>
+            <div class="ctl">
+              <div class="top"><span data-i18n="p.ecc">離心率 e</span><b id="vecc">0.35</b></div>
+              <input type="range" id="secc" min="0" max="0.85" step="0.01" value="0.35">
+            </div>
+            <div class="ctl">
+              <div class="top"><span data-i18n="p.argp">近點方向 / Argument of periapsis</span><b id="vargp">0°</b></div>
+              <input type="range" id="sargp" min="0" max="360" step="1" value="0">
+            </div>
+          </div>
+          <div id="hohBox" hidden>
+            <div class="ctl">
+              <div class="top"><span data-i18n="p.h2">目標軌道高度 / Target altitude</span><b id="vh2">—</b></div>
+              <input type="range" id="sh2" min="0" max="1" step="0.001" value="0.9">
+            </div>
+          </div>
+          <div class="mnote ext" id="modeWarn" hidden><b>範圍提醒：</b>橢圓軌道、霍曼轉移同逃逸速度屬 DSE <b>選修（Elective）Astronomy</b> 範圍，<b>必修卷不考</b>。必修只要求圓軌道。</div>
+        </div>
+      </div>
+
+      <div class="card" id="cardScene">
+        <h2 class="clickable" data-fold="scene"><span data-i18n="h.scene">示範情境</span><span class="scope req" data-i18n="scope.req">必修</span></h2>
+        <div class="cardbody" id="sceneList"></div>
+      </div>
+
+      <div class="card" id="cardPlay">
+        <h2 class="clickable" data-fold="play"><span data-i18n="h.play">播放</span><span class="scope aux" data-i18n="scope.aux">輔助</span></h2>
+        <div class="cardbody">
+          <div class="btns">
+            <button class="btn live" id="play" type="button" data-i18n="btn.pause">暫停</button>
+            <button class="btn" id="step" type="button" data-i18n="btn.step">單幀</button>
+            <button class="btn" id="reset" type="button" data-i18n="btn.reset">重置</button>
+          </div>
+          <div class="ctl">
+            <div class="top"><span data-i18n="p.speed">動畫速度 / Speed</span><b id="vsp">500×</b></div>
+            <input type="range" id="ssp" min="1" max="2000" step="1" value="500">
+          </div>
+          <div class="ctl">
+            <div class="top"><span data-i18n="p.phase">軌道相位 / Orbital Phase</span><b id="vph">0°</b></div>
+            <input type="range" id="sph" min="0" max="360" step="1" value="0">
+          </div>
+          <div class="ctl">
+            <div class="top"><span data-i18n="p.hud">資訊卡透明度</span><b id="vop">88%</b></div>
+            <input type="range" id="sop" min="20" max="100" step="1" value="88">
+          </div>
+          <label class="sw"><input type="checkbox" id="cHudOn" checked><span data-i18n="p.hudOn">顯示資訊卡</span></label>
+          <label class="sw"><input type="checkbox" id="cHudFold"><span data-i18n="p.hudFold">收起資訊卡（只留標題列）</span></label>
+          <div class="hint" data-i18n="hud.foldHint">除咗呢兩個開關，亦可以直接按畫布上資訊卡右上角嘅「－ / ＋」切換收起，或按住卡面拖動、用滾輪調透明度。</div>
+        </div>
+      </div>
+
+      <div class="card" id="cardTrail">
+        <h2 class="clickable" data-fold="trail"><span data-i18n="h.trail">軌跡留存</span><span class="scope aux" data-i18n="scope.aux">輔助</span></h2>
+        <div class="cardbody">
+          <div class="chips" id="trailChips">
+            <button class="chip" type="button" data-trail="off" data-i18n="tr.off">關閉</button>
+            <button class="chip on" type="button" data-trail="laps" data-i18n="tr.laps">限時</button>
+            <button class="chip" type="button" data-trail="forever" data-i18n="tr.forever">永久</button>
+          </div>
+          <div class="ctl" id="trailLapCtl">
+            <div class="top"><span data-i18n="p.laps">保留圈數</span><b id="vlaps">1.5 圈</b></div>
+            <input type="range" id="slaps" min="0.5" max="5" step="0.1" value="1.5">
+          </div>
+          <div class="ctl">
+            <div class="top"><span data-i18n="p.talpha">軌跡透明度</span><b id="vta">70%</b></div>
+            <input type="range" id="sta" min="0" max="100" step="1" value="70">
+          </div>
+          <label class="sw"><input type="checkbox" id="cMarks" checked><span data-i18n="p.marks">每圈自動標記</span></label>
+          <div class="btns" style="margin-top:11px">
+            <button class="btn" id="clearTrail" type="button" data-i18n="btn.clearTrail">清除軌跡</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="cardVec">
+        <h2 class="clickable" data-fold="vec"><span data-i18n="h.vec">向量顯示</span><span class="scope aux" data-i18n="scope.aux">輔助</span></h2>
+        <div class="cardbody">
+          <label class="sw"><input type="checkbox" id="cShowF" checked><span data-i18n="p.showF">F = GMm/r²（磚紅·指向中心）</span></label>
+          <label class="sw"><input type="checkbox" id="cShowG"><span data-i18n="p.showG">g = GM/r²（金·指向中心）</span></label>
+          <label class="sw"><input type="checkbox" id="cShowV" checked><span data-i18n="p.showV">v = √(GM/r)（青藍·切向）</span></label>
+          <label class="sw"><input type="checkbox" id="cShowA"><span data-i18n="p.showA">a = v²/r（灰綠·指向中心）</span></label>
+          <label class="sw"><input type="checkbox" id="cShowFr"><span data-i18n="p.showFr">F′ 反作用力（作用於天體）</span></label>
+          <div class="chips" style="margin-top:12px">
+            <button class="chip" type="button" data-view="compress" data-i18n="v.compress">壓縮視圖</button>
+            <button class="chip" type="button" data-view="true" data-i18n="v.true">真實比例</button>
+          </div>
+          <div class="hint" data-i18n="vec.hint">向量長度經對數壓縮，只表示方向同相對大小，唔係嚴格等比。當 v_actual = v_orbit 時，所需向心力 mv²/r 會與萬有引力 F 疊合並轉為綠色 ✓。</div>
+        </div>
+      </div>
+
+      <div class="card" id="cardField">
+        <h2 class="clickable" data-fold="field"><span data-i18n="h.field">引力場線</span><span class="scope aux" data-i18n="scope.aux">輔助</span></h2>
+        <div class="cardbody">
+          <label class="sw"><input type="checkbox" id="cField"><span data-i18n="p.field">顯示引力場線（單一天體）</span></label>
+          <div class="ctl">
+            <div class="top"><span data-i18n="p.falpha">場線透明度</span><b id="vfa">45%</b></div>
+            <input type="range" id="sfa" min="0" max="100" step="1" value="45">
+          </div>
+          <div class="ctl">
+            <div class="top"><span data-i18n="p.fn">場線數目</span></div>
+            <div class="chips" id="fnChips">
+              <button class="chip" type="button" data-fn="8">8</button>
+              <button class="chip on" type="button" data-fn="12">12</button>
+              <button class="chip" type="button" data-fn="16">16</button>
+              <button class="chip" type="button" data-fn="24">24</button>
+            </div>
+          </div>
+          <div class="mnote" id="fieldNote"></div>
+        </div>
+      </div>
+
+      <div class="card" id="cardEquip">
+        <h2 class="clickable" data-fold="equip"><span data-i18n="h.equip">等勢面</span><span class="scope ext" data-i18n="scope.ext">選修延伸</span></h2>
+        <div class="cardbody">
+          <label class="sw"><input type="checkbox" id="cEquip"><span data-i18n="p.equip">顯示等勢面（同心圓）</span></label>
+          <div class="ctl">
+            <div class="top"><span data-i18n="p.ealpha">等勢線透明度</span><b id="vea">40%</b></div>
+            <input type="range" id="sea" min="0" max="100" step="1" value="40">
+          </div>
+          <div class="ctl">
+            <div class="top"><span data-i18n="p.en">等勢線數目</span></div>
+            <div class="chips" id="enChips">
+              <button class="chip" type="button" data-en="4">4</button>
+              <button class="chip on" type="button" data-en="6">6</button>
+              <button class="chip" type="button" data-en="8">8</button>
+            </div>
+          </div>
+          <label class="sw"><input type="checkbox" id="cEquipV" checked><span data-i18n="p.equipV">顯示 V 數值</span></label>
+          <div class="mnote ext" id="equipWarn" data-i18n="warn.equip" hidden><b>範圍提醒：</b>引力勢 V = −GM/r 屬 DSE <b>選修（Elective）Astronomy</b> 範圍，<b>必修卷不考</b>。此處只為幫助理解「場線 ⊥ 等勢面」同「圓軌道總能量為負」嘅物理圖像。</div>
+        </div>
+      </div>
+
+      <div class="card" id="cardResults">
+        <h2 class="clickable" data-fold="results"><span data-i18n="h.results">計算結果</span><span class="scope req" data-i18n="scope.req">必修</span></h2>
+        <div class="cardbody">
+          <div class="gh" data-i18n="g.geom">軌道幾何</div>
+          <div class="out"><k data-i18n="r.r">軌道半徑 r = R + h</k><b class="kt" id="oRr">—</b></div>
+          <div class="out"><k data-i18n="r.h">軌道高度 h</k><b class="kt" id="oH">—</b></div>
+          <div class="out"><k data-i18n="r.rR">r / R（天體半徑倍數）</k><b class="kt" id="oRR">—</b></div>
+
+          <div class="gh" data-i18n="g.field">引力與場強</div>
+          <div class="out"><k data-i18n="r.g">引力場強度 g = GM/r²</k><b class="kg" id="oG">—</b></div>
+          <div class="out"><k data-i18n="r.gR">g / g₀</k><b class="kg" id="oGR">—</b></div>
+          <div class="out"><k data-i18n="r.m">衛星質量 m</k><b class="kg" id="oMs">—</b></div>
+          <div class="out"><k data-i18n="r.F">萬有引力 F = GMm/r²</k><b class="kf" id="oF">—</b></div>
+          <div class="out"><k data-i18n="r.gdef">驗算：F / m（單位質量所受引力）</k><b class="kg" id="oGD">—</b></div>
+
+          <div class="gh" data-i18n="g.circ">圓周運動</div>
+          <div class="out"><k data-i18n="r.v">圓軌道速率 v = √(GM/r)</k><b class="kv" id="oV">—</b></div>
+          <div class="out"><k data-i18n="r.omega">角速度 ω = √(GM/r³)</k><b class="kv" id="oOmega">—</b></div>
+          <div class="out"><k data-i18n="r.T">週期 T = 2πr/v</k><b class="kv" id="oT">—</b></div>
+          <div class="out"><k data-i18n="r.a">向心加速度 a = v²/r</k><b class="ka" id="oA">—</b></div>
+          <div class="out"><k data-i18n="r.chk">驗算：GM/r² 與 v²/r 相等</k><b class="ka" id="oChk">—</b></div>
+          <div class="out"><k data-i18n="r.work">徑向重力對切向運動作功 W = F·s cos90° = 0</k><b class="ka" id="oWork">0 J</b></div>
+
+          <div class="gh" data-i18n="g.golden">黃金代換（必修）</div>
+          <div class="out"><k data-i18n="r.golden">g = g₀R²/r²（由 GM = g₀R² 代換）</k><b class="kg" id="oGolden">—</b></div>
+          <div class="out"><k data-i18n="r.goldenChk">驗算：GM/R² 與 g₀ 相等</k><b class="kg" id="oGoldenChk">—</b></div>
+
+          <div class="gh" data-i18n="g.orbitres">軌道要素</div>
+          <div class="out"><k data-i18n="r.mode">目前模式</k><b class="kt" id="oMode">—</b></div>
+          <div class="out" id="rowA"><k data-i18n="r.sma">半長軸 a</k><b class="kt" id="oA2">—</b></div>
+          <div class="out" id="rowE"><k data-i18n="r.ecc">離心率 e</k><b class="kt" id="oEcc">—</b></div>
+          <div class="out" id="rowRp"><k data-i18n="r.rp">近點距離 rₚ</k><b class="kt" id="oRp">—</b></div>
+          <div class="out" id="rowRa"><k data-i18n="r.ra">遠點距離 rₐ</k><b class="kt" id="oRa">—</b></div>
+          <div class="out" id="rowDv1"><k data-i18n="r.dv1">第一次點火 Δv₁</k><b class="kf" id="oDv1">—</b></div>
+          <div class="out" id="rowDv2"><k data-i18n="r.dv2">第二次點火 Δv₂</k><b class="kf" id="oDv2">—</b></div>
+          <div class="out" id="rowDvT"><k data-i18n="r.dvT">總 Δv</k><b class="kf" id="oDvT">—</b></div>
+          <div class="out" id="rowTt"><k data-i18n="r.tTransfer">轉移時間（半個橢圓週期）</k><b class="kt" id="oTt">—</b></div>
+
+          <div class="gh" data-i18n="g.esc">逃逸速度（選修延伸）</div>
+          <div class="out"><k data-i18n="r.vesc">表面逃逸速度 v = √(2GM/R)</k><b class="kf" id="oVesc">—</b></div>
+          <div class="out"><k data-i18n="r.vescNow">該處所需逃逸速度 √(2GM/r)</k><b class="kf" id="oVescNow">—</b></div>
+
+          <div class="gh" data-i18n="g.twinres">雙衛星對照（同軌道）</div>
+          <div class="out"><k data-i18n="r.m1">衛星 1 質量 m₁</k><b class="kg" id="oM1">—</b></div>
+          <div class="out"><k data-i18n="r.F1">衛星 1 所受引力 F₁</k><b class="kf" id="oF1">—</b></div>
+          <div class="out"><k data-i18n="r.m2r">衛星 2 質量 m₂</k><b class="kg" id="oM2">—</b></div>
+          <div class="out"><k data-i18n="r.F2">衛星 2 所受引力 F₂</k><b class="kf" id="oF2">—</b></div>
+          <div class="out"><k data-i18n="r.F12">F₂ / F₁</k><b class="kf" id="oF12">—</b></div>
+          <div class="mnote" data-i18n="twin.note">兩顆衛星在<b>同一軌道</b>：g、v、T 全部相同（v = √(GM/r) 與衛星質量無關）；只有所受引力 F = GMm/r² 與 m 成正比。</div>
+        </div>
+      </div>
+
+      <div class="card" id="cardEnergy">
+        <h2 class="clickable" data-fold="energy"><span data-i18n="h.energy">能量條</span><span class="scope ext" data-i18n="scope.ext">選修延伸</span><span class="fold-chevron" role="button" tabindex="0" aria-label="整組開合"></span></h2>
+        <div class="cardbody">
+          <label class="sw"><input type="checkbox" id="cPE"><span data-i18n="p.pe">顯示引力勢能 PE 與總能量 E</span></label>
+          <div class="chips" style="margin-top:11px" id="energyChips">
+            <button class="chip on" type="button" data-ek="perkg" data-i18n="ek.perkg">每公斤</button>
+            <button class="chip" type="button" data-ek="abs" data-i18n="ek.abs">絕對值</button>
+            <button class="chip" type="button" data-ek="ratio" data-i18n="ek.ratio">相對比例</button>
+          </div>
+          <div class="ebar" id="ebar">
+            <div class="erow">
+              <div class="etop"><span data-i18n="e.ke">動能 KE = ½mv²</span><b id="oKE">—</b></div>
+              <div class="track"><div class="fill fke" id="barKE" style="width:0%"></div></div>
+            </div>
+            <div class="erow" id="peRow">
+              <div class="etop"><span data-i18n="e.pe">引力勢能 PE = −GMm/r</span><b id="oPE">—</b></div>
+              <div class="track"><span class="zero"></span><div class="fill fpe" id="barPE" style="width:0%"></div></div>
+            </div>
+            <div class="erow" id="etRow">
+              <div class="etop"><span data-i18n="e.tot">總機械能 E = PE + KE</span><b id="oET">—</b></div>
+              <div class="track"><span class="zero"></span><div class="fill fet" id="barET" style="width:0%"></div></div>
+            </div>
+          </div>
+          <div class="mnote" id="energyNote"></div>
+          <div class="mnote ext"><b>範圍提醒：</b>PE = −GMm/r 與總機械能屬 DSE <b>選修（Elective）Astronomy</b> 範圍，<b>必修卷不考</b>；必修只要求 KE = ½mv²。</div>
+        </div>
+      </div>
+
+      <div class="card" id="cardFormula">
+        <h2 class="clickable" data-fold="formula"><span data-i18n="h.formula">公式與定義</span><span class="scope req" data-i18n="scope.req">必修</span><span class="fold-chevron" role="button" tabindex="0" aria-label="整組開合"></span></h2>
+        <div class="cardbody">
+          <div class="fml">
+            <div class="fcard"><span class="ff">F = GMm / r²</span><span class="fu">N</span><span class="fx" data-i18n="fx.f">萬有引力定律；r 為兩質心距離</span></div>
+            <div class="fcard"><span class="ff">g = F / m</span><span class="fu">N kg⁻¹（= m s⁻²）</span><span class="fx" data-i18n="fx.g">引力場強度<b>定義</b>：單位質量所受引力</span></div>
+            <div class="fcard"><span class="ff">g = GM / r²</span><span class="fu">N kg⁻¹</span><span class="fx" data-i18n="fx.g2">由定義＋定律推得；只適用於天體外部</span></div>
+            <div class="fcard"><span class="ff">GMm / r² = mv² / r</span><span class="fu">—</span><span class="fx" data-i18n="fx.cond">圓軌道條件：引力提供向心力</span></div>
+            <div class="fcard"><span class="ff">v = √(GM / r)</span><span class="fu">m s⁻¹</span><span class="fx" data-i18n="fx.v">上式化簡，衛星質量 m 消去</span></div>
+            <div class="fcard"><span class="ff">T = 2πr / v</span><span class="fu">s</span><span class="fx" data-i18n="fx.t">圓周運動週期</span></div>
+            <div class="fcard"><span class="ff">KE = ½mv²</span><span class="fu">J</span><span class="fx" data-i18n="fx.ke">必修範圍（Work, energy and power）</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="cardTips">
+        <h2 class="clickable" data-fold="tips"><span data-i18n="h.tips">DSE 考試重點</span><span class="scope aux" data-i18n="scope.aux">輔助</span><span class="fold-chevron" role="button" tabindex="0" aria-label="整組開合"></span></h2>
+        <div class="cardbody"><ul class="tips" id="tips"></ul></div>
+      </div>
+
+      <div class="card" id="cardSol">
+        <h2 class="clickable" data-fold="sol"><span data-i18n="h.sol">解題步驟</span><span class="scope aux" data-i18n="scope.aux">輔助</span><span class="fold-chevron" role="button" tabindex="0" aria-label="整組開合"></span></h2>
+        <div class="cardbody"><div class="sol" id="steps"></div></div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- ═══ 全寬：對數關係圖 ═══ -->
+  <section class="card plotwrap" id="cardPlot">
+    <h2 class="clickable" data-fold="plot"><span data-i18n="h.plot">關係圖</span><span class="sub" data-i18n="h.plot.sub">雙對數座標下的直線 ⟹ 冪次定律</span><span class="scope req" data-i18n="scope.req">必修</span><span class="fold-chevron" role="button" tabindex="0" aria-label="整組開合"></span></h2>
+    <div class="cardbody">
+      <div class="chips" id="plotChips">
+        <button class="chip on" type="button" data-plot="g" data-i18n="plot.g">引力場強度 g(r)</button>
+        <button class="chip" type="button" data-plot="F" data-i18n="plot.F">萬有引力 F(r)</button>
+        <button class="chip" type="button" data-plot="v" data-i18n="plot.v">圓軌道速率 v(r)</button>
+        <button class="chip" type="button" data-plot="T" data-i18n="plot.T">週期 T(r)</button>
+      </div>
+      <canvas id="cv2" width="1020" height="440" style="margin-top:13px"></canvas>
+      <div class="hint" id="plotHint"></div>
+    </div>
+  </section>
+
+  <!-- ═══ 全寬：表觀視重 ═══ -->
+  <section class="card awsec" id="cardApparent">
+    <h2 class="clickable" data-fold="apparent">
+      <span data-i18n="h.apparent">表觀視重</span>
+      <span class="sub" data-i18n="h.apparent.sub">地球自轉如何令磅重讀數變細</span>
+      <span class="scope req" data-i18n="scope.req">必修</span>
+      <span class="scope aux" data-i18n="scope.aux">輔助</span><span class="fold-chevron" role="button" tabindex="0" aria-label="整組開合"></span>
+    </h2>
+    <div class="cardbody">
+      <p class="awlede" data-i18n="aw.lede">地面上的物體隨地球自轉做圓周運動，圓周半徑 <b>ρ = R cosφ</b>（φ 為緯度），所以需要向心力。呢個向心力由真重量嘅<b>徑向分量</b>提供，於是地面嘅法向反作用力 <b>R = W − mω²ρ cosφ</b> 就細過 mg —— 即係磅重讀數變細。<b>赤道最明顯（ρ 最大），兩極完全無影響（ρ = 0）。</b></p>
+
+      <div class="awgrid">
+        <div style="min-width:0"><canvas id="cv3" width="1020" height="620"></canvas></div>
+
+        <div class="awpanel">
+          <div class="ctl">
+            <div class="top"><span data-i18n="aw.lat">緯度 / Latitude φ</span><b id="awvlat">22.3°</b></div>
+            <input type="range" id="awslat" min="0" max="90" step="0.1" value="22.3">
+            <div class="chips" style="margin-top:9px" id="awLatChips">
+              <button class="chip" type="button" data-lat="0" data-i18n="aw.eq">赤道 0°</button>
+              <button class="chip on" type="button" data-lat="22.3" data-i18n="aw.hk">香港 22.3°</button>
+              <button class="chip" type="button" data-lat="45" data-i18n="aw.mid">中緯 45°</button>
+              <button class="chip" type="button" data-lat="90" data-i18n="aw.pole">北極 90°</button>
+            </div>
+          </div>
+
+          <div class="ctl">
+            <div class="top"><span data-i18n="aw.omega">自轉角速度 ω</span><b id="awvom">7.292 × 10⁻⁵ rad s⁻¹</b></div>
+            <input type="range" id="awsom" min="0" max="1" step="0.001" value="0.1">
+            <div class="hint" data-i18n="aw.omHint">滑桿由 0 調到臨界值（視重變 0）。地球實際值對應週期約 23.93 小時（恆星日）。</div>
+          </div>
+
+          <div class="ctl">
+            <div class="top"><span data-i18n="aw.period">等效自轉週期 T = 2π/ω</span><b id="awvT">1.001 日</b></div>
+          </div>
+
+          <div class="ctl">
+            <div class="top"><span data-i18n="aw.mass">物體質量 / Mass m</span><b id="awvm">60 kg</b></div>
+            <input type="range" id="awsm" min="1" max="200" step="1" value="60">
+          </div>
+
+          <label class="sw"><input type="checkbox" id="awSpin" checked><span data-i18n="aw.spin">地球自轉（關閉 = 不轉動，視重 = 真重量）</span></label>
+
+          <div class="mnote" id="awNote" hidden></div>
+
+          <div class="gh" data-i18n="aw.g1">圓周運動</div>
+          <div class="out"><k data-i18n="aw.rho">圓周半徑 ρ = R cosφ</k><b class="kv" id="awRho">—</b></div>
+          <div class="out"><k data-i18n="aw.ac">向心加速度 a = ω²ρ</k><b class="kv" id="awAc">—</b></div>
+          <div class="out"><k data-i18n="aw.fc">所需向心力 F = mω²ρ</k><b class="kv" id="awFc">—</b></div>
+
+          <div class="gh" data-i18n="aw.g2">重量</div>
+          <div class="out"><k data-i18n="aw.mg">真重量 W = mg（赤道 g₀）</k><b class="kf" id="awMG">—</b></div>
+          <div class="out"><k data-i18n="aw.N">視重（法向力 R）</k><b class="kg" id="awN">—</b></div>
+          <div class="out"><k data-i18n="aw.ratio">R / W</k><b class="kg" id="awRatio">—</b></div>
+          <div class="out"><k data-i18n="aw.drop">比 W 減少</k><b class="kf" id="awDrop">—</b></div>
+          <div class="out"><k data-i18n="aw.tilt">視重方向偏離徑向</k><b class="kt" id="awTilt">—</b></div>
+
+          <div class="gh" data-i18n="aw.g3">赤道 / 兩極 / 本緯度</div>
+          <div class="out"><k data-i18n="aw.eqN">赤道 R = W − mω²R</k><b class="kg" id="awEqN">—</b></div>
+          <div class="out"><k data-i18n="aw.poleN">兩極 R = W（ρ = 0）</k><b class="kg" id="awPoleN">—</b></div>
+          <div class="out"><k data-i18n="aw.hereN">本緯度 R</k><b class="kg" id="awHereN">—</b></div>
+          <div class="out"><k data-i18n="aw.crit">臨界自轉週期（R 變 0）</k><b class="kt" id="awCrit">—</b></div>
+
+          <div class="mnote" data-i18n="aw.earth"><b>真實地球參數：</b>M = 5.97 × 10²⁴ kg、R = 6.37 × 10⁶ m、恆星日 23 h 56 min 4 s（ω = 7.292 × 10⁻⁵ rad s⁻¹）。實際效應只有約 0.3%，所以拖 ω 滑桿放大才睇得清楚。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 全寬：開放式計算練習 ═══ -->
+  <section class="card" id="cardCalc">
+    <h2 class="clickable" data-fold="calc">
+      <span data-i18n="h.calc">計算練習</span><span class="sub" data-i18n="h.calc.sub">輸入答案，容差 ±2%</span>
+      <span class="scope aux" data-i18n="scope.aux">輔助</span><span class="fold-chevron" role="button" tabindex="0" aria-label="整組開合"></span>
+    </h2>
+    <div class="cardbody">
+      <div class="hint" data-i18n="calc.lede">用目前嘅參數，計算下列目標量並輸入答案（容差 ±2%）。答錯只會給概念提示，唔會直接給答案。</div>
+      <div class="chips" style="margin-top:11px" id="calcChips">
+        <button class="chip on" type="button" data-calc="g">g</button>
+        <button class="chip" type="button" data-calc="F">F</button>
+        <button class="chip" type="button" data-calc="v">v</button>
+      </div>
+      <div class="calcrow">
+        <span class="calcunit" id="calcLabel">g =</span>
+        <input type="number" id="calcIn" step="any" placeholder="0">
+        <span class="calcunit" id="calcUnit">N kg⁻¹</span>
+        <button class="btn live" id="calcCheck" type="button" data-i18n="btn.check">檢查</button>
+        <button class="btn" id="calcShow" type="button" data-i18n="btn.showAns">顯示答案</button>
+      </div>
+      <div class="calcfeed" id="calcFeed"></div>
+      <div class="hint" style="margin-top:11px" data-i18n="calc.tip">唔需要背 G 嘅數值 — 題目會提供 G = 6.67 × 10⁻¹¹ N m² kg⁻²。</div>
+    </div>
+  </section>
+
+  <!-- ═══ 全寬：概念小測 ═══ -->
+  <section class="card quizbox" id="quiz">
+    <div class="qhead">
+      <div>
+        <h2 class="clickable" data-fold="quiz">
+          <span data-i18n="h.quiz">概念小測</span><span class="scope aux" data-i18n="scope.aux">輔助</span><span class="fold-chevron" role="button" tabindex="0" aria-label="整組開合"></span>
+        </h2>
+        <div class="qsub" data-i18n="quiz.sub">即時對答，附詳盡解釋同陷阱提醒</div>
+      </div>
+      <div id="score">—</div>
+    </div>
+    <div class="cardbody">
+      <div id="qlist"></div>
+      <button class="qreset" id="qreset" type="button" data-i18n="btn.resetQuiz">重做全部題目</button>
+    </div>
+  </section>
+
+  <footer>
+    <span class="mark">最強 Physics by Jacky</span>
+    <p>Gravitation &amp; Circular Orbits Simulation · DSE Physics Interactive Simulation Lab</p>
+  </footer>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   Gravitation 萬有引力 / 引力場 互動模擬
+   範圍依 HKDSE Physics 必修部分「Force and Motion (g) Gravitation」：
+     ・牛頓萬有引力定律 F = GMm/r²
+     ・引力場強度定義 g = F/m（單位質量所受的引力）
+     ・星球上方某一點的引力場強度 g = GM/r²
+     ・圓軌道物體的速率 v = √(GM/r)，週期 T = 2πr/v
+   刻意不包含（syllabus 明確不要求，永久禁區）：
+     開普勒定律、逃逸速度、橢圓／圓錐曲線軌道、行星內部引力場 (r < R)、
+     多天體引力場疊加。
+   範圍標籤制度：.scope.req = 必修 / .scope.aux = 輔助 /
+     .scope.ext = 選修延伸（PE、總能量、等勢面，一律預設關閉）
+   ═══════════════════════════════════════════════════════════════ */
+const money = id => document.getElementById(id);
+
+/* ───────── 物理常數 ───────── */
+const G  = 6.674e-11;               // N m² kg⁻²（內部運算精度）
+const G_SHOW = '6.67 × 10⁻¹¹';      // 顯示值（與 DSE 卷面一致）
+
+/* ───────── 天體資料（M / R 為真實數值） ───────── */
+const BODIES = {
+  earth:  { key:'earth',  M:5.97e24, R:6.37e6, color:'#3f6f9c', edge:'#2c5273',
+            glow:'rgba(63,111,156,.20)', zh:'地球', en:'Earth' },
+  moon:   { key:'moon',   M:7.35e22, R:1.74e6, color:'#8a8a92', edge:'#61616a',
+            glow:'rgba(138,138,146,.20)', zh:'月球', en:'Moon' },
+  mars:   { key:'mars',   M:6.42e23, R:3.39e6, color:'#b06a44', edge:'#8a4f30',
+            glow:'rgba(176,106,68,.20)', zh:'火星', en:'Mars' },
+  custom: { key:'custom', M:5.97e24, R:6.37e6, color:'#7a6a9c', edge:'#5a4d78',
+            glow:'rgba(122,106,156,.20)', zh:'自訂', en:'Custom' }
+};
+const H_MAX_FACTOR = 50;     // 最高軌道高度 = 50 R（地球 ≈ 3.19 × 10⁸ m，涵蓋 GEO 與月球軌道）
+const M_LOG = [22, 31];      // 自訂 M：10²² – 10³¹ kg
+const R_LOG = [5, 9];        // 自訂 R：10⁵ – 10⁹ m
+
+/* ───────── 狀態 ───────── */
+const S = {
+  lang:'zh',
+  body:'earth',
+  hLog:0.797,          // log10(h / R)
+  mLog:3,              // m = 10^mLog kg  → 1000 kg
+  m2Log:Math.log10(2000),
+  phase:0,             // rad
+  phase2:Math.PI,      // 第二衛星
+  speed:500,           // 動畫加速
+  vRatio:1,            // v_actual / v_orbit
+  rNow:1,              // Scene B 的目前半徑比（1 = 圓軌道）
+  twin:false,
+  run:true,
+  view:'compress',
+  plot:'g',
+  calc:'g',
+  mode:'circular',        // circular【必修】 / ellipse【選修延伸】 / hohmann【選修延伸】
+  ecc:0.35,               // 橢圓離心率（僅 ellipse 模式）
+  argp:0,                 // 近點方向角（僅 ellipse 模式）
+  h2Log:0.9,              // 目標軌道高度（僅 hohmann 模式）
+  orbitSamples:240,       // 軌道取樣點數（固定上限，控制成本）
+  awLat:22.3,             // 表觀視重：緯度（度）
+  awOmegaFrac:0.1,        // 表觀視重：ω 相對臨界值嘅比例
+  awMass:60,              // 表觀視重：物體質量（kg）
+  awSpin:true,            // 表觀視重：地球是否自轉
+  showF:true, showG:false, showV:true, showA:false, showFr:false,
+  quizCorrect:0,
+  trail:'laps',
+  laps:1.5,
+  trailAlpha:0.7,
+  marks:true,
+  field:false,
+  fieldAlpha:0.45,
+  fieldN:12,
+  equip:false,
+  equipAlpha:0.4,
+  equipN:6,
+  equipV:true,
+  keOnly:true,         // 能量條：只顯示 KE（PE / E 為選修延伸）
+  eMode:'perkg',
+  hudAlpha:0.88,
+  hudX:22, hudY:96,
+  hudCollapsed:false,     // 資訊卡是否收起
+  hudOn:true,             // 資訊卡是否顯示
+  opacity:1,           // 資訊卡總透明度（滾輪）
+  scene:'iss',
+  answered:{}, calcOk:0, calcDone:0, calcSeen:0
+};
+let trail = [], trail2 = [], lapCount = 1, lapCount2 = 1;
+
+/* ───────── 格式化工具 ───────── */
+function sci(x, dp){
+  if (!isFinite(x)) return '—';
+  if (x === 0) return '0';
+  const e = Math.floor(Math.log10(Math.abs(x)));
+  if (e >= -2 && e < 5) return x.toFixed(dp == null ? 3 : dp);
+  return x.toExponential(2).replace('e', ' × 10^').replace('^', '');
+}
+function sup(n){ return String(n).replace(/-/g, '⁻').replace(/[0-9]/g, d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[+d]); }
+function sciD(x, dp){
+  const s = sci(x, dp);
+  return s.replace(/× 10\^([-\d]+)/, (m, e) => '× 10' + sup(e));
+}
+function fmtLen(m){
+  if (!isFinite(m)) return '—';
+  if (Math.abs(m) >= 1e9) return sciD(m / 1e9, 3) + ' × 10⁹ m';
+  if (Math.abs(m) >= 1e6) return (m / 1e6).toFixed(3) + ' × 10⁶ m';
+  if (Math.abs(m) >= 1000) return (m / 1000).toFixed(1) + ' km';
+  return m.toFixed(1) + ' m';
+}
+function fmtSpeed(v){
+  if (!isFinite(v)) return '—';
+  if (v >= 1000) return (v / 1000).toFixed(3) + ' km s⁻¹';
+  return v.toFixed(2) + ' m s⁻¹';
+}
+function fmtT(s){
+  if (!isFinite(s)) return '—';
+  if (s >= 86400) return (s / 86400).toFixed(3) + ' 日';
+  if (s >= 3600) return (s / 3600).toFixed(3) + ' h';
+  if (s >= 60) return (s / 60).toFixed(3) + ' min';
+  return s.toFixed(2) + ' s';
+}
+function fmtMass(kg){
+  if (!isFinite(kg)) return '—';
+  return sciD(kg, 3) + ' kg';
+}
+function fmtEnergy(J){
+  if (!isFinite(J)) return '—';
+  const a = Math.abs(J);
+  if (a === 0) return '0 J';
+  if (a >= 1e9) return (J / 1e9).toFixed(3) + ' GJ';
+  if (a >= 1e6) return (J / 1e6).toFixed(3) + ' MJ';
+  if (a >= 1e3) return (J / 1e3).toFixed(3) + ' kJ';
+  return J.toFixed(3) + ' J';
+}
+function fmtEnergyPerKg(J){ return fmtEnergy(J) + ' kg⁻¹'; }
+function fmtG(g){ return sciD(g, 3) + ' N kg⁻¹'; }
+function fmtF(F){ return sciD(F, 3) + ' N'; }
+
+/* ───────── 天體 / 軌道存取 ───────── */
+function body(){ return BODIES[S.body] || BODIES.earth; }
+function hRange(){
+  const R = body().R;
+  /* 高度下限 100 m（> 0，否則對數滑桿會塌縮）；上限 50R（地球 ≈ 3.19 × 10⁸ m），
+     足以涵蓋 GEO（3.59 × 10⁷ m）與月球軌道（3.84 × 10⁸ m）。
+     滑桿位置 f ∈ [0,1] 線性對應 log10(h)，故 f = (log10 h − log10 lo)/(log10 hi − log10 lo) */
+  return { min:100, max:H_MAX_FACTOR * R, R };
+}
+function hAlt(){
+  const rg = hRange();
+  const f = Math.min(1, Math.max(0, S.hLog));
+  const lo = Math.log10(rg.min), hi = Math.log10(rg.max);
+  const h = Math.pow(10, lo + (hi - lo) * f);
+  return Math.max(0, Math.min(rg.max, h));
+}
+function rNow(){ return body().R + hAlt(); }
+function h2Alt(){
+  const rg = hRange();
+  const f = Math.min(1, Math.max(0, S.h2Log));
+  const lo = Math.log10(rg.min), hi = Math.log10(rg.max);
+  return Math.max(rg.min, Math.min(rg.max, Math.pow(10, lo + (hi - lo) * f)));
+}
+function mNow(){ return Math.pow(10, S.mLog); }
+function m2Now(){ return Math.pow(10, S.m2Log); }
+/* 由目標週期反解 r，再反解 h */
+function geoAltitude(T){
+  const b = body();
+  const r = Math.cbrt(G * b.M * T * T / (4 * Math.PI * Math.PI));
+  const h = Math.max(0, r - b.R);
+  S.hLog = logH(h);
+  return h;
+}
+
+/* ───────── 物理核心（單一真相來源） ───────── */
+function physics(){
+  const b = body(), R = b.R, h = hAlt(), r = R + h, m = mNow(), GM = G * b.M;
+  const g0 = GM / (R * R);        // 表面引力場強度 g₀ = GM/R²
+  const g  = GM / (r * r);        // 星球上方 g = GM/r²
+  const F  = GM * m / (r * r);    // 萬有引力 F = GMm/r²
+  const v  = Math.sqrt(GM / r);   // 圓軌道速率 v = √(GM/r)
+  const T  = 2 * Math.PI * r / v; // 週期 T = 2πr/v
+  const a  = v * v / r;           // 向心加速度 a = v²/r
+  const KE = 0.5 * m * v * v;     // 動能（必修）
+  const PE = -GM * m / r;         // 引力勢能（選修延伸）
+  return { b, R, h, r, m, GM, g0, g, F, v, T, a,
+           gDef: F / m,                       // 驗算：g = F/m
+           KE, PE, ET: PE + KE,               // 能量
+           KEpkg: 0.5 * v * v, PEpkg: -GM / r, ETpkg: -GM / (2 * r),
+           vRatio: S.vRatio, balanced: Math.abs(S.vRatio - 1) < 1e-9,
+           m2: m2Now(), F2: GM * m2Now() / (r * r),
+           omega: Math.sqrt(GM / (r * r * r)),                    // 角速度 ω = √(GM/r³)
+           gGolden: g0 * (R * R) / (r * r),                        // 黃金代換 g = g₀R²/r²
+           vEsc: Math.sqrt(2 * GM / R),                            // 【選修延伸】表面逃逸速度
+           vEscAt: Math.sqrt(2 * GM / r),                          // 【選修延伸】該處半徑嘅逃逸速度
+           vEscAtR: Math.sqrt(2 * GM / r) };                       // 同 v = √(GM/r) 同半徑比較，比值必為 √2
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ORBIT CORE ── 純物理計算核心（無 DOM / 無繪圖依賴）
+   同時用於：(1) 主執行緒同步計算  (2) Web Worker 軌道取樣
+   由 _gravitation_v2_verify.js 以正則抽出，在 Node 內獨立驗算。
+   範圍：必修圓軌 + 【選修延伸】橢圓 / 霍曼轉移 / 逃逸速度
+   ═══════════════════════════════════════════════════════════════ */
+/* @ORBIT-CORE-START@ */
+var PC_G = 6.674e-11;
+/* 黃金代換：g = g₀·R²/r²（由 g₀ = GM/R² 與 g = GM/r² 相除而得） */
+function pcGolden(g0, R, r){ return g0 * (R * R) / (r * r); }
+/* 重力場強度 g = GM/r²，一律由天體質心量起 */
+function pcField(GM, r){ return GM / (r * r); }
+/* 圓軌道：速率 v = √(GM/r)、角速度 ω = √(GM/r³)、週期 T = 2π/ω */
+function pcCircular(GM, r){
+  var v = Math.sqrt(GM / r);
+  var omega = Math.sqrt(GM / (r * r * r));
+  return { v: v, omega: omega, T: 2 * Math.PI / omega };
+}
+/* 逃逸速度：動能 = 由表面移到無限遠所需之能量 ⟹ v = √(2GM/R) */
+function pcEscape(GM, R){ return Math.sqrt(2 * GM / R); }
+/* 由週期反解半徑：r = (GM T²/4π²)^(1/3)（用於靜止軌道） */
+function pcRadiusFromPeriod(GM, T){
+  return Math.cbrt(GM * T * T / (4 * Math.PI * Math.PI));
+}
+/* 兩點間霍曼轉移：橢圓 a = (r₁+r₂)/2，e = (r₂−r₁)/(r₂+r₁) */
+function pcHohmann(GM, r1, r2){
+  var lo = Math.min(r1, r2), hi = Math.max(r1, r2);
+  var a = 0.5 * (lo + hi);
+  var e = (hi - lo) / (hi + lo);
+  var vLo = Math.sqrt(GM / lo), vHi = Math.sqrt(GM / hi);
+  var vp = Math.sqrt(GM * (2 / lo - 1 / a));   // 近點速率（vis-viva）
+  var va = Math.sqrt(GM * (2 / hi - 1 / a));   // 遠點速率
+  return {
+    a: a, e: e, r1: lo, r2: hi, vp: vp, va: va,
+    dv1: Math.abs(vp - vLo),                   // 第一次點火 Δv
+    dv2: Math.abs(vHi - va),                   // 第二次點火 Δv
+    dvTotal: Math.abs(vp - vLo) + Math.abs(vHi - va),
+    tTransfer: Math.PI * Math.sqrt(a * a * a / GM),   // 轉移時間 = 半個橢圓週期
+    vpAtR1: vLo, vpAtR2: vHi
+  };
+}
+/* 開普勒方程 M = E − e·sinE，以牛頓法解 E；再轉真近點角 ν */function pcSolveE(M, e){
+  M = ((M % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  var E = e < 0.8 ? M : Math.PI;
+  for (var k = 0; k < 40; k++){
+    var f = E - e * Math.sin(E) - M;
+    var fp = 1 - e * Math.cos(E);
+    var d = f / fp;
+    E -= d;
+    if (Math.abs(d) < 1e-12) break;
+  }
+  return E;
+}
+function pcTrueAnomaly(E, e){
+  return Math.atan2(Math.sqrt(1 - e * e) * Math.sin(E), Math.cos(E) - e);
+}
+/* 橢圓：由真近點角求焦半徑 r = a(1−e²)/(1+e·cosν) 與速率（vis-viva） */
+function pcEllipseRadius(a, e, nu){ return a * (1 - e * e) / (1 + e * Math.cos(nu)); }
+function pcVisViva(GM, r, a){ return Math.sqrt(GM * (2 / r - 1 / a)); }
+/* 由真近點角取位置（焦點在天體質心）：x 沿近點方向 */
+function pcEllipsePoint(a, e, nu){
+  var r = pcEllipseRadius(a, e, nu);
+  return { x: r * Math.cos(nu), y: r * Math.sin(nu), r: r, nu: nu };
+}
+/* 產生固定點數嘅橢圓軌道取樣表（用於 Web Worker / 快取） */
+function pcEllipseTable(a, e, n, omega){
+  var pts = new Float64Array(n * 3), w = omega || 0;
+  for (var i = 0; i < n; i++){
+    var nu = 2 * Math.PI * i / n;
+    var p = pcEllipsePoint(a, e, nu);
+    var ang = Math.atan2(p.y, p.x) + w;
+    var rr = Math.hypot(p.x, p.y);
+    pts[i * 3] = rr; pts[i * 3 + 1] = ang; pts[i * 3 + 2] = nu;
+  }
+  return pts;
+}
+/* 產生固定點數嘅霍曼轉移軌道（近點 → 遠點嘅半個橢圓） */
+function pcTransferTable(GM, r1, r2, n, omega){
+  var h = pcHohmann(GM, r1, r2);
+  var pts = new Float64Array(n * 3), w = omega || 0;
+  for (var i = 0; i < n; i++){
+    var nu = Math.PI * i / (n - 1);       // 0 → π（近點到遠點）
+    var p = pcEllipsePoint(h.a, h.e, nu);
+    var ang = Math.atan2(p.y, p.x) + w;
+    pts[i * 3] = p.r; pts[i * 3 + 1] = ang; pts[i * 3 + 2] = nu;
+  }
+  return { table: pts, hohmann: h, a: h.a, e: h.e };
+}
+
+/* ── 表觀視重（Apparent weight，必修：圓周運動 + 萬有引力 + 牛頓第二定律） ──
+   物體隨行星自轉做圓周運動，圓周半徑 ρ = R cosφ（φ = 緯度）。
+   在赤道，向心加速度 a_c = ω²R 直接沿徑向指向軸心，所以
+       真重量 W − 法向力 R = mω²R   ⟹  視重 R = W − mω²R
+   在兩極，ρ = 0 ⟹ 毋須向心力 ⟹ R = W。
+   一般緯度要分解：真重量徑向，所需向心力水平指向軸。
+       徑向： W − R_r = mω²ρ·cosφ
+       切向： R_t     = mω²ρ·sinφ   （指向赤道，故視重方向略偏離徑向）
+   以下函式供主執行緒與 Web Worker 共用。 */
+function pcApparent(g0, R, phi, omega){
+  var c = Math.cos(phi), s = Math.sin(phi);
+  var rho = R * c;                       // 圓周半徑 = R cosφ
+  var ac = omega * omega * rho;          // 向心加速度 ω²ρ
+  var gR = g0 - ac * c;                  // 視重嘅徑向分量（每單位質量）
+  var gT = -ac * s;                      // 視重嘅切向分量（負 = 指向赤道）
+  return { rho:rho, ac:ac,
+           gRadial:gR, gTangent:gT,
+           gApp:Math.sqrt(gR * gR + gT * gT),   // |g_app|
+           tilt:Math.atan2(-gT, gR) };          // 偏離徑向嘅角度（rad）
+}
+/* 赤道（φ = 0）：R = W − mω²R */
+function pcApparentEquator(g0, R, omega){
+  var ac = omega * omega * R;
+  return { ac:ac, gApp:g0 - ac, ratio:(g0 - ac) / g0 };
+}
+/* 兩極（φ = 90°）：ρ = 0 ⟹ R = W */
+function pcApparentPole(g0){ return { ac:0, gApp:g0, ratio:1 }; }
+/* 視重變 0 嘅臨界自轉週期（赤道）：ω_c = √(g₀/R) */
+function pcCriticalPeriod(g0, R){ return 2 * Math.PI / Math.sqrt(g0 / R); }
+/* @ORBIT-CORE-END@ */
+
+/* ───────── Web Worker：軌道取樣（無 Worker 環境自動降級） ───────── */
+/* 由原始碼抽出 ORBIT_CORE，令 Worker 可以完整重用同一份物理程式碼 */
+function orbitCoreSrc(){
+  let src = null;
+  try { src = orbitCoreSrc.cached; } catch (e) {}
+  if (src) return src;
+  const whole = (typeof document !== 'undefined' && document.currentScript) ? document.currentScript.textContent : '';
+  const m = /\/\* @ORBIT-CORE-START@ \*\/([\s\S]*?)\/\* @ORBIT-CORE-END@ \*\//.exec(whole || '');
+  src = m ? m[1] : 'var PC_G=6.674e-11;';
+  try { orbitCoreSrc.cached = src; } catch (e) {}
+  return src;
+}
+const WORKER_SRC = [
+  orbitCoreSrc(),
+  'self.onmessage=function(ev){',
+  '  var d=ev.data||{};',
+  '  try{',
+  '    if(d.cmd==="ellipse"){ var t=pcEllipseTable(d.a,d.e,d.n,d.omega);',
+  '      self.postMessage({ok:true,key:d.key,kind:"ellipse",table:t},{transfer:[t.buffer]}); }',
+  '    else if(d.cmd==="transfer"){ var r=pcTransferTable(d.GM,d.r1,d.r2,d.n,d.omega);',
+  '      self.postMessage({ok:true,key:d.key,kind:"transfer",table:r.table,hohmann:r.hohmann},{transfer:[r.table.buffer]}); }',
+  '    else if(d.cmd==="ping"){ self.postMessage({ok:true,kind:"pong"}); }',
+  '  }catch(e){ self.postMessage({ok:false,key:d.key,error:String(e&&e.message||e)}); }',
+  '};'
+].join('\n');
+
+let orbitWorker = null, orbitWorkerFailed = false;
+let orbitCache = { key:'', table:null, kind:'', hohmann:null };
+function workerAvailable(){
+  return !orbitWorkerFailed && typeof Worker !== 'undefined' && typeof Blob !== 'undefined' &&
+         typeof URL !== 'undefined' && URL.createObjectURL && typeof self !== 'undefined';
+}
+function ensureWorker(){
+  if (orbitWorker || orbitWorkerFailed) return orbitWorker;
+  if (!workerAvailable()){ orbitWorkerFailed = true; return null; }
+  try {
+    const url = URL.createObjectURL(new Blob([WORKER_SRC], { type:'application/javascript' }));
+    orbitWorker = new Worker(url);
+    orbitWorker.onmessage = ev => {
+      const d = ev.data || {};
+      if (!d.ok) return;
+      if (d.key !== orbitRequestKey) return;          // 過期結果，丟棄
+      orbitCache = { key:d.key, table:d.table, kind:d.kind, hohmann:d.hohmann || null };
+      orbitReady = true;
+    };
+    orbitWorker.onerror = () => { orbitWorkerFailed = true; orbitWorker = null; };
+  } catch (e){ orbitWorkerFailed = true; orbitWorker = null; }
+  return orbitWorker;
+}
+/* 主執行緒同步取樣（Worker 不可用時即時降級） */
+function sampleOrbitSync(spec){
+  if (spec.kind === 'ellipse'){
+    const t = pcEllipseTable(spec.a, spec.e, spec.n, spec.omega);
+    return { key:spec.key, table:t, kind:'ellipse', hohmann:null };
+  }
+  if (spec.kind === 'transfer'){
+    const r = pcTransferTable(spec.GM, spec.r1, spec.r2, spec.n, spec.omega);
+    return { key:spec.key, table:r.table, kind:'transfer', hohmann:r.hohmann };
+  }
+  return { key:spec.key, table:null, kind:'circular', hohmann:null };
+}
+/* 由於 ORBIT_CORE 已在主執行緒作用域內，直接引用即可 */
+let orbitReady = true, orbitRequestKey = '';
+function requestOrbit(spec){
+  orbitRequestKey = spec.key;
+  const w = ensureWorker();
+  if (!w){                                      // 降級：同步計算，行為完全一致
+    orbitCache = sampleOrbitSync(spec);
+    orbitReady = true;
+    return orbitCache;
+  }
+  w.postMessage({ cmd:spec.kind, key:spec.key, GM:spec.GM, a:spec.a, e:spec.e,
+                  r1:spec.r1, r2:spec.r2, n:spec.n, omega:spec.omega });
+  if (orbitCache.key !== spec.key){            // 未及回應期間先用同步版本，避免閃爍
+    orbitCache = sampleOrbitSync(spec);
+    orbitReady = true;
+  }
+  return orbitCache;
+}
+function orbitSpec(){
+  const k = physics(), R = k.R, r1 = k.r;
+  if (S.mode === 'ellipse'){
+    const ra = r1, rp = Math.max(R * 1.02, r1 * (1 - S.ecc));
+    const a = 0.5 * (ra + rp), e = (ra - rp) / (ra + rp);
+    return { kind:'ellipse', key:'el|' + a.toFixed(1) + '|' + e.toFixed(6) + '|' + S.argp.toFixed(3) + '|' + S.body,
+             a:a, e:e, n:S.orbitSamples, omega:S.argp };
+  }
+  if (S.mode === 'hohmann'){
+    const r2 = R + h2Alt();                 // 目標軌道半徑 = R + 目標高度
+    return { kind:'transfer', key:'ho|' + k.GM.toFixed(1) + '|' + r1.toFixed(1) + '|' + r2.toFixed(1) + '|' + S.body,
+             GM:k.GM, r1:Math.min(r1, r2), r2:Math.max(r1, r2), n:S.orbitSamples, omega:0 };
+  }
+  return { kind:'circular', key:'ci|' + S.body, n:S.orbitSamples, omega:0 };
+}
+
+/* ───────── 標籤避重疊（包圍盒推開） ───────── */
+const placedLabels = [];
+let labelAvoidOn = false;      // 只有教學核心標籤才參與避讓
+function beginLabelAvoid(){ resetLabels(); labelAvoidOn = true; }
+function endLabelAvoid(){ labelAvoidOn = false; }
+function resetLabels(){ placedLabels.length = 0; }
+function overlaps(a, b, pad){
+  const p = pad == null ? 2 : pad;
+  return !(a.x2 + p < b.x1 || b.x2 + p < a.x1 || a.y2 + p < b.y1 || b.y2 + p < a.y1);
+}
+/* 回傳一個唔會撞到已放置標籤嘅位置（最多上下移 8 次，每次 15px） */
+function avoidLabel(x, y, w, h){
+  if (!labelAvoidOn) return { x, y };
+  const box = { x1:x - w / 2, x2:x + w / 2, y1:y - h / 2, y2:y + h / 2, x, y };
+  for (let i = 0; i < 8; i++){
+    let hit = false;
+    for (let j = 0; j < placedLabels.length; j++){
+      if (overlaps(box, placedLabels[j])){ hit = true; break; }
+    }
+    if (!hit) break;
+    const dir = (i % 2 === 0) ? -1 : 1;
+    const step = 15 * (Math.floor(i / 2) + 1);
+    box.y = y + dir * step;
+    box.y1 = box.y - h / 2; box.y2 = box.y + h / 2;
+  }
+  placedLabels.push(box);
+  return { x, y:box.y };
+}
+
+/* ───────── 軌跡取樣（固定點數上限 + 相位插值，避免斷裂） ───────── */
+const TRAIL_MAX = 720, TRAIL_MIN = 90;
+function trailBudget(){
+  if (S.trail === 'forever') return TRAIL_MAX;
+  const laps = Math.max(0.5, S.laps);
+  return Math.round(Math.min(TRAIL_MAX, Math.max(TRAIL_MIN, 150 * laps)));
+}
+/* 相位跳躍時補插中間點：解決拖曳時間滑桿令軌跡斷裂 */
+function pushSample(arr, prevPhase, phase, radiusOf){
+  let d = phase - prevPhase;
+  if (!isFinite(d)) return phase;
+  while (d > Math.PI) d -= 2 * Math.PI;
+  while (d < -Math.PI) d += 2 * Math.PI;
+  const steps = Math.min(48, Math.max(1, Math.ceil(Math.abs(d) / 0.05)));
+  for (let i = 1; i <= steps; i++){
+    const ph = prevPhase + d * (i / steps);
+    arr.push({ r: radiusOf(ph), ang: ph });
+  }
+  return phase;
+}
+function trimTrail(arr, budget){ while (arr.length > budget) arr.shift(); }
+
+/* ───────── i18n 字典 ───────── */
+const L = {
+  zh: {
+    'title.main':'萬有引力 互動模擬','title.sub':'Gravitation & Circular Orbits',
+    'lede':'萬有引力定律 <b>F = GMm/r²</b>、引力場強度定義 <b>g = F/m</b>、星球上方 <b>g = GM/r²</b>、圓軌道速率 <b>v = √(GM/r)</b>。拖動滑桿，所有數值、向量同圖表即時更新。',
+    'legend':'圖例','scope.req':'必修','scope.aux':'輔助','scope.ext':'選修延伸',
+    'lg.g':'g = GM/r²（引力場強度）','lg.f':'F = GMm/r²（萬有引力）',
+    'lg.v':'v = √(GM/r)（圓軌道速率）','lg.a':'a = v²/r（向心加速度）',
+    'lg.sat':'衛星','lg.trail':'軌跡 ＋ 圈數標記','lg.field':'引力場線（單一天體）','lg.equip':'等勢面（同心圓）',
+    'hud.hint':'左上資訊卡：按住拖動可移動位置，滾輪或雙指上下滑動可調透明度。徑向比例預設為「壓縮視圖」，令近地軌道同遠距離軌道可以同時顯示；向量長度經對數壓縮，只表示方向同相對大小。',
+    'h.body':'中心天體','h.body.sub':'M 決定一切','h.params':'參數','h.scene':'示範情境',
+    'h.play':'播放','h.trail':'軌跡留存','h.field':'引力場線','h.equip':'等勢面',
+    'h.vec':'向量顯示','h.results':'計算結果','h.energy':'能量條','h.formula':'公式與定義','h.tips':'DSE 考試重點',
+    'h.mode':'軌道模式',
+    'm.circular':'圓軌道','m.ellipse':'橢圓軌道','m.hohmann':'霍曼轉移',
+    'p.ecc':'離心率 e','p.argp':'近點方向 / Argument of periapsis','p.h2':'目標軌道高度 / Target altitude',
+    'g.golden':'黃金代換（必修）','r.golden':'g = g₀R²/r²（由 GM = g₀R² 代換）',
+    'r.goldenChk':'驗算：GM/R² 與 g₀ 相等','g.orbitres':'軌道要素','r.mode':'目前模式',
+    'r.sma':'半長軸 a','r.ecc':'離心率 e','r.rp':'近點距離 rₚ','r.ra':'遠點距離 rₐ',
+    'r.dv1':'第一次點火 Δv₁','r.dv2':'第二次點火 Δv₂','r.dvT':'總 Δv','r.tTransfer':'轉移時間（半個橢圓週期）',
+    'g.esc':'逃逸速度（選修延伸）','r.vesc':'表面逃逸速度 v = √(2GM/R)','r.vescNow':'該處所需逃逸速度 √(2GM/r)',
+    'r.omega':'角速度 ω = √(GM/r³)','r.work':'徑向重力對切向運動作功 W = F·s cos90° = 0',
+    'h.apparent':'表觀視重','h.apparent.sub':'地球自轉如何令磅重讀數變細',
+    'aw.lede':'地面上的物體隨地球自轉做圓周運動，圓周半徑 <b>ρ = R cosφ</b>（φ 為緯度），所以需要向心力。呢個向心力由真重量嘅<b>徑向分量</b>提供，於是地面嘅法向反作用力 <b>R = W − mω²ρ cosφ</b> 就細過 mg —— 即係磅重讀數變細。<b>赤道最明顯（ρ 最大），兩極完全無影響（ρ = 0）。</b>',
+    'aw.lat':'緯度 / Latitude φ','aw.omega':'自轉角速度 ω','aw.period':'等效自轉週期 T = 2π/ω',
+    'aw.mass':'物體質量 / Mass m','aw.spin':'地球自轉（關閉 = 不轉動，視重 = 真重量）',
+    'aw.omHint':'滑桿由 0 調到臨界值（視重變 0）。地球實際值對應週期約 23.93 小時（恆星日）。',
+    'aw.eq':'赤道 0°','aw.hk':'香港 22.3°','aw.mid':'中緯 45°','aw.pole':'北極 90°',
+    'aw.g1':'圓周運動','aw.g2':'重量','aw.g3':'赤道 / 兩極 / 本緯度',
+    'aw.rho':'圓周半徑 ρ = R cosφ','aw.ac':'向心加速度 a = ω²ρ','aw.fc':'所需向心力 F = mω²ρ',
+    'aw.mg':'真重量 W = mg（赤道 g₀）','aw.N':'視重（法向力 R）','aw.ratio':'R / W',
+    'aw.drop':'比 W 減少','aw.tilt':'視重方向偏離徑向',
+    'aw.eqN':'赤道 R = W − mω²R','aw.poleN':'兩極 R = W（ρ = 0）','aw.hereN':'本緯度 R',
+    'aw.crit':'臨界自轉週期（R 變 0）',
+    'aw.earth':'<b>真實地球參數：</b>M = 5.97 × 10²⁴ kg、R = 6.37 × 10⁶ m、恆星日 23 h 56 min 4 s（ω = 7.292 × 10⁻⁵ rad s⁻¹）。實際效應只有約 0.3%，所以拖 ω 滑桿放大才睇得清楚。',
+    'h.sol':'解題步驟','h.plot':'關係圖','h.plot.sub':'雙對數座標下的直線 ⟹ 冪次定律',
+    'h.calc':'計算練習','h.calc.sub':'輸入答案，容差 ±2%','h.quiz':'概念小測',
+    'b.earth':'地球','b.moon':'月球','b.mars':'火星','b.custom':'自訂',
+    'p.M':'天體質量 M','p.R':'天體半徑 R',
+    'p.h':'軌道高度 / Altitude h','p.m':'衛星質量 / Satellite Mass m',
+    'p.m2':'第二衛星質量 m₂（同軌道）','p.vr':'軌道速率比 v_actual / v_orbit',
+    'p.twin':'雙衛星對照（同軌道、不同 m）','p.speed':'動畫速度 / Speed',
+    'p.phase':'軌道相位 / Orbital Phase','p.hud':'資訊卡透明度','p.laps':'保留圈數',
+    'p.talpha':'軌跡透明度','p.marks':'每圈自動標記','p.field':'顯示引力場線（單一天體）',
+    'p.falpha':'場線透明度','p.fn':'場線數目','p.equip':'顯示等勢面（同心圓）',
+    'p.ealpha':'等勢線透明度','p.en':'等勢線數目','p.equipV':'顯示 V 數值',
+    'p.pe':'顯示引力勢能 PE 與總能量 E',
+    'p.showF':'F = GMm/r²（磚紅·指向中心）','p.showG':'g = GM/r²（金·指向中心）',
+    'p.showV':'v = √(GM/r)（青藍·切向）','p.showA':'a = v²/r（灰綠·指向中心）',
+    'p.showFr':'F′ 反作用力（作用於天體）',
+    'v.compress':'壓縮視圖','v.true':'真實比例',
+    'vec.hint':'向量長度經對數壓縮，只表示方向同相對大小，唔係嚴格等比。當 v_actual = v_orbit 時，所需向心力 mv²/r 會與萬有引力 F 疊合並轉為綠色 ✓。',
+    'vr.hint':'100% = 穩定圓軌道。低於 100% 引力大於所需向心力，半徑單調收縮；高於 100% 則單調擴張。只示範半徑恆定嘅圓軌道，唔涉及其他軌道形狀。',
+    'tr.off':'關閉','tr.laps':'限時','tr.forever':'永久',
+    'ek.perkg':'每公斤','ek.abs':'絕對值','ek.ratio':'相對比例',
+    'btn.pause':'暫停','btn.play':'播放','btn.step':'單幀','btn.reset':'重置',
+    'btn.clearTrail':'清除軌跡','btn.check':'檢查','btn.showAns':'顯示答案','btn.resetQuiz':'重做全部題目',
+    'r.M':'天體質量 M','r.R':'天體半徑 R','r.g0':'表面引力場強度 g₀ = GM/R²',
+    'r.r':'軌道半徑 r = R + h','r.h':'軌道高度 h','r.rR':'r / R（天體半徑倍數）',
+    'r.g':'引力場強度 g = GM/r²','r.gR':'g / g₀','r.m':'衛星質量 m','r.F':'萬有引力 F = GMm/r²',
+    'r.gdef':'驗算：F / m（單位質量所受引力）','r.v':'圓軌道速率 v = √(GM/r)',
+    'r.T':'週期 T = 2πr/v','r.a':'向心加速度 a = v²/r','r.chk':'驗算：GM/r² 與 v²/r 相等',
+    'r.m1':'衛星 1 質量 m₁','r.F1':'衛星 1 所受引力 F₁','r.m2r':'衛星 2 質量 m₂',
+    'r.F2':'衛星 2 所受引力 F₂','r.F12':'F₂ / F₁',
+    'twin.note':'兩顆衛星在同一軌道：g、v、T 全部相同（v = √(GM/r) 與衛星質量無關）；只有所受引力 F = GMm/r² 與 m 成正比。',
+    'g.geom':'軌道幾何','g.field':'引力與場強','g.circ':'圓周運動','g.twinres':'雙衛星對照（同軌道）',
+    'e.ke':'動能 KE = ½mv²','e.pe':'引力勢能 PE = −GMm/r','e.tot':'總機械能 E = PE + KE',
+    'e.fixed':'定值 ✓','e.rise':'軌道半徑增大：KE 減小、E 增大（需外界做功）',
+    'e.fall':'軌道半徑減小：KE 增大、E 減小',
+    'e.noncirc':'非圓軌道（速率比 ≠ 100%）：機械能不守恆，有外加徑向作用。',
+    'e.notePerKg':'「每公斤」檢視：數值已除以衛星質量 m，所以拖動 m 滑桿時能量條完全不動 — 同 g = F/m 與放甚麼物體無關係同一道理。',
+    'e.noteAbs':'三個能量值都與衛星質量 m 成正比。',
+    'e.noteRatio':'圓軌道嘅關鍵比例：PE : KE : E = −2 : 1 : −1，即 KE = −PE/2、E = −KE。總能量為負 ⟹ 衛星被束縛。',
+    'warn.equip':'<b>範圍提醒：</b>引力勢 V = −GM/r 屬 DSE 選修（Elective）Astronomy 範圍，必修卷不考。此處只為幫助理解「場線 ⊥ 等勢面」同「圓軌道總能量為負」嘅物理圖像。',
+    'warn.pe':'<b>範圍提醒：</b>PE = −GMm/r 與總機械能屬 DSE 選修（Elective）Astronomy 範圍，必修卷不考；必修只要求 KE = ½mv²。',
+    'field.compressed':'壓縮視圖下，場線以「等角度間距」繪製（因為對數徑向軸會扭曲線密度，直接畫 1/r² 密度會誤導）。密度隨距離下降嘅效果請切到「真實比例」檢視，或睇場線上標示嘅 g 數值。',
+    'field.true':'真實比例：場線密度隨 r² 下降（同一個立體角內場線數目不變，但面積變大 ⟹ 密度下降）。',
+    'fx.f':'萬有引力定律；r 為兩質心距離','fx.g':'引力場強度定義：單位質量所受引力',
+    'fx.g2':'由定義＋定律推得；只適用於天體外部','fx.cond':'圓軌道條件：引力提供向心力',
+    'fx.v':'上式化簡，衛星質量 m 消去','fx.t':'圓周運動週期','fx.ke':'必修範圍（Work, energy and power）',
+    'plot.g':'引力場強度 g(r)','plot.F':'萬有引力 F(r)','plot.v':'圓軌道速率 v(r)','plot.T':'週期 T(r)',
+    'plot.hint.g':'雙對數座標下 g 對 r 係斜率 −2 嘅直線 ⟹ g ∝ r⁻²（平方反比定律）。線性座標下近表面急降。',
+    'plot.hint.F':'雙對數座標下 F 對 r 係斜率 −2 嘅直線 ⟹ F ∝ r⁻²。整體與 g(r) 同形，只係乘咗衛星質量 m。',
+    'plot.hint.v':'雙對數座標下 v 對 r 係斜率 −1/2 嘅直線 ⟹ v ∝ r^(−1/2)。外圈衛星行得較慢。',
+    'plot.hint.T':'雙對數座標下 T 對 r 係斜率 +3/2 嘅直線 ⟹ T ∝ r^(3/2)。呢個係由 T = 2πr/v 推導出嘅結果，唔需要另外背。',
+    'calc.lede':'用目前嘅參數，計算下列目標量並輸入答案（容差 ±2%）。答錯只會給概念提示，唔會直接給答案。',
+    'calc.tip':'唔需要背 G 嘅數值 — 題目會提供 G = 6.67 × 10⁻¹¹ N m² kg⁻²。',
+    'calc.ok':'✓ 正確！','calc.no':'✗ 未正確',
+    'calc.correctAns':'正確答案','calc.mag':'你嘅數值相差超過一個數量級，檢查單位或科學記數法。',
+    'calc.unitF':'N','calc.unitg':'N kg⁻¹','calc.unitv':'m s⁻¹',
+    'calc.hintF1':'萬有引力定律係 F = GMm/r²。你係咪用咗高度 h 而唔係質心距離 r？',
+    'calc.hintF2':'r 一定要由球心量起：r = R + h。先用 h 求出 r，再代入公式。',
+    'calc.hintg1':'g 係單位質量所受嘅引力，所以 m 應該會消去。你條式有冇 m？',
+    'calc.hintg2':'由 g = F/m 出發，代入 F = GMm/r²，睇下 m 會點。再用 r = R + h。',
+    'calc.hintv1':'圓軌道嘅關鍵係引力提供向心力：GMm/r² = mv²/r。你有冇寫呢條式？',
+    'calc.hintv2':'兩邊都有 m，約走之後 v 同衛星質量無關。再整理一次，然後用 r = R + h 代入。',
+    'calc.stepR':'第一步：r = R + h = ','calc.stepMid':'中間值：','calc.seen':'（已睇答案，此題唔計分）',
+    'score.prefix':'得分','score.calc':'計算練習','score.quiz':'概念小測',
+    'quiz.sub':'即時對答，附詳盡解釋同陷阱提醒',
+    'tips':['g 嘅定義式必須寫 g = F/m，唔好只寫 g = GM/r²（後者係推導結果）',
+            'r 永遠係兩質心距離；題目給高度 h 就要自己加 R：r = R + h',
+            '圓軌道題先寫 GMm/r² = mv²/r，m 消去係關鍵一步',
+            'G = 6.67 × 10⁻¹¹ N m² kg⁻² 卷面會提供；g₀ = 9.81 m s⁻² 視題目給定',
+            '有效數字 3 位；單位 N kg⁻¹ 與 m s⁻² 等價',
+            'v 與衛星質量無關，但所受引力 F = GMm/r² 與 m 成正比',
+            '外圈衛星 v 較小、T 較大 —— 唔係「行遠啲要快啲」',
+            '高中範圍唔涉及行星內部、逃逸速度、開普勒定律'],
+    'sol.title':'題型 1：基本代入型','sol.q':'給軌道高度 h，求 g、F、v、T。',
+    'sol.title2':'題型 2：反解型','sol.q2':'給週期 T，求軌道半徑 r 與高度 h。',
+    'sol.title3':'題型 3：比較型','sol.q3':'兩顆衛星同軌道或不同軌道，比較 g、F、v、T。',
+    'sc.iss':'ISS 近地軌道','sc.iss.sub':'基準情境：r ≈ R，g ≈ g₀。考 v = √(GM/r) 同 T = 2πr/v',
+    'sc.geo':'地球同步軌道 GEO','sc.geo.sub':'由 T = 1 日反解 r。考「由週期求半徑」',
+    'sc.hR':'高度 = R 的軌道','sc.hR.sub':'陷阱情境：h = R ⟹ r = 2R，g = g₀/4',
+    'sc.highorbit':'極高軌道（h = 50R）','sc.highorbit.sub':'大尺度：g 極小但仍然非零；對比 g₀ 差距 2500 倍',
+    'sc.twin':'同軌道雙衛星','sc.twin.sub':'m 差 4 倍：F 差 4 倍，但 v、T 完全相同',
+    'sc.moonsurf':'月球表面軌道','sc.moonsurf.sub':'換咗 M 同 R：g₀ ≈ 1.62 m s⁻²',
+    'sc.custom':'自訂天體','sc.custom.sub':'自己輸入 M 同 R，算 g₀ = GM/R²',
+    'hint.scene':'每個情境下面都寫明「呢個情境考你咩」，唔使亂按。',
+    'hud.r':'r = R + h','hud.h':'高度 h','hud.g':'g = GM/r²','hud.F':'F = GMm/r²',
+    'hud.v':'v = √(GM/r)','hud.T':'T = 2πr/v','hud.collapsed':'（已收起）',
+    'p.hudOn':'顯示資訊卡','p.hudFold':'收起資訊卡（只留標題列）',
+    'hud.foldHint':'除咗呢兩個開關，亦可以直接按畫布上資訊卡右上角嘅「－ / ＋」切換收起，或按住卡面拖動、用滾輪調透明度。',
+    'canvas.orbit':'圓軌道','canvas.sat':'衛星 1','canvas.sat2':'衛星 2',
+    'canvas.geo':'地球同步軌道 (GEO)','canvas.surface':'天體表面',
+    'canvas.equip':'等勢面 V = −GM/r','canvas.fieldline':'引力場線',
+    'canvas.marks':'第','canvas.laps':'圈',
+    'lang.label':'中文 / English',
+    'quiz.exp':'詳解','quiz.ok':'正確','quiz.no':'未正確','quiz.trap':'陷阱'
+  },
+  en: {
+    'title.main':'Gravitation Simulation','title.sub':'Gravitation & Circular Orbits',
+    'lede':'Newton\u2019s law of universal gravitation <b>F = GMm/r²</b>, field strength defined as <b>g = F/m</b>, above a planet <b>g = GM/r²</b>, circular orbital speed <b>v = √(GM/r)</b>. Drag the sliders and every value, vector and graph updates instantly.',
+    'legend':'Legend','scope.req':'Compulsory','scope.aux':'Support','scope.ext':'Elective ext.',
+    'lg.g':'g = GM/r² (field strength)','lg.f':'F = GMm/r² (gravitational force)',
+    'lg.v':'v = √(GM/r) (orbital speed)','lg.a':'a = v²/r (centripetal acceleration)',
+    'lg.sat':'Satellite','lg.trail':'Trail + lap markers','lg.field':'Field lines (single body)','lg.equip':'Equipotentials (circles)',
+    'hud.hint':'Info card (top left): drag to move, scroll or pinch to change opacity. Radial scale defaults to a compressed view so low and distant orbits fit together; vector lengths are log-compressed and show direction and relative size only.',
+    'h.body':'Central body','h.body.sub':'M determines everything','h.params':'Parameters','h.scene':'Example scenes',
+    'h.play':'Playback','h.trail':'Trail retention','h.field':'Gravitational field lines','h.equip':'Equipotential surfaces',
+    'h.vec':'Vectors','h.results':'Results','h.energy':'Energy bars','h.formula':'Formulae & definitions','h.tips':'DSE exam notes',
+    'h.mode':'Orbit mode',
+    'm.circular':'Circular','m.ellipse':'Elliptical','m.hohmann':'Hohmann transfer',
+    'p.ecc':'Eccentricity e','p.argp':'Argument of periapsis','p.h2':'Target altitude',
+    'g.golden':'Golden substitution (compulsory)','r.golden':'g = g₀R²/r² (from GM = g₀R²)',
+    'r.goldenChk':'Check: GM/R² equals g₀','g.orbitres':'Orbit elements','r.mode':'Current mode',
+    'r.sma':'Semi-major axis a','r.ecc':'Eccentricity e','r.rp':'Periapsis distance rₚ','r.ra':'Apoapsis distance rₐ',
+    'r.dv1':'First burn Δv₁','r.dv2':'Second burn Δv₂','r.dvT':'Total Δv','r.tTransfer':'Transfer time (half an ellipse)',
+    'g.esc':'Escape speed (elective extension)','r.vesc':'Surface escape speed v = √(2GM/R)','r.vescNow':'Escape speed needed there √(2GM/r)',
+    'r.omega':'Angular velocity ω = √(GM/r³)','r.work':'Radial gravity does no work on tangential motion: W = F·s cos90° = 0',
+    'h.apparent':'Apparent weight','h.apparent.sub':'How Earth\u2019s rotation reduces the reading on a scale',
+    'aw.lede':'An object on the surface moves in a circle with the rotating planet. The circle radius is <b>ρ = R cosφ</b> (φ = latitude), so a centripetal force is needed. The <b>radial component</b> of the true weight supplies it, so the normal reaction <b>R = W − mω²ρ cosφ</b> is smaller than mg — the scale reads less. <b>Largest effect at the equator (ρ is greatest), none at the poles (ρ = 0).</b>',
+    'aw.lat':'Latitude φ','aw.omega':'Angular velocity ω','aw.period':'Equivalent period T = 2π/ω',
+    'aw.mass':'Object mass m','aw.spin':'Planet rotates (off = no rotation, apparent = true weight)',
+    'aw.omHint':'The slider runs from 0 up to the critical value (where apparent weight becomes 0). Earth\u2019s real value corresponds to a period of about 23.93 hours (sidereal day).',
+    'aw.eq':'Equator 0°','aw.hk':'Hong Kong 22.3°','aw.mid':'Mid 45°','aw.pole':'North pole 90°',
+    'aw.g1':'Circular motion','aw.g2':'Weight','aw.g3':'Equator / poles / this latitude',
+    'aw.rho':'Circle radius ρ = R cosφ','aw.ac':'Centripetal acceleration a = ω²ρ','aw.fc':'Required centripetal force F = mω²ρ',
+    'aw.mg':'True weight W = mg (g₀ at equator)','aw.N':'Apparent weight (normal force R)','aw.ratio':'R / W',
+    'aw.drop':'Reduction from W','aw.tilt':'Apparent weight tilted from radial',
+    'aw.eqN':'Equator R = W − mω²R','aw.poleN':'Poles R = W (ρ = 0)','aw.hereN':'At this latitude, R',
+    'aw.crit':'Critical period (R becomes 0)',
+    'aw.earth':'<b>Real Earth parameters:</b> M = 5.97 × 10²⁴ kg, R = 6.37 × 10⁶ m, sidereal day 23 h 56 min 4 s (ω = 7.292 × 10⁻⁵ rad s⁻¹). The real effect is only about 0.3%, so drag the ω slider to magnify it and see it clearly.',
+    'h.sol':'Solution walkthrough','h.plot':'Relationships','h.plot.sub':'Straight lines on log–log ⟹ power law',
+    'h.calc':'Calculation practice','h.calc.sub':'Enter your answer, ±2% tolerance','h.quiz':'Concept check',
+    'b.earth':'Earth','b.moon':'Moon','b.mars':'Mars','b.custom':'Custom',
+    'p.M':'Body mass M','p.R':'Body radius R',
+    'p.h':'Altitude h','p.m':'Satellite mass m','p.m2':'Second satellite mass m₂ (same orbit)',
+    'p.vr':'Speed ratio v_actual / v_orbit','p.twin':'Two satellites (same orbit, different m)',
+    'p.speed':'Animation speed','p.phase':'Orbital phase','p.hud':'Info card opacity','p.laps':'Laps kept',
+    'p.talpha':'Trail opacity','p.marks':'Mark each lap','p.field':'Show field lines (single body)',
+    'p.falpha':'Field line opacity','p.fn':'Number of field lines','p.equip':'Show equipotentials (circles)',
+    'p.ealpha':'Equipotential opacity','p.en':'Number of equipotentials','p.equipV':'Show V values',
+    'p.pe':'Show gravitational PE and total energy E',
+    'p.showF':'F = GMm/r² (brick red, towards centre)','p.showG':'g = GM/r² (gold, towards centre)',
+    'p.showV':'v = √(GM/r) (teal, tangential)','p.showA':'a = v²/r (grey-green, towards centre)',
+    'p.showFr':'F′ reaction force (acting on the body)',
+    'v.compress':'Compressed view','v.true':'True scale',
+    'vec.hint':'Vector lengths are log-compressed and show direction and relative size only — not a strict proportion. When v_actual = v_orbit, the required centripetal force mv²/r overlaps the gravitational force F and turns green ✓.',
+    'vr.hint':'100% = stable circular orbit. Below 100% gravity exceeds the required centripetal force and the radius contracts monotonically; above 100% it expands monotonically. Only a constant-radius circular orbit is demonstrated — no other orbit shapes are involved.',
+    'tr.off':'Off','tr.laps':'Timed','tr.forever':'Forever',
+    'ek.perkg':'Per kilogram','ek.abs':'Absolute','ek.ratio':'Ratios',
+    'btn.pause':'Pause','btn.play':'Play','btn.step':'Step','btn.reset':'Reset',
+    'btn.clearTrail':'Clear trail','btn.check':'Check','btn.showAns':'Show answer','btn.resetQuiz':'Reset all questions',
+    'r.M':'Body mass M','r.R':'Body radius R','r.g0':'Surface field strength g₀ = GM/R²',
+    'r.r':'Orbital radius r = R + h','r.h':'Altitude h','r.rR':'r / R (body radii)',
+    'r.g':'Field strength g = GM/r²','r.gR':'g / g₀','r.m':'Satellite mass m','r.F':'Gravitational force F = GMm/r²',
+    'r.gdef':'Check: F / m (force per unit mass)','r.v':'Orbital speed v = √(GM/r)',
+    'r.T':'Period T = 2πr/v','r.a':'Centripetal acceleration a = v²/r','r.chk':'Check: GM/r² equals v²/r',
+    'r.m1':'Satellite 1 mass m₁','r.F1':'Force on satellite 1, F₁','r.m2r':'Satellite 2 mass m₂',
+    'r.F2':'Force on satellite 2, F₂','r.F12':'F₂ / F₁',
+    'twin.note':'Both satellites share one orbit: g, v and T are identical (v = √(GM/r) is independent of satellite mass); only the force F = GMm/r² is proportional to m.',
+    'g.geom':'Orbit geometry','g.field':'Force and field','g.circ':'Circular motion','g.twinres':'Two satellites (same orbit)',
+    'e.ke':'Kinetic energy KE = ½mv²','e.pe':'Gravitational PE = −GMm/r','e.tot':'Total energy E = PE + KE',
+    'e.fixed':'constant ✓','e.rise':'Larger radius: KE decreases, E increases (external work needed)',
+    'e.fall':'Smaller radius: KE increases, E decreases',
+    'e.noncirc':'Not a circular orbit (speed ratio ≠ 100%): mechanical energy is not conserved; there is an external radial action.',
+    'e.notePerKg':'“Per kilogram” view: values are divided by the satellite mass m, so the bars do not move at all when you drag m — exactly the same idea as g = F/m being independent of what you place there.',
+    'e.noteAbs':'All three energies are proportional to the satellite mass m.',
+    'e.noteRatio':'Key circular-orbit ratios: PE : KE : E = −2 : 1 : −1, i.e. KE = −PE/2 and E = −KE. A negative total energy means the satellite is bound.',
+    'warn.equip':'<b>Scope note:</b> gravitational potential V = −GM/r belongs to the DSE <b>Elective</b> (Astronomy) part and is <b>not examined in the compulsory paper</b>. It is shown only to illustrate “field lines ⊥ equipotentials” and “negative total energy on a circular orbit”.',
+    'warn.pe':'<b>Scope note:</b> PE = −GMm/r and total mechanical energy belong to the DSE <b>Elective</b> (Astronomy) part and are <b>not examined in the compulsory paper</b>; the compulsory part requires only KE = ½mv².',
+    'field.compressed':'In the compressed view, field lines are drawn at equal angular spacing (a logarithmic radial axis distorts line density, so drawing a 1/r² density directly would be misleading). Switch to “true scale” to see the density fall-off, or read the g values labelled on the lines.',
+    'field.true':'True scale: field line density falls as r² (the number of lines inside a given solid angle is fixed, but the area grows, so the density drops).',
+    'fx.f':'Law of universal gravitation; r is the centre-to-centre distance','fx.g':'Definition of field strength: force per unit mass',
+    'fx.g2':'Derived from the definition and the law; valid outside the body only','fx.cond':'Circular orbit condition: gravity supplies the centripetal force',
+    'fx.v':'Simplified above; the satellite mass m cancels','fx.t':'Period of circular motion','fx.ke':'Compulsory part (Work, energy and power)',
+    'plot.g':'Field strength g(r)','plot.F':'Gravitational force F(r)','plot.v':'Orbital speed v(r)','plot.T':'Period T(r)',
+    'plot.hint.g':'On log–log axes g against r is a straight line of slope −2 ⟹ g ∝ r⁻² (inverse-square law). On linear axes it plunges near the surface.',
+    'plot.hint.F':'On log–log axes F against r is a straight line of slope −2 ⟹ F ∝ r⁻². It has the same shape as g(r), simply multiplied by the satellite mass m.',
+    'plot.hint.v':'On log–log axes v against r is a straight line of slope −1/2 ⟹ v ∝ r^(−1/2). Outer satellites move more slowly.',
+    'plot.hint.T':'On log–log axes T against r is a straight line of slope +3/2 ⟹ T ∝ r^(3/2). This follows from T = 2πr/v — there is nothing extra to memorise.',
+    'calc.lede':'Using the current parameters, calculate the target quantity and enter your answer (±2% tolerance). A wrong answer gives a conceptual hint only — never the answer itself.',
+    'calc.tip':'You do not need to memorise G — the question paper gives G = 6.67 × 10⁻¹¹ N m² kg⁻².',
+    'calc.ok':'✓ Correct!','calc.no':'✗ Not yet correct',
+    'calc.correctAns':'Correct answer','calc.mag':'Your value differs by more than an order of magnitude — check the unit or the scientific notation.',
+    'calc.unitF':'N','calc.unitg':'N kg⁻¹','calc.unitv':'m s⁻¹',
+    'calc.hintF1':'The law is F = GMm/r². Did you use the altitude h instead of the centre-to-centre distance r?',
+    'calc.hintF2':'r must be measured from the centre: r = R + h. Find r from h first, then substitute.',
+    'calc.hintg1':'g is the force per unit mass, so m should cancel. Does your expression still contain m?',
+    'calc.hintg2':'Start from g = F/m, substitute F = GMm/r² and see what happens to m. Then use r = R + h.',
+    'calc.hintv1':'The key to a circular orbit is that gravity supplies the centripetal force: GMm/r² = mv²/r. Have you written that equation?',
+    'calc.hintv2':'Both sides contain m, so it cancels and v is independent of the satellite mass. Rearrange, then substitute r = R + h.',
+    'calc.stepR':'Step 1: r = R + h = ','calc.stepMid':'Intermediate value: ','calc.seen':'(answer viewed — this item does not score)',
+    'score.prefix':'Score','score.calc':'Calculation practice','score.quiz':'Concept check',
+    'quiz.sub':'Instant feedback with full explanations and trap warnings',
+    'tips':['Write the definition g = F/m, not just g = GM/r² (the latter is a derived result)',
+            'r is always the centre-to-centre distance; if the question gives an altitude h, add R: r = R + h',
+            'For a circular orbit always start with GMm/r² = mv²/r — cancelling m is the key step',
+            'G = 6.67 × 10⁻¹¹ N m² kg⁻² is given in the paper; g₀ = 9.81 m s⁻² is given when needed',
+            '3 significant figures; N kg⁻¹ and m s⁻² are equivalent units',
+            'v is independent of satellite mass, but the force F = GMm/r² is proportional to m',
+            'Outer satellites have smaller v and larger T — not “further means faster”',
+            'The syllabus does not include inside a planet, escape speed or Kepler\u2019s laws'],
+    'sol.title':'Type 1: direct substitution','sol.q':'Given the altitude h, find g, F, v and T.',
+    'sol.title2':'Type 2: solving backwards','sol.q2':'Given the period T, find the orbital radius r and the altitude h.',
+    'sol.title3':'Type 3: comparison','sol.q3':'Two satellites on the same or different orbits — compare g, F, v and T.',
+    'sc.iss':'ISS low Earth orbit','sc.iss.sub':'Baseline: r ≈ R so g ≈ g₀. Tests v = √(GM/r) and T = 2πr/v',
+    'sc.geo':'Geostationary orbit (GEO)','sc.geo.sub':'Solve r from T = 1 day. Tests “period → radius”',
+    'sc.hR':'Orbit at height R','sc.hR.sub':'Trap scene: h = R ⟹ r = 2R, so g = g₀/4',
+    'sc.highorbit':'Very high orbit (h = 50R)','sc.highorbit.sub':'Large scale: g is tiny but never zero; 2500× smaller than g₀',
+    'sc.twin':'Two satellites, one orbit','sc.twin.sub':'m differs by 4×: F differs by 4×, but v and T are identical',
+    'sc.moonsurf':'Low lunar orbit','sc.moonsurf.sub':'Different M and R: g₀ ≈ 1.62 m s⁻²',
+    'sc.custom':'Custom body','sc.custom.sub':'Enter your own M and R and compute g₀ = GM/R²',
+    'hint.scene':'Each scene states what it is testing, so there is no need to press buttons at random.',
+    'hud.r':'r = R + h','hud.h':'altitude h','hud.g':'g = GM/r²','hud.F':'F = GMm/r²',
+    'hud.v':'v = √(GM/r)','hud.T':'T = 2πr/v','hud.collapsed':'(collapsed)',
+    'p.hudOn':'Show info card','p.hudFold':'Collapse info card (header only)',
+    'hud.foldHint':'Besides these two switches, click the “− / ＋” button at the top-right of the info card on the canvas to collapse it; drag the card to move it, or scroll over it to change opacity.',
+    'canvas.orbit':'Circular orbit','canvas.sat':'Satellite 1','canvas.sat2':'Satellite 2',
+    'canvas.geo':'Geostationary orbit (GEO)','canvas.surface':'Body surface',
+    'canvas.equip':'Equipotential V = −GM/r','canvas.fieldline':'Field lines',
+    'canvas.marks':'Lap ','canvas.laps':'',
+    'lang.label':'English / 中文',
+    'quiz.exp':'Explanation','quiz.ok':'Correct','quiz.no':'Not correct','quiz.trap':'Trap'
+  }
+};
+function T(k){ const d = L[S.lang] || L.zh; return (k in d) ? d[k] : (k in L.zh ? L.zh[k] : k); }
+
+/* ───────── 概念小測題庫（全部鎖定必修 (g) 範圍） ───────── */
+const QUIZ = {
+  zh: [
+    { q:'某行星半徑為 R。在離表面高度 R 處（即 r = 2R），引力場強度 g 為表面 g₀ 的多少倍？',
+      o:['1/2','1/4','1/8','2'], a:1,
+      e:'<b>g = GM/r²。</b>r 由 R 變 2R ⟹ g 變 1/2² = <b>1/4</b>。<br><b>陷阱：</b>答 1/2（當成反比而唔係平方反比）；或者把「高度 = R」直接當成 r，忘記 r = R + h = 2R。' },
+    { q:'引力場強度 g 的定義是甚麼？',
+      o:['物體在該處所受的萬有引力','單位質量物體在該處所受的萬有引力','單位體積物體在該處所受的萬有引力','物體在該處的重力勢能'], a:1,
+      e:'<b>引力場強度定義為「單位質量所受的引力」：g = F/m，單位 N kg⁻¹。</b><br>把 F = GMm/r² 代入，m 消去 ⟹ g = GM/r²，所以 g 只由場源（M、r）決定，與放甚麼物體無關。<br><b>陷阱：</b>把 g 同「引力 F」混為一談 —— F 取決於放幾重，g 唔會。' },
+    { q:'衛星在圓軌道上運行。若軌道半徑變為原來的 4 倍，其軌道速率 v 變為原來的多少？',
+      o:['1/2','1/4','2 倍','不變'], a:0,
+      e:'<b>v = √(GM/r) ∝ r^(−1/2)。</b>4^(−1/2) = <b>1/2</b>。<br><b>陷阱：</b>答 1/4（誤把平方反比用在 v 上）；答「不變」（記錯成 v 同 r 無關）。' },
+    { q:'質量分別為 m 與 2m 的兩顆衛星在同一圓軌道上運行。下列哪一項<b>不同</b>？',
+      o:['引力場強度 g','軌道速率 v','週期 T','所受萬有引力 F'], a:3,
+      e:'<b>g = GM/r²、v = √(GM/r)、T = 2πr/v 全部與衛星質量無關；只有 F = GMm/r² ∝ m。</b><br>2m 那顆所受引力是 m 那顆的兩倍，但兩者行得一樣快、週期一樣。<br><b>陷阱：</b>以為「重啲就要行快啲」。' },
+    { q:'兩物體之間的萬有引力 F = GMm/r²。若兩者距離變為原來的 3 倍，引力變為原來的多少？',
+      o:['1/3','1/6','1/9','3 倍'], a:2,
+      e:'<b>平方反比：F ∝ 1/r²。</b>r 變 3 倍 ⟹ F 變 1/3² = <b>1/9</b>。<br><b>陷阱：</b>答 1/3（當成反比）。呢個係「平方反比定律」最直接嘅考法。' },
+    { q:'兩顆衛星 A、B 環繞同一行星作圓軌道運動，A 的軌道半徑較大。下列比較何者正確？',
+      o:['A 的 v 較大、T 較短','A 的 v 較小、T 較長','A 的 v 較大、T 較長','兩者的 v 與 T 都相同'], a:1,
+      e:'<b>v = √(GM/r)：r 越大 ⟹ v 越小。</b><br><b>T = 2πr/v：r 增大而 v 減小，兩邊夾攻之下 T 必然增大。</b><br><b>陷阱：</b>以為「行遠啲要快啲」。實際上外圈衛星行得更慢，所以周期更長。' }
+  ],
+  en: [
+    { q:'A planet has radius R. At a height R above the surface (so r = 2R), the field strength g is what fraction of the surface value g₀?',
+      o:['1/2','1/4','1/8','2'], a:1,
+      e:'<b>g = GM/r².</b> r goes from R to 2R ⟹ g falls to 1/2² = <b>1/4</b>.<br><b>Trap:</b> answering 1/2 (inverse rather than inverse-square), or treating the height R as the radius r and forgetting r = R + h = 2R.' },
+    { q:'How is gravitational field strength g defined?',
+      o:['The gravitational force acting on an object there','The gravitational force per unit mass acting there','The gravitational force per unit volume acting there','The gravitational potential energy of an object there'], a:1,
+      e:'<b>Gravitational field strength is defined as the force per unit mass: g = F/m, in N kg⁻¹.</b><br>Substituting F = GMm/r² makes m cancel ⟹ g = GM/r², so g depends only on the source (M and r) and not on what you place there.<br><b>Trap:</b> confusing g with the force F — F depends on the mass placed there, g does not.' },
+    { q:'A satellite moves in a circular orbit. If the orbital radius becomes 4 times larger, its orbital speed v becomes:',
+      o:['1/2 of the original','1/4 of the original','2 times the original','unchanged'], a:0,
+      e:'<b>v = √(GM/r) ∝ r^(−1/2).</b> 4^(−1/2) = <b>1/2</b>.<br><b>Trap:</b> answering 1/4 (applying the inverse-square law to v), or “unchanged” (misremembering v as independent of r).' },
+    { q:'Two satellites of mass m and 2m share the same circular orbit. Which quantity is <b>different</b>?',
+      o:['Field strength g','Orbital speed v','Period T','Gravitational force F'], a:3,
+      e:'<b>g = GM/r², v = √(GM/r) and T = 2πr/v are all independent of the satellite mass; only F = GMm/r² is ∝ m.</b><br>The heavier satellite feels twice the force but travels at exactly the same speed with the same period.<br><b>Trap:</b> assuming a heavier satellite must move faster.' },
+    { q:'For two bodies, the gravitational force is F = GMm/r². If their separation becomes 3 times larger, the force becomes:',
+      o:['1/3 of the original','1/6 of the original','1/9 of the original','3 times the original'], a:2,
+      e:'<b>Inverse-square law: F ∝ 1/r².</b> Tripling r gives 1/3² = <b>1/9</b>.<br><b>Trap:</b> answering 1/3 (treating it as an inverse rather than inverse-square relationship).' },
+    { q:'Two satellites A and B orbit the same planet in circular orbits, with A at the larger radius. Which comparison is correct?',
+      o:['A has a larger v and a shorter T','A has a smaller v and a longer T','A has a larger v and a longer T','Both have the same v and T'], a:1,
+      e:'<b>v = √(GM/r): a larger r means a smaller v.</b><br><b>T = 2πr/v: r increases while v decreases, so T must increase.</b><br><b>Trap:</b> assuming a distant satellite must travel faster. In fact outer satellites move more slowly, so their period is longer.' }
+  ]
+};
+
+/* ───────── 情境定義 ───────── */
+const SCENES = [
+  { key:'iss', apply(){ S.body='earth'; S.twin=false; S.hLog=logH(400e3); S.mLog=3; S.vRatio=1; } },
+  { key:'geo', apply(){ S.body='earth'; S.twin=false; geoAltitude(24*3600); S.mLog=3; S.vRatio=1; } },
+  { key:'hR',  apply(){ S.body='earth'; S.twin=false; S.hLog=logH(body().R); S.mLog=3; S.vRatio=1; } },
+  { key:'highorbit', apply(){ S.body='earth'; S.twin=false; S.hLog=1; S.mLog=3; S.vRatio=1; } },
+  { key:'twin', apply(){ S.body='earth'; S.twin=true; S.hLog=logH(400e3); S.mLog=Math.log10(500); S.m2Log=Math.log10(2000); S.vRatio=1; } },
+  { key:'moonsurf', apply(){ S.body='moon'; S.twin=false; S.hLog=logH(100e3); S.mLog=3; S.vRatio=1; } },
+  { key:'custom', apply(){ S.body='custom'; S.twin=false; S.hLog=0.6; S.mLog=3; S.vRatio=1; } }
+];
+function logH(h){
+  const rg = hRange();
+  const hh = Math.min(rg.max, Math.max(rg.min, h));
+  const lo = Math.log10(rg.min), hi = Math.log10(rg.max);
+  return Math.min(1, Math.max(0, (Math.log10(hh) - lo) / (hi - lo)));
+}
+/* 滑桿回填：只在場景 / URL 還原時呼叫，避免與拖曳互相干擾 */
+function syncSliders(){
+  const sv = (id, v) => { const e = money(id); if (e) e.value = v; };
+  const b = body();
+  sv('sh', S.hLog); sv('sm', S.mLog); sv('sm2', S.m2Log);
+  sv('svr', S.vRatio * 100); sv('ssp', S.speed); sv('sop', S.hudAlpha * 100);
+  sv('slaps', S.laps); sv('sta', S.trailAlpha * 100);
+  sv('sfa', S.fieldAlpha * 100); sv('sea', S.equipAlpha * 100);
+  sv('sM', (Math.log10(b.M) - M_LOG[0]) / (M_LOG[1] - M_LOG[0]));
+  sv('sR', (Math.log10(b.R) - R_LOG[0]) / (R_LOG[1] - R_LOG[0]));
+  sv('secc', S.ecc); sv('sargp', S.argp); sv('sh2', S.h2Log);
+  sv('awslat', S.awLat); sv('awsom', S.awOmegaFrac); sv('awsm', S.awMass);
+}
+
+/* ───────── Canvas 設定 ───────── */
+const CW = 1020, CH = 672, PW = 1020, PH = 440, AW_W = 1020, AW_H = 620, DPR_CAP = 2;
+const cv = money('cv'), cv2 = money('cv2'), cv3 = money('cv3');
+/* 無 ctx 時回傳一個「乜都唔做」嘅代理，令缺 canvas 嘅環境（例如局部嵌入）
+   只會少畫圖，而唔會令整個插件初始化時拋錯。 */
+const NULL_CTX = new Proxy({}, {
+  get(_, p){
+    if (p === 'createRadialGradient' || p === 'createLinearGradient')
+      return () => ({ addColorStop(){} });
+    if (p === 'measureText') return () => ({ width:0 });
+    if (p === 'canvas') return { width:0, height:0 };
+    return () => {};
+  },
+  set(){ return true; }
+});
+function ctxOf(el){ return (el && el.getContext) ? el.getContext('2d') : NULL_CTX; }
+const ctx = ctxOf(cv), ctx2 = ctxOf(cv2), ctx3 = ctxOf(cv3);
+let g1 = null, g2 = null, staticLayer = null;
+function dprNow(){ return Math.min(DPR_CAP, (typeof window !== 'undefined' && window.devicePixelRatio) || 1); }
+function fitOne(canvas, c2, lw, lh){
+  if (!canvas) return NULL_CTX;
+  const s = dprNow();
+  if (canvas.width !== Math.round(lw * s) || canvas.height !== Math.round(lh * s)){
+    canvas.width = Math.round(lw * s); canvas.height = Math.round(lh * s);
+  }
+  c2.setTransform(s, 0, 0, s, 0, 0);
+  return c2;
+}
+/* 壓縮視圖 / 真實比例：徑向映射 */
+function geom(){
+  const k = physics(), R = k.R;
+  const rMin = R * 1.02, rMax = R * (1 + H_MAX_FACTOR);
+  const cx = CW * 0.42, cy = CH * 0.52, radMax = Math.min(CW * 0.34, CH * 0.40);
+  const radMin = 34;
+  const compress = S.view === 'compress';
+  const P = r => {
+    let f;
+    if (compress) f = Math.log(r / rMin) / Math.log(rMax / rMin);
+    else f = (r - rMin) / (rMax - rMin);
+    return radMin + Math.max(0, Math.min(1, f)) * (radMax - radMin);
+  };
+  return { k, R, rMin, rMax, cx, cy, radMax, radMin, P, compress };
+}
+function sx(g, r, ang){ const rad = g.P(r); return g.cx + Math.cos(ang) * rad; }
+function sy(g, r, ang){ const rad = g.P(r); return g.cy + Math.sin(ang) * rad; }
+
+/* ───────── 繪圖工具 ───────── */
+function arrowOn(c, x1, y1, x2, y2, color, width, dash){
+  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy);
+  if (len < 0.6) return;
+  const ux = dx / len, uy = dy / len, head = Math.min(11, Math.max(6, width * 3.4));
+  const bx = x2 - ux * head, by = y2 - uy * head;
+  c.save(); c.strokeStyle = color; c.fillStyle = color; c.lineWidth = width;
+  c.lineCap = 'round'; if (dash) c.setLineDash(dash);
+  c.beginPath(); c.moveTo(x1, y1); c.lineTo(bx, by); c.stroke();
+  c.setLineDash([]);
+  c.beginPath(); c.moveTo(x2, y2);
+  c.lineTo(bx - uy * head * 0.42, by + ux * head * 0.42);
+  c.lineTo(bx + uy * head * 0.42, by - ux * head * 0.42);
+  c.closePath(); c.fill(); c.restore();
+}
+function tagOn(c, t, x, y, color, align, size, weight){
+  c.save();
+  const fs = size || 12;
+  c.font = (weight || 650) + ' ' + fs + 'px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+  const w = c.measureText(t).width + 9, h = 18;
+  /* 標籤避重疊：自動上下推開，避免在同一區域互相覆蓋 */
+  const pos = avoidLabel(x, y, w, h);
+  const yy = pos.y;
+  c.textAlign = align || 'left'; c.textBaseline = 'middle';
+  const dx = align === 'center' ? -w / 2 : (align === 'right' ? -w : 0);
+  c.fillStyle = 'rgba(255,255,255,.82)';
+  roundRectOn(c, x + dx, yy - h / 2, w, h, 6); c.fill();
+  c.fillStyle = color; c.fillText(t, x + dx + 4.5, yy + 0.5);
+  c.restore();
+}
+function roundRectOn(c, x, y, w, h, r){
+  c.beginPath();
+  c.moveTo(x + r, y); c.lineTo(x + w - r, y); c.quadraticCurveTo(x + w, y, x + w, y + r);
+  c.lineTo(x + w, y + h - r); c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  c.lineTo(x + r, y + h); c.quadraticCurveTo(x, y + h, x, y + h - r);
+  c.lineTo(x, y + r); c.quadraticCurveTo(x, y, x + r, y);
+  c.closePath();
+}
+function toCanvas(e){
+  const r = (cv && cv.getBoundingClientRect) ? cv.getBoundingClientRect()
+                                             : { left:0, top:0, width:CW, height:CH };
+  const x = (e.clientX != null ? e.clientX : 0) - r.left;
+  const y = (e.clientY != null ? e.clientY : 0) - r.top;
+  return { x: x * (CW / (r.width || CW)), y: y * (CH / (r.height || CH)) };
+}
+
+/* ───────── 引力場線 ───────── */
+function drawFieldLines(c, g){
+  const k = g.k, R = k.R, alpha = S.fieldAlpha;
+  if (alpha <= 0 || S.fieldN < 4) return;
+  const N = S.fieldN;
+  c.save();
+  c.strokeStyle = 'rgba(74,122,92,' + (alpha * 0.72).toFixed(3) + ')';
+  c.lineWidth = 1.15;
+  if (g.compress){
+    /* 等角度間距（避免對數軸上出現假密度），末端箭頭指向中心 */
+    for (let i = 0; i < N; i++){
+      const ang = (i / N) * Math.PI * 2;
+      const x1 = sx(g, R * 1.01, ang), y1 = sy(g, R * 1.01, ang);
+      const x2 = sx(g, g.rMax, ang),   y2 = sy(g, g.rMax, ang);
+      c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke();
+      /* 箭頭指向天體中心 */
+      const t = 0.16, mx = x1 + (x2 - x1) * t, my = y1 + (y2 - y1) * t;
+      arrowOn(c, x2, y2, mx, my, 'rgba(74,122,92,' + (alpha * 0.72).toFixed(3) + ')', 1.15);
+    }
+    /* 用數值標籤補回密度資訊 */
+    c.font = '600 11px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+    c.fillStyle = 'rgba(58,102,74,' + Math.min(1, alpha * 1.5).toFixed(3) + ')';
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    [1, 2, 3, 4].forEach(mult => {
+      const rr = R * mult;
+      if (rr > g.rMax) return;
+      const ang = -Math.PI / 4;
+      const x = sx(g, rr, ang), y = sy(g, rr, ang);
+      c.fillText('g = ' + sciD(k.GM / (rr * rr), 2), x, y);
+    });
+  } else {
+    /* 真實比例：密度 ∝ 1/r² —— 以等「通量」畫法，間距隨 r 增加 */
+    const base = g.rMin;
+    for (let i = 0; i < N; i++){
+      const ang = (i / N) * Math.PI * 2;
+      let prevX = null, prevY = null;
+      const steps = 26;
+      for (let s = 0; s <= steps; s++){
+        const f = s / steps;
+        const rr = base + (g.rMax - base) * f;
+        const x = sx(g, rr, ang), y = sy(g, rr, ang);
+        if (prevX != null){
+          c.beginPath(); c.moveTo(prevX, prevY); c.lineTo(x, y); c.stroke();
+        }
+        prevX = x; prevY = y;
+      }
+    }
+  }
+  c.restore();
+}
+/* ───────── 等勢面（同心圓） ───────── */
+function drawEquip(c, g){
+  const alpha = S.equipAlpha;
+  if (alpha <= 0 || S.equipN < 2) return;
+  const k = g.k, R = k.R;
+  c.save();
+  c.setLineDash([5, 5]);
+  c.lineWidth = 1.1;
+  c.strokeStyle = 'rgba(176,106,68,' + (alpha * 0.85).toFixed(3) + ')';
+  c.font = '600 11px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+  c.fillStyle = 'rgba(150,84,52,' + Math.min(1, alpha * 1.6).toFixed(3) + ')';
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  for (let i = 1; i <= S.equipN; i++){
+    const mult = 1 + (H_MAX_FACTOR - 1) * (i / S.equipN);
+    const rr = R * mult;
+    if (rr > g.rMax) continue;
+    const rad = g.P(rr);
+    c.beginPath(); c.arc(g.cx, g.cy, rad, 0, Math.PI * 2); c.stroke();
+  }
+  /* V 數值：只標最內圈嘅實際值 + 一條範圍標尺。
+     逐圈標註會令 6 個標籤在同心圓最右點疊在一起（對數軸下水平間距不足），故改用此做法。 */
+  if (S.equipV){
+    const rIn = R, rOut = R * H_MAX_FACTOR;
+    tagOn(c, 'V = ' + sciD(-k.GM / rIn, 3) + ' J kg⁻¹', g.cx, g.cy - g.P(rIn) - 11,
+          'rgba(150,84,52,.95)', 'center', 10.4, 650);
+    tagOn(c, 'V = −GM/r ：  由 ' + sciD(-k.GM / rIn, 2) + '  →  ' + sciD(-k.GM / rOut, 2) + ' J kg⁻¹',
+          g.cx, 40, 'rgba(150,84,52,.95)', 'center', 11, 650);
+  }
+  c.restore();
+}
+/* ───────── 【選修延伸】橢圓軌道 / 霍曼轉移 繪製 ───────── */
+let cachedOrbit = null;
+/* 取得目前模式嘅軌道取樣（優先用 Web Worker 回傳結果，否則同步計算） */
+function currentOrbit(){
+  const spec = orbitSpec();
+  if (cachedOrbit && cachedOrbit.key === spec.key) return cachedOrbit;
+  if (orbitCache && orbitCache.key === spec.key){ cachedOrbit = orbitCache; return cachedOrbit; }
+  const sync = sampleOrbitSync(spec);
+  requestOrbit(spec);                       // 交 Worker 背景計算並快取
+  cachedOrbit = orbitCache && orbitCache.key === spec.key ? orbitCache : sync;
+  return cachedOrbit;
+}
+function drawEllipseOrbit(c, g){
+  const o = currentOrbit();
+  if (!o || !o.table) return;
+  const t = o.table, n = t.length / 3;
+  c.save();
+  c.strokeStyle = 'rgba(176,106,68,.85)'; c.lineWidth = 1.6; c.setLineDash([6, 4]);
+  c.beginPath();
+  for (let i = 0; i < n; i++){
+    const x = sx(g, t[i * 3], t[i * 3 + 1]), y = sy(g, t[i * 3], t[i * 3 + 1]);
+    i ? c.lineTo(x, y) : c.moveTo(x, y);
+  }
+  c.closePath(); c.stroke(); c.restore();
+  /* 標出近點與遠點 */
+  let iMin = 0, iMax = 0;
+  for (let i = 0; i < n; i++){
+    if (t[i * 3] < t[iMin * 3]) iMin = i;
+    if (t[i * 3] > t[iMax * 3]) iMax = i;
+  }
+  const k = g.k;
+  tagOn(c, (S.lang === 'zh' ? '近點 rₚ = ' : 'periapsis rₚ = ') + fmtLen(t[iMin * 3]),
+        sx(g, t[iMin * 3], t[iMin * 3 + 1]), sy(g, t[iMin * 3], t[iMin * 3 + 1]) - 16, '#8a5b3a', 'center', 10.6, 650);
+  tagOn(c, (S.lang === 'zh' ? '遠點 rₐ = ' : 'apoapsis rₐ = ') + fmtLen(t[iMax * 3]),
+        sx(g, t[iMax * 3], t[iMax * 3 + 1]), sy(g, t[iMax * 3], t[iMax * 3 + 1]) - 16, '#8a5b3a', 'center', 10.6, 650);
+  void k;
+  return o;
+}
+function drawHohmannOrbit(c, g){
+  const o = currentOrbit();
+  if (!o || !o.table) return;
+  const k = g.k, t = o.table, n = t.length / 3;
+  const h = o.hohmann || pcHohmann(k.GM, k.r, k.R * (1 + h2Alt()));
+  /* 起始圓軌與目標圓軌 */
+  c.save();
+  c.strokeStyle = 'rgba(27,111,150,.55)'; c.lineWidth = 1.3; c.setLineDash([3, 5]);
+  c.beginPath(); c.arc(g.cx, g.cy, g.P(h.r1), 0, Math.PI * 2); c.stroke();
+  c.strokeStyle = 'rgba(74,122,92,.65)';
+  c.beginPath(); c.arc(g.cx, g.cy, g.P(h.r2), 0, Math.PI * 2); c.stroke();
+  /* 轉移橢圓（半個） */
+  c.strokeStyle = 'rgba(176,106,68,.9)'; c.lineWidth = 1.8; c.setLineDash([7, 4]);
+  c.beginPath();
+  for (let i = 0; i < n; i++){
+    const x = sx(g, t[i * 3], t[i * 3 + 1]), y = sy(g, t[i * 3], t[i * 3 + 1]);
+    i ? c.lineTo(x, y) : c.moveTo(x, y);
+  }
+  c.stroke(); c.restore();
+  tagOn(c, (S.lang === 'zh' ? '起始圓軌 r₁' : 'initial orbit r₁'), g.cx, g.cy - g.P(h.r1) - 10,
+        '#1b6f96', 'center', 10.6, 650);
+  tagOn(c, (S.lang === 'zh' ? '目標圓軌 r₂' : 'target orbit r₂'), g.cx, g.cy - g.P(h.r2) - 10,
+        '#4a7a5c', 'center', 10.6, 650);
+  return o;
+}
+
+/* ───────── 天體 ───────── */
+function drawBody(c, g){
+  const k = g.k, b = k.b;
+  const rad = Math.max(16, g.P(k.R));
+  c.save();
+  const rg = c.createRadialGradient(g.cx - rad * .35, g.cy - rad * .35, rad * .12, g.cx, g.cy, rad);
+  rg.addColorStop(0, '#ffffff'); rg.addColorStop(.28, b.color); rg.addColorStop(1, b.edge);
+  c.fillStyle = rg;
+  c.beginPath(); c.arc(g.cx, g.cy, rad, 0, Math.PI * 2); c.fill();
+  c.strokeStyle = 'rgba(184,134,11,.65)'; c.lineWidth = 1.4; c.stroke();
+  c.restore();
+  /* 天體標籤放左下方並向左對齊，完全離開右上嘅軌道／衛星／向量擁擠區 */
+  tagOn(c, (S.lang === 'zh' ? b.zh : b.en) + '  M = ' + sciD(b.M, 2) + ' kg',
+        g.cx - rad - 18, g.cy + rad + 22, '#8b6914', 'right', 11.5, 650);
+}
+/* ───────── 參考圈 ───────── */
+function drawRings(c, g){
+  const k = g.k, R = k.R;
+  c.save(); c.setLineDash([3, 6]); c.lineWidth = 1;
+  [[1, 'g₀'], [2, 'g₀/4'], [3, 'g₀/9'], [10, 'g₀/100'], [50, 'g₀/2500']].forEach(([mult, lab]) => {
+    const rr = R * mult;
+    if (rr > g.rMax) return;
+    c.strokeStyle = 'rgba(184,134,11,.30)';
+    c.beginPath(); c.arc(g.cx, g.cy, g.P(rr), 0, Math.PI * 2); c.stroke();
+    const rad = g.P(rr);
+    tagOn(c, 'r = ' + mult + 'R  ' + lab, g.cx + rad * 0.707, g.cy + rad * 0.707,
+          'rgba(139,105,20,.85)', 'center', 10.4, 600);
+  });
+  c.restore();
+}
+/* ───────── 軌跡 ───────── */
+function pushTrail(){
+  const k = physics();
+  const budget = trailBudget();
+  /* 半徑函式：圓軌固定；非圓軌（Scene B）半徑隨時間單調變化 */
+  const radiusOf = () => k.r * S.rNow;
+  if (S.trail !== 'off'){
+    const last = trail[trail.length - 1];
+    const prev = last ? last.ang : S.phase;
+    if (!last) trail.push({ r:radiusOf(), ang:S.phase });
+    else if (Math.abs(S.phase - last.ang) > 1e-4){
+      /* 相位跳躍（拖曳時間滑桿 / 高加速）→ 補插中間點，軌跡不再斷裂 */
+      pushSample(trail, prev, S.phase, radiusOf);
+    }
+    trimTrail(trail, budget);
+  } else if (trail.length) trail = [];
+  if (S.twin){
+    if (S.trail !== 'off'){
+      const l2 = trail2[trail2.length - 1];
+      const prev2 = l2 ? l2.ang : S.phase2;
+      if (!l2) trail2.push({ r:radiusOf(), ang:S.phase2 });
+      else if (Math.abs(S.phase2 - l2.ang) > 1e-4){
+        pushSample(trail2, prev2, S.phase2, radiusOf);
+      }
+      trimTrail(trail2, budget);
+    } else if (trail2.length) trail2 = [];
+  } else if (trail2.length) trail2 = [];
+}
+/* 每幀重設標籤佔位表（在繪製前呼叫一次） */
+
+function drawTrail(c, g, arr, color){
+  if (arr.length < 2 || S.trailAlpha <= 0) return;
+  c.save();
+  c.strokeStyle = color;
+  c.globalAlpha = S.trailAlpha;
+  c.lineWidth = 2; c.lineJoin = 'round';
+  c.beginPath();
+  for (let i = 0; i < arr.length; i++){
+    const p = arr[i], x = sx(g, p.r, p.ang), y = sy(g, p.r, p.ang);
+    i ? c.lineTo(x, y) : c.moveTo(x, y);
+  }
+  c.stroke();
+  c.restore();
+  /* 每圈標記 */
+  if (!S.marks) return;
+  c.save();
+  c.font = '700 10px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+  c.fillStyle = color; c.globalAlpha = Math.min(1, S.trailAlpha + 0.2);
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  const step = Math.max(24, Math.round(150 / 1.5));
+  for (let i = step; i < arr.length; i += step){
+    const p = arr[i], x = sx(g, p.r, p.ang), y = sy(g, p.r, p.ang);
+    c.beginPath(); c.arc(x, y, 2.6, 0, Math.PI * 2); c.fill();
+    const n = Math.round(i / step);
+    c.fillText(T('canvas.marks') + n + T('canvas.laps'), x, y - 11);
+  }
+  c.restore();
+}
+/* ───────── 衛星 ───────── */
+/* 由相位取得目前軌道位置。圓軌用閉式；橢圓／霍曼沿取樣表推進（近點快、遠點慢） */
+function orbitPoint(phase){
+  const k = physics();
+  if (S.mode === 'ellipse' || S.mode === 'hohmann'){
+    const o = currentOrbit();
+    if (o && o.table){
+      const t = o.table, n = t.length / 3;
+      let f = phase / (2 * Math.PI);
+      f = f - Math.floor(f);
+      const fi = f * n, i0 = Math.floor(fi) % n, i1 = (i0 + 1) % n, fr = fi - Math.floor(fi);
+      const r0 = t[i0 * 3], a0 = t[i0 * 3 + 1], r1 = t[i1 * 3], a1 = t[i1 * 3 + 1];
+      let da = a1 - a0;
+      while (da > Math.PI) da -= 2 * Math.PI;
+      while (da < -Math.PI) da += 2 * Math.PI;
+      let ang = a0 + da * fr;
+      const rr = r0 + (r1 - r0) * fr;
+      if (S.mode === 'hohmann') ang += Math.PI;          // 轉移段由起始軌出發
+      const vNow = pcVisViva(k.GM, rr, o.hohmann ? o.hohmann.a : (o.a || rr));
+      return { r:rr, ang, v:vNow };
+    }
+  }
+  const rEff = k.r * S.rNow;
+  return { r:rEff, ang:phase, v:k.v };
+}
+function drawSat(c, g, ang, color, label, filled){
+  const k = g.k;
+  const p = orbitPoint(ang), rEff = p.r, aEff = p.ang;
+  const x = sx(g, rEff, aEff), y = sy(g, rEff, aEff);
+  c.save();
+  if (filled){
+    c.fillStyle = '#3c3c43'; c.beginPath(); c.arc(x, y, 7, 0, Math.PI * 2); c.fill();
+  } else {
+    c.fillStyle = '#fff'; c.strokeStyle = color; c.lineWidth = 2.4;
+    c.beginPath(); c.arc(x, y, 6, 0, Math.PI * 2); c.fill(); c.stroke();
+  }
+  c.strokeStyle = '#c9a227'; c.lineWidth = 1.6;
+  c.beginPath(); c.arc(x, y, 9.5, 0, Math.PI * 2); c.stroke();
+  c.restore();
+  /* 標籤沿徑向向外推，距離隨軌道大小調整（小軌道用小偏移，避免推到向量／圓周之外） */
+  const ux = Math.cos(aEff), uy = Math.sin(aEff);
+  const rad0 = Math.hypot(x - g.cx, y - g.cy);
+  const off = Math.max(19, Math.min(52, rad0 * 0.19));
+  tagOn(c, label, x + ux * off, y + uy * off, color, 'center', 10.8, 700);
+  return { x, y, r: rEff, ang: aEff, v: p.v };
+}
+/* ───────── HUD 資訊卡（可拖動 · 可調透明度 · 可收起） ───────── */
+const HUD = { w:224 };
+const HUD_ROWS = 6;
+/* 資訊卡：可自由收起 / 展開。收起後只剩標題列，並顯示數值摘要 */
+function hudCollapsedH(){ return 24; }
+function hudH(){ return S.hudCollapsed ? hudCollapsedH() : (30 + HUD_ROWS * 19); }
+/* 右側切換鈕（收起 / 展開）嘅位置 */
+function hudToggleRect(){
+  return { x: S.hudX + HUD.w - 26, y: S.hudY + 3, w: 20, h: 18 };
+}
+function hitHUD(p){
+  if (!S.hudOn) return false;
+  return p.x >= S.hudX && p.x <= S.hudX + HUD.w && p.y >= S.hudY && p.y <= S.hudY + hudH();
+}
+function hitHudToggle(p){
+  if (!S.hudOn) return false;
+  const r = hudToggleRect();
+  return p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h;
+}
+function drawHUD(c, g){
+  if (!S.hudOn) return;
+  const k = g.k;
+  const rows = [
+    [T('hud.r'), fmtLen(k.r)],
+    [T('hud.h'), fmtLen(k.h)],
+    [T('hud.g'), sciD(k.g, 3) + ' N kg⁻¹'],
+    [T('hud.F'), sciD(k.F, 3) + ' N'],
+    [T('hud.v'), (k.v / 1000).toFixed(3) + ' km s⁻¹'],
+    [T('hud.T'), fmtT(k.T)]
+  ];
+  const collapsed = !!S.hudCollapsed;
+  const H = hudH();
+  c.save();
+  c.globalAlpha = Math.min(1, S.hudAlpha * S.opacity);
+  c.fillStyle = '#ffffff';
+  roundRectOn(c, S.hudX, S.hudY, HUD.w, H, 10); c.fill();
+  c.strokeStyle = 'rgba(184,134,11,.45)'; c.lineWidth = 1; c.stroke();
+  c.fillStyle = 'rgba(201,162,39,.12)';
+  roundRectOn(c, S.hudX, S.hudY, HUD.w, 24, 10); c.fill();
+  c.font = '700 11.5px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+  c.fillStyle = '#8b6914'; c.textAlign = 'left'; c.textBaseline = 'middle';
+  const title = collapsed
+    ? 'r = ' + fmtLen(k.r) + '   ·   ' + T('hud.collapsed')
+    : 'r = R + h   ·   R = ' + fmtLen(k.R);
+  c.fillText(title, S.hudX + 10, S.hudY + 13);
+  /* 收起 / 展開切換鈕 */
+  const tg = hudToggleRect();
+  c.fillStyle = 'rgba(184,134,11,.16)';
+  roundRectOn(c, tg.x, tg.y, tg.w, tg.h, 5); c.fill();
+  c.strokeStyle = 'rgba(184,134,11,.5)'; c.lineWidth = 1; c.stroke();
+  c.fillStyle = '#8b6914'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.font = '700 11px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+  c.fillText(collapsed ? '＋' : '－', tg.x + tg.w / 2, tg.y + tg.h / 2 + 0.5);
+  if (!collapsed){
+    c.font = '500 11.5px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+    rows.forEach((rw, i) => {
+      const y = S.hudY + 34 + i * 19;
+      c.fillStyle = '#6b6b73'; c.textAlign = 'left'; c.fillText(rw[0], S.hudX + 10, y);
+      c.fillStyle = '#8b6914'; c.font = '700 11.5px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+      c.textAlign = 'right'; c.fillText(rw[1], S.hudX + HUD.w - 10, y);
+      c.font = '500 11.5px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+    });
+  }
+  c.restore();
+}
+
+/* ───────── 主場景繪製 ───────── */
+function renderStatic(){ /* 預留：靜態層快取入口 */ }
+function draw(){
+  const c = fitOne(cv, ctx, CW, CH);
+  c.clearRect(0, 0, CW, CH);
+  c.fillStyle = '#ffffff'; c.fillRect(0, 0, CW, CH);
+  const g = geom(), k = g.k;
+
+  /* 0. 重設標籤佔位表：之後所有 tagOn() 都會自動避重疊 */
+  resetLabels();
+  /* 1. 引力場線 → 2. 等勢面 → 3. 參考圈
+     註：這三層的標籤屬「刻度／量測」性質，不參與避讓，
+         否則會把衛星、F、v 等核心標籤推離原位。 */
+  if (S.field) drawFieldLines(c, g);
+  if (S.equip) drawEquip(c, g);
+  drawRings(c, g);
+  /* 3b. 開始避讓：以下為教學核心標籤 */
+  beginLabelAvoid();
+  /* 4. 天體 */
+  drawBody(c, g);
+  /* 4b. 【選修延伸】橢圓 / 霍曼轉移軌道 */
+  if (S.mode === 'ellipse') drawEllipseOrbit(c, g);
+  if (S.mode === 'hohmann') drawHohmannOrbit(c, g);
+  /* 5. 軌跡 */
+  drawTrail(c, g, trail, 'rgba(201,162,39,.95)');
+  if (S.twin) drawTrail(c, g, trail2, 'rgba(27,111,150,.95)');
+  /* 6. 軌道圈 */
+  c.save(); c.setLineDash([4, 5]); c.strokeStyle = 'rgba(184,134,11,.35)'; c.lineWidth = 1.1;
+  if (S.mode === 'circular'){ c.beginPath(); c.arc(g.cx, g.cy, g.P(k.r * S.rNow), 0, Math.PI * 2); c.stroke(); }
+  c.restore();
+  /* 7. 衛星 */
+  const s1 = drawSat(c, g, S.phase, '#8b6914', T('canvas.sat'), true);
+  let s2 = null;
+  if (S.twin) s2 = drawSat(c, g, S.phase2, '#1b6f96', T('canvas.sat2') + ' (m₂)', false);
+  /* 8. 向量 */
+  drawVectors(c, g, s1, s2);
+  /* 9. HUD */
+  drawHUD(c, g);
+  /* 9b. 教學核心標籤放置完畢，停止避讓 */
+  endLabelAvoid();
+  /* 10. 比例標示 */
+  c.save();
+  c.font = '600 11px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+  c.fillStyle = '#9a9aa2'; c.textAlign = 'left'; c.textBaseline = 'middle';
+  c.fillText(S.view === 'compress' ? (S.lang === 'zh' ? '徑向比例：壓縮視圖（對數）' : 'Radial scale: compressed (log)')
+                                   : (S.lang === 'zh' ? '徑向比例：真實比例（線性）' : 'Radial scale: true scale (linear)'),
+             22, CH - 22);
+  if (S.view === 'compress')
+    c.fillText(S.lang === 'zh' ? '※ 對數軸令軌道呈壓縮形狀，非等比圓形' : '※ A log axis compresses the orbit; it is not a true circle',
+               22, CH - 40);
+  else if (S.field)
+    c.fillText(T('field.true'), 22, CH - 40);
+  c.restore();
+  /* 非圓軌道（速率比 ≠ 100%）狀態指示：避免面板數值被誤讀成圓軌道 */
+  if (!k.balanced){
+    const txt = (S.lang === 'zh' ? '半徑' : 'Radius ') + (S.vRatio < 1 ? (S.lang === 'zh' ? '收縮中' : 'contracting') : (S.lang === 'zh' ? '擴張中' : 'expanding')) +
+                (S.lang === 'zh' ? '：非圓軌道（v_actual ≠ v_orbit）' : ': not a circular orbit (v_actual ≠ v_orbit)');
+    c.save();
+    c.globalAlpha = 0.96;
+    c.font = '700 12px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+    const w = c.measureText(txt).width + 22;
+    c.fillStyle = '#fdf5f4'; roundRectOn(c, CW / 2 - w / 2, 16, w, 26, 8); c.fill();
+    c.strokeStyle = 'rgba(192,69,95,.6)'; c.lineWidth = 1; c.stroke();
+    c.fillStyle = '#8f4a3f'; c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillText(txt, CW / 2, 30);
+    c.restore();
+  }
+}
+/* ───────── 向量 ───────── */
+function drawVectors(c, g, s1, s2){
+  const k = g.k;
+  const sats = [s1].concat(s2 ? [s2] : []);
+  sats.forEach((s, idx) => {
+    const isFirst = idx === 0;
+    const ks = isFirst ? k : Object.assign({}, k, { m: k.m2, F: k.F2 });
+    const dirx = g.cx - s.x, diry = g.cy - s.y;
+    const dl = Math.hypot(dirx, diry) || 1;
+    const tang = s.ang + Math.PI / 2;
+
+    /* g 向量（金·指向中心） */
+    if (S.showG){
+      const L = logLen(k.g / k.g0, 92);
+      arrowOn(c, s.x, s.y, s.x + dirx / dl * L, s.y + diry / dl * L, '#c9a227', 2.6);
+    }
+    /* a 向量（灰綠·指向中心） */
+    if (S.showA){
+      const L = logLen(k.a / k.g0, 74);
+      arrowOn(c, s.x, s.y, s.x + dirx / dl * L, s.y + diry / dl * L, '#4a7a5c', 2, [5, 4]);
+    }
+    /* F 向量（磚紅·指向中心） */
+    if (S.showF){
+      const L = logLen(ks.F / k.F, 104);
+      arrowOn(c, s.x, s.y, s.x + dirx / dl * L, s.y + diry / dl * L, '#b23c52', 3);
+      tagOn(c, isFirst ? 'F' : 'F₂', s.x + dirx / dl * L, s.y + diry / dl * L, '#b23c52', 'center', 11, 700);
+    }
+    /* v 向量（青藍·切向） */
+    if (S.showV){
+      const L = 74 * S.vRatio;
+      arrowOn(c, s.x, s.y, s.x + Math.cos(tang) * L, s.y + Math.sin(tang) * L, '#1b6f96', 2.6);
+      tagOn(c, 'v', s.x + Math.cos(tang) * L, s.y + Math.sin(tang) * L, '#1b6f96', 'center', 11, 700);
+    }
+    /* 所需向心力 mv²/r（與 F 疊合 → 平衡時綠） */
+    if (S.showF && isFirst){
+      const L = 104 * S.vRatio * S.vRatio;
+      const col = k.balanced ? 'rgba(47,158,111,.95)' : 'rgba(138,106,18,.95)';
+      arrowOn(c, s.x, s.y, s.x + dirx / dl * L, s.y + diry / dl * L, col, 1.6, [4, 4]);
+      if (k.balanced) tagOn(c, 'F = mv²/r ✓', s.x + dirx / dl * (L + 16), s.y + diry / dl * (L + 16), '#2f9e6f', 'center', 10.6, 700);
+    }
+    /* 反作用力 F'（作用於天體） */
+    if (S.showFr && isFirst){
+      const L = 60;
+      const ux = -dirx / dl, uy = -diry / dl;
+      arrowOn(c, g.cx, g.cy, g.cx + ux * L, g.cy + uy * L, 'rgba(178,60,82,.6)', 1.8, [5, 4]);
+    }
+  });
+}
+function logLen(ratio, maxLen){
+  const rr = Math.max(1e-9, ratio);
+  const f = (Math.log10(rr) + 3) / 4;   /* 1e-3 → 0，1e1 → 1 */
+  return Math.max(16, Math.min(1, Math.max(0, f)) * maxLen);
+}
+function clampLen(v, lo, hi){
+  if (!isFinite(v)) return lo;
+  return Math.max(lo, Math.min(hi, v));
+}
+
+/* ───────── 關係圖 ───────── */
+function plotMeta(){
+  const b = body(), R = b.R;
+  const rMin = R, rMax = R * (1 + H_MAX_FACTOR);
+  const k = physics();
+  const modes = {
+    g: { lab:'g', unit:'N kg⁻¹', color:'#8a6a12', f:r => G * b.M / (r * r) },
+    F: { lab:'F', unit:'N', color:'#b23c52', f:r => G * b.M * k.m / (r * r) },
+    v: { lab:'v', unit:'m s⁻¹', color:'#1b6f96', f:r => Math.sqrt(G * b.M / r) },
+    T: { lab:'T', unit:'s', color:'#4a7a5c', f:r => 2 * Math.PI * r / Math.sqrt(G * b.M / r) }
+  };
+  return { rMin, rMax, m: modes[S.plot] || modes.g, k };
+}
+function plotY(rr){ return plotMeta().m.f(rr); }
+function ticks(lo, hi, n){
+  const out = [], span = hi - lo;
+  for (let i = 0; i <= n; i++) out.push(lo + span * i / n);
+  return out;
+}
+function drawPlot(){
+  const c = fitOne(cv2, ctx2, PW, PH);
+  c.clearRect(0, 0, PW, PH);
+  c.fillStyle = '#fff'; c.fillRect(0, 0, PW, PH);
+  const pm = plotMeta(), R = body().R;
+  const logMode = true;
+  const rr0 = R * 1.0001, rr1 = pm.rMax;
+  const f0 = pm.m.f(rr0), f1 = pm.m.f(rr1);
+  const ly0 = Math.floor(Math.log10(Math.min(f0, f1))) - 0.2;
+  const ly1 = Math.ceil(Math.log10(Math.max(f0, f1))) + 0.2;
+  const lx0 = Math.log10(rr0), lx1 = Math.log10(rr1);
+  const padL = 74, padR = 26, padT = 26, padB = 50;
+  const pw = PW - padL - padR, ph = PH - padT - padB;
+  const PX = rr => padL + (Math.log10(rr) - lx0) / (lx1 - lx0) * pw;
+  const PY = yy => padT + (ly1 - Math.log10(yy)) / (ly1 - ly0) * ph;
+
+  /* 網格 */
+  c.save(); c.strokeStyle = '#f0f0f3'; c.lineWidth = 1;
+  for (let e = Math.ceil(ly0); e <= Math.floor(ly1); e++){
+    const y = PY(Math.pow(10, e));
+    c.beginPath(); c.moveTo(padL, y); c.lineTo(padL + pw, y); c.stroke();
+  }
+  for (let e = Math.ceil(lx0); e <= Math.floor(lx1); e++){
+    const x = PX(Math.pow(10, e));
+    c.beginPath(); c.moveTo(x, padT); c.lineTo(x, padT + ph); c.stroke();
+  }
+  c.restore();
+  /* 曲線 */
+  c.save(); c.strokeStyle = pm.m.color; c.lineWidth = 2.4; c.lineJoin = 'round';
+  c.beginPath();
+  const N = 220;
+  for (let i = 0; i <= N; i++){
+    const rr = Math.pow(10, lx0 + (lx1 - lx0) * i / N);
+    const yy = pm.m.f(rr);
+    const x = PX(rr), y = PY(yy);
+    i ? c.lineTo(x, y) : c.moveTo(x, y);
+  }
+  c.stroke(); c.restore();
+  /* 目前位置 */
+  const xNow = PX(pm.k.r), yNow = PY(pm.m.f(pm.k.r));
+  c.save();
+  c.fillStyle = '#3c3c43'; c.beginPath(); c.arc(xNow, yNow, 5.4, 0, Math.PI * 2); c.fill();
+  c.strokeStyle = '#c9a227'; c.lineWidth = 2; c.beginPath(); c.arc(xNow, yNow, 8, 0, Math.PI * 2); c.stroke();
+  c.restore();
+  /* 斜率參考線 */
+  const mid = Math.sqrt(rr0 * rr1);
+  const slope = { g:-2, F:-2, v:-0.5, T:1.5 }[S.plot];
+  const refY = pm.m.f(mid) * Math.pow(pm.k.r / mid, slope);
+  c.save();
+  c.setLineDash([6, 5]); c.strokeStyle = 'rgba(184,134,11,.5)'; c.lineWidth = 1.4;
+  c.beginPath();
+  for (let i = 0; i <= 40; i++){
+    const rr = Math.pow(10, lx0 + (lx1 - lx0) * i / 40);
+    const yy = pm.m.f(mid) * Math.pow(rr / mid, slope);
+    if (yy < Math.pow(10, ly0) || yy > Math.pow(10, ly1)) continue;
+    const x = PX(rr), y = PY(yy);
+    c.lineTo(x, y);
+  }
+  c.stroke(); c.restore();
+  tagOn(c, (S.lang === 'zh' ? '斜率 ' : 'slope ') + slope.toFixed(2), padL + pw - 92, padT + 18, '#8b6914', 'left', 12, 700);
+  /* 軸 */
+  c.save();
+  c.strokeStyle = '#d4d4d8'; c.lineWidth = 1.2;
+  c.beginPath(); c.moveTo(padL, padT); c.lineTo(padL, padT + ph); c.lineTo(padL + pw, padT + ph); c.stroke();
+  c.font = '500 11px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+  c.fillStyle = '#6b6b73'; c.textAlign = 'right'; c.textBaseline = 'middle';
+  for (let e = Math.ceil(ly0); e <= Math.floor(ly1); e++){
+    c.fillText('10' + sup(e), padL - 10, PY(Math.pow(10, e)));
+  }
+  c.textAlign = 'center'; c.textBaseline = 'top';
+  for (let e = Math.ceil(lx0); e <= Math.floor(lx1); e++){
+    c.fillText('10' + sup(e), PX(Math.pow(10, e)), padT + ph + 9);
+  }
+  c.font = '700 12px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+  c.fillStyle = pm.m.color;
+  c.fillText(pm.m.lab + '  (' + pm.m.unit + ')', padL, padT - 16);
+  c.fillStyle = '#6b6b73';
+  c.fillText('r  (m)', padL + pw - 34, padT + ph + 28);
+  c.restore();
+  const hi = money('plotHint');
+  if (hi) hi.textContent = T('plot.hint.' + S.plot);
+}
+
+/* ───────── 更新 UI ───────── */
+function update(){
+  const k = physics();
+  const q = id => money(id);
+  const set = (id, v) => { const e = q(id); if (e) e.textContent = v; };
+
+  /* 天體卡 */
+  set('oM', fmtMass(k.b.M));
+  set('oR', fmtLen(k.R));
+  set('oG0', sciD(k.g0, 3) + ' N kg⁻¹');
+  set('vM', fmtMass(k.b.M));
+  set('vR', fmtLen(k.R));
+
+  /* 參數值 */
+  set('vh', fmtLen(k.h));
+  const hr = money('hRangeNote');
+  if (hr) hr.textContent = (S.lang === 'zh' ? '可調範圍：' : 'Range: ') +
+    fmtLen(hRange().min) + ' – ' + fmtLen(hRange().max) +
+    (S.lang === 'zh' ? '（對數刻度）' : ' (log scale)');
+  set('vm', k.m >= 1000 ? (k.m / 1000).toFixed(2) + ' × 10³ kg' : k.m.toFixed(0) + ' kg');
+  set('vm2', k.m2 >= 1000 ? (k.m2 / 1000).toFixed(2) + ' × 10³ kg' : k.m2.toFixed(0) + ' kg');
+  set('vvr', (S.vRatio * 100).toFixed(0) + '%');
+  set('vsp', S.speed + '×');
+  set('vph', (((S.phase * 180 / Math.PI) % 360 + 360) % 360).toFixed(0) + '°');
+  set('vop', Math.round(S.hudAlpha * 100) + '%');
+  set('vlaps', S.laps.toFixed(1) + (S.lang === 'zh' ? ' 圈' : ' laps'));
+  set('vta', Math.round(S.trailAlpha * 100) + '%');
+  set('vfa', Math.round(S.fieldAlpha * 100) + '%');
+  set('vea', Math.round(S.equipAlpha * 100) + '%');
+
+  /* 結果卡 */
+  set('oRr', fmtLen(k.r));
+  set('oH', fmtLen(k.h));
+  set('oRR', (k.r / k.R).toFixed(4) + ' R');
+  set('oG', sciD(k.g, 3) + ' N kg⁻¹');
+  set('oGR', (k.g / k.g0).toFixed(5));
+  set('oMs', k.m >= 1000 ? (k.m / 1000).toFixed(2) + ' × 10³ kg' : k.m.toFixed(0) + ' kg');
+  set('oF', fmtF(k.F));
+  set('oGD', sciD(k.gDef, 3) + ' N kg⁻¹');
+  set('oV', (k.v / 1000).toFixed(4) + ' km s⁻¹');
+  set('oT', fmtT(k.T));
+  set('oA', sciD(k.a, 3) + ' m s⁻²');
+  set('oChk', Math.abs(k.a / k.g - 1) < 1e-9 ? '✓ 相等' : '—');
+  set('oOmega', sciD(k.omega, 3) + ' rad s⁻¹');
+  set('oWork', '0 J');
+  set('oGolden', sciD(k.gGolden, 3) + ' N kg⁻¹');
+  set('oGoldenChk', Math.abs(k.gGolden / k.g - 1) < 1e-9 ? '✓ 相等' : '—');
+  set('oVesc', fmtSpeed(k.vEsc));
+  set('oVescNow', fmtSpeed(k.vEscAt));
+  set('oM1', fmtMass(k.m));
+  set('oF1', fmtF(k.F));
+  set('oM2', fmtMass(k.m2));
+  set('oF2', fmtF(k.F2));
+  set('oF12', (k.F2 / k.F).toFixed(4));
+  updateOrbitRows(k);
+  updateApparent();
+
+  /* 能量條 */
+  updateEnergy(k);
+  /* 場線 / 等勢面說明 */
+  const fn = money('fieldNote');
+  if (fn) fn.textContent = T(S.view === 'compress' ? 'field.compressed' : 'field.true');
+  /* 解題步驟 */
+  buildSolution(k);
+  /* 計算練習標籤與單位 */
+  const ct = calcTarget();
+  const cl = money('calcLabel'); if (cl) cl.textContent = ct.label;
+  const cu = money('calcUnit');  if (cu) cu.textContent = ct.unit;
+  /* 播放按鈕狀態 */
+  const pb = money('play'); if (pb) pb.textContent = T(S.run ? 'btn.pause' : 'btn.play');
+  /* 軌跡取樣：放在 update() 內，令暫停時拖相位滑桿都會更新軌跡 */
+  pushTrail();
+  /* 圖表 */
+  drawPlot();
+  draw();
+}
+
+/* ───────── 軌道要素 / 選修模式列更新 ───────── */
+function updateOrbitRows(k){
+  const set = (id, v) => { const e = money(id); if (e) e.textContent = v; };
+  const show = (id, on) => { const e = money(id); if (e) e.hidden = !on; };
+  const circ = S.mode === 'circular', ell = S.mode === 'ellipse', hoh = S.mode === 'hohmann';
+  set('oMode', T(circ ? 'm.circular' : (ell ? 'm.ellipse' : 'm.hohmann')));
+  show('rowA', !circ); show('rowE', !circ); show('rowRp', !circ); show('rowRa', !circ);
+  show('rowDv1', hoh); show('rowDv2', hoh); show('rowDvT', hoh); show('rowTt', hoh);
+  const eb = money('eccBox'); if (eb) eb.hidden = !ell;
+  const hb = money('hohBox'); if (hb) hb.hidden = !hoh;
+  const mw = money('modeWarn'); if (mw) mw.hidden = circ;
+  set('vecc', S.ecc.toFixed(2));
+  set('vargp', S.argp.toFixed(0) + '°');
+  set('vh2', fmtLen(h2Alt()));
+  if (ell){
+    const ra = k.r, rp = Math.max(k.R * 1.02, k.r * (1 - S.ecc));
+    const a = 0.5 * (ra + rp), e = (ra - rp) / (ra + rp);
+    set('oA2', fmtLen(a)); set('oEcc', e.toFixed(4));
+    set('oRp', fmtLen(rp)); set('oRa', fmtLen(ra));
+  }
+  if (hoh){
+    const r2 = k.R + h2Alt();
+    const h = pcHohmann(k.GM, k.r, r2);
+    set('oA2', fmtLen(h.a)); set('oEcc', h.e.toFixed(4));
+    set('oRp', fmtLen(h.r1)); set('oRa', fmtLen(h.r2));
+    set('oDv1', h.dv1.toFixed(2) + ' m s⁻¹');
+    set('oDv2', h.dv2.toFixed(2) + ' m s⁻¹');
+    set('oDvT', h.dvTotal.toFixed(2) + ' m s⁻¹');
+    set('oTt', fmtT(h.tTransfer));
+  }
+}
+
+/* ───────── 表觀視重：存取與計算 ───────── */
+const EARTH_REAL = { M:5.97e24, R:6.37e6, daySidereal:86164 };   // 恆星日 23 h 56 min 4 s
+function awOmegaCritical(){ return Math.sqrt(physics().g0 / EARTH_REAL.R); }
+function awOmega(){
+  if (!S.awSpin) return 0;
+  return S.awOmegaFrac * awOmegaCritical();
+}
+function awNow(){
+  const k = physics();
+  const g0 = k.g0, R = EARTH_REAL.R, m = S.awMass;
+  const w = awOmega(), phi = S.awLat * Math.PI / 180;
+  const a = pcApparent(g0, R, phi, w);
+  const eq = pcApparentEquator(g0, R, w);
+  const pole = pcApparentPole(g0);
+  return {
+    g0, R, m, omega:w, phiDeg:S.awLat,
+    rho:a.rho, ac:a.ac, Fc:m * a.ac,
+    gApp:a.gApp, gRadial:a.gRadial, gTangent:a.gTangent, tilt:a.tilt,
+    W:m * g0, N:m * a.gApp,
+    Nradial:m * a.gRadial, Ntangential:m * a.gTangent,
+    eqN:m * eq.gApp, eqRatio:eq.ratio,
+    poleN:m * pole.gApp, poleRatio:pole.ratio,
+    period: w > 0 ? 2 * Math.PI / w : Infinity,
+    critPeriod: pcCriticalPeriod(g0, R),
+    ratio:a.gApp / g0
+  };
+}
+
+/* ───────── 表觀視重：Canvas 繪製（地球剖面 + W / R / 向心力） ───────── */
+function drawApparent(){
+  const c = fitOne(cv3, ctx3, AW_W, AW_H);
+  c.clearRect(0, 0, AW_W, AW_H);
+  c.fillStyle = '#fff'; c.fillRect(0, 0, AW_W, AW_H);
+  resetLabels(); beginLabelAvoid();
+  const d = awNow();
+  const k = physics();
+  const cx = AW_W * 0.5, cy = AW_H * 0.53, Re = 150;
+
+  /* 自轉軸（虛線） */
+  c.save();
+  c.setLineDash([5, 6]); c.strokeStyle = 'rgba(107,107,115,.5)'; c.lineWidth = 1.2;
+  c.beginPath(); c.moveTo(cx, cy - Re - 62); c.lineTo(cx, cy + Re + 62); c.stroke();
+  c.restore();
+  tagOn(c, (S.lang === 'zh' ? '自轉軸' : 'rotation axis'), cx, cy - Re - 74, '#6b6b73', 'center', 11, 650);
+  /* 赤道線 */
+  c.save();
+  c.setLineDash([4, 5]); c.strokeStyle = 'rgba(27,111,150,.5)'; c.lineWidth = 1.1;
+  c.beginPath(); c.moveTo(cx - Re - 40, cy); c.lineTo(cx + Re + 40, cy); c.stroke();
+  c.restore();
+
+  /* 地球 */
+  const rgc = c.createRadialGradient(cx - Re * .35, cy - Re * .35, Re * .12, cx, cy, Re);
+  rgc.addColorStop(0, '#ffffff'); rgc.addColorStop(.28, k.b.color); rgc.addColorStop(1, k.b.edge);
+  c.fillStyle = rgc;
+  c.beginPath(); c.arc(cx, cy, Re, 0, Math.PI * 2); c.fill();
+  c.strokeStyle = 'rgba(184,134,11,.65)'; c.lineWidth = 1.4; c.stroke();
+  /* 自轉方向箭頭 */
+  c.save();
+  c.strokeStyle = 'rgba(139,105,20,.75)'; c.lineWidth = 2;
+  c.beginPath(); c.arc(cx, cy, Re + 20, -Math.PI * 0.30, Math.PI * 0.10); c.stroke();
+  c.restore();
+  tagOn(c, 'ω', cx + (Re + 20) * Math.cos(-0.10), cy + (Re + 20) * Math.sin(-0.10) - 16,
+        '#8b6914', 'center', 12, 700);
+
+  /* 物體所在點：φ = 緯度，由赤道向北量度 */
+  const ux = Math.sin(d.phiDeg * Math.PI / 180), uy = -Math.cos(d.phiDeg * Math.PI / 180);
+  const px = cx + ux * Re, py = cy + uy * Re;
+  c.save();
+  c.fillStyle = '#3c3c43'; c.beginPath(); c.arc(px, py, 7, 0, Math.PI * 2); c.fill();
+  c.strokeStyle = '#c9a227'; c.lineWidth = 1.6; c.beginPath(); c.arc(px, py, 9.5, 0, Math.PI * 2); c.stroke();
+  c.restore();
+
+  /* 圓周半徑 ρ：由自轉軸水平量到物體 */
+  c.save();
+  c.setLineDash([3, 4]); c.strokeStyle = 'rgba(27,111,150,.75)'; c.lineWidth = 1.3;
+  c.beginPath(); c.moveTo(cx, py); c.lineTo(px, py); c.stroke();
+  c.restore();
+  tagOn(c, 'ρ = R cosφ', (cx + px) / 2, py + 13, '#1b6f96', 'center', 10.8, 650);
+
+  /* 緯度角弧 */
+  c.save();
+  c.strokeStyle = 'rgba(107,107,115,.6)'; c.lineWidth = 1.2;
+  c.beginPath(); c.arc(cx, cy, 44, -Math.PI / 2, -Math.PI / 2 + d.phiDeg * Math.PI / 180); c.stroke();
+  c.restore();
+  tagOn(c, 'φ = ' + d.phiDeg.toFixed(1) + '°', cx + 12, cy - 56, '#6b6b73', 'left', 10.6, 650);
+
+  /* ── 真重量 W：沿徑向指向球心，長度 ∝ mg ── */
+  const Wl = clampLen(d.W / d.m * 9, 60, 150);
+  arrowOn(c, px, py, px - ux * Wl, py - uy * Wl, '#b23c52', 3);
+  tagOn(c, (S.lang === 'zh' ? '真重量 W = mg' : 'True weight W = mg'),
+        px - ux * (Wl + 24), py - uy * (Wl + 24), '#b23c52', 'center', 10.8, 700);
+
+  /* ── 視重 R（法向力）：方向 = 視重加速度方向 = gRadial·徑向 + gTangent·切向 ──
+     徑向單位向量 u = (ux, uy)；切向北單位向量 t = (−uy, ux)。
+     注意 gTangent 為負 ⟹ t 分量向左傾，即視重略偏向赤道。 */
+  const Rl = clampLen(d.N / d.m * 9, 26, 150);
+  const nr = d.gRadial / Math.max(1e-12, d.gApp);
+  const nt = d.gTangent / Math.max(1e-12, d.gApp);
+  const Rx = (ux * nr - uy * nt) * Rl;
+  const Ry = (uy * nr + ux * nt) * Rl;
+  arrowOn(c, px, py, px + Rx, py + Ry, '#1f6b4a', 2.8);
+  tagOn(c, (S.lang === 'zh' ? '視重 R（法向力）' : 'Apparent weight R (normal)'),
+        px + Rx, py + Ry, '#1f6b4a', 'center', 10.8, 700);
+
+  /* ── 所需向心力 F = mω²ρ：水平指向自轉軸 ── */
+  if (d.Fc > 0){
+    const Fl = clampLen(d.Fc / d.m * 9, 18, 150);
+    const sx2 = (px >= cx) ? -1 : 1;
+    arrowOn(c, px, py, px + sx2 * Fl, py, '#1b6f96', 2.6);
+    tagOn(c, (S.lang === 'zh' ? '所需向心力 F = mω²ρ' : 'Required centripetal F = mω²ρ'),
+          px + sx2 * (Fl + 26), py - 22, '#1b6f96', 'center', 10.8, 700);
+  }
+  endLabelAvoid();
+
+  /* 底部狀態 */
+  c.save();
+  c.font = '600 11.5px -apple-system,"PingFang TC","Noto Sans TC",sans-serif';
+  c.fillStyle = '#9a9aa2'; c.textAlign = 'left'; c.textBaseline = 'middle';
+  const txt = !S.awSpin
+    ? (S.lang === 'zh' ? '地球唔轉動：ρ 方向無需向心力 ⟹ 視重 = 真重量（R = W）'
+                       : 'No rotation: no centripetal force needed ⟹ apparent weight = true weight (R = W)')
+    : (S.lang === 'zh' ? 'R = W − mω²ρ cosφ　·　赤道最細，兩極 R = W'
+                       : 'R = W − mω²ρ cosφ　·　smallest at the equator, R = W at the poles');
+  c.fillText(txt, 18, AW_H - 20);
+  c.restore();
+}
+
+/* ───────── 表觀視重：面板更新 ───────── */
+function updateApparent(){
+  const set = (id, v) => { const e = money(id); if (e) e.textContent = v; };
+  const d = awNow();
+  set('awvlat', d.phiDeg.toFixed(1) + '°');
+  set('awvom', S.awSpin ? sciD(d.omega, 4) + ' rad s⁻¹' : (S.lang === 'zh' ? '0（唔轉動）' : '0 (no rotation)'));
+  set('awvT', isFinite(d.period) ? fmtT(d.period) : '∞');
+  set('awvm', d.m.toFixed(0) + ' kg');
+  set('awRho', fmtLen(d.rho));
+  set('awAc', sciD(d.ac, 4) + ' m s⁻²');
+  set('awFc', sciD(d.Fc, 4) + ' N');
+  set('awMG', d.W.toFixed(3) + ' N');
+  set('awN', d.N.toFixed(3) + ' N');
+  set('awRatio', d.ratio.toFixed(6));
+  set('awDrop', (d.W - d.N).toFixed(3) + ' N（' + ((1 - d.ratio) * 100).toFixed(4) + '%）');
+  set('awTilt', (d.tilt * 180 / Math.PI).toFixed(4) + '°');
+  set('awEqN', d.eqN.toFixed(3) + ' N（R/W = ' + d.eqRatio.toFixed(6) + '）');
+  set('awPoleN', d.poleN.toFixed(3) + ' N（R/W = ' + d.poleRatio.toFixed(6) + '）');
+  set('awHereN', d.N.toFixed(3) + ' N');
+  set('awCrit', fmtT(d.critPeriod));
+  const note = money('awNote');
+  if (note){
+    const hot = S.awOmegaFrac >= 0.9;
+    note.hidden = !S.awSpin;
+    note.className = hot ? 'mnote ext' : 'mnote';
+    note.innerHTML = hot
+      ? (S.lang === 'zh' ? '<b>已接近臨界值：</b>赤道視重即將變 0，物體會「浮起」。行星自轉太快就會解體 —— 呢個係真實物理極限。'
+                         : '<b>Near the critical value:</b> apparent weight at the equator approaches zero and objects would float off. A planet spinning this fast would break up — this is a real physical limit.')
+      : '';
+  }
+  drawApparent();
+}
+
+/* ───────── 摺疊面板（Accordion） ─────────
+   只加摺疊互動：唔移動模塊位置、唔改 grid / max-height / 任何模擬或計算邏輯。
+   開關以 inline style（display）實現，配合 access-style.css，無新增外部依賴。
+   分組：參數控制｜能量條｜公式與定義｜DSE重點｜解題步驟｜表觀視重｜計算練習｜概念小測
+   預設：只有「參數控制」展開，其餘全部摺埋。 */
+const ACCORDION = [
+  { key:'params',  cards:['cardBody','cardParams','cardMode','cardScene','cardPlay','cardTrail','cardVec','cardField','cardEquip','cardResults'], open:true  },
+  { key:'energy',  cards:['cardEnergy'],  open:false },
+  { key:'formula', cards:['cardFormula'], open:false },
+  { key:'tips',    cards:['cardTips'],    open:false },
+  { key:'sol',     cards:['cardSol'],     open:false },
+  { key:'apparent',cards:['cardApparent'],open:false },
+  { key:'calc',    cards:['cardCalc'],    open:false },
+  { key:'quiz',    cards:['quiz'],        open:false },
+  { key:'plot',    cards:['cardPlot'],    open:false }
+];
+const DEFAULT_OPEN = {};
+/* 每個 .card / section 屬於邊個組 */
+const CARD2GROUP = (() => {
+  const m = {};
+  ACCORDION.forEach(g => g.cards.forEach(c => { m[c] = g.key; DEFAULT_OPEN[c] = g.open; }));
+  return m;
+})();
+/* 還原 cardbody 原本 display 值：
+   優先讀 card 上嘅 data-disp（穩健，唔依賴 querySelector），再讀 cardbody，最後預設 block */
+function bodyDisp(card){
+  if (!card) return 'block';
+  const own = card.getAttribute ? card.getAttribute('data-disp') : null;
+  if (own === 'flex' || own === 'grid') return own;
+  const body = card.querySelector ? card.querySelector('.cardbody') : null;
+  const d = (body && body.getAttribute) ? body.getAttribute('data-disp') : null;
+  return (d === 'flex' || d === 'grid') ? d : 'block';
+}
+function setCardOpen(cardId, open){
+  const card = money(cardId);
+  if (!card) return;
+  card.classList.toggle('folded', !open);
+  const body = card.querySelector ? card.querySelector('.cardbody') : null;
+  if (body) body.style.display = open ? bodyDisp(card) : 'none';
+  const h2 = card.querySelector ? card.querySelector('h2.clickable') : null;
+  if (h2 && h2.setAttribute) h2.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+function syncFoldState(){ ACCORDION.forEach(g => g.cards.forEach(c => setCardOpen(c, !!g.open))); }
+function applyFolds(){
+  syncFoldState();
+  /* localStorage 記憶（可選；無 localStorage 時照用預設） */
+  try {
+    const saved = (typeof localStorage !== 'undefined') ? localStorage.getItem('grav_folds') : null;
+    if (saved){
+      const o = JSON.parse(saved);
+      ACCORDION.forEach(g => {
+        if (g.key === 'params') return;                    // 參數控制永遠保持展開
+        if (o[g.key] != null) g.open = !!o[g.key];
+      });
+      syncFoldState();
+    }
+  } catch (e){}
+}
+/* 判定一張卡現時係唔係「有內容顯示緊」 */
+function cardIsOpen(card){
+  if (!card) return false;
+  if (card.classList && card.classList.contains('folded')) return false;
+  const body = card.querySelector ? card.querySelector('.cardbody') : null;
+  if (!body) return false;
+  return body.style.display !== 'none';
+}
+/* 依實際狀態推導所屬分組嘅開合狀態（避免 open 標記同畫面唔一致） */
+function syncGroupOpenFromCards(){
+  ACCORDION.forEach(g => { g.open = g.cards.some(cid => cardIsOpen(money(cid))); });
+}
+function toggleGroup(key){
+  const g = ACCORDION.filter(x => x.key === key)[0];
+  if (!g) return;
+  const anyOpen = g.cards.some(cid => cardIsOpen(money(cid)));
+  g.open = !anyOpen;                    // 整組一齊開 / 一齊收（參數控制亦可以完全收起）
+  syncFoldState();
+  persistFolds();
+}
+/* 單一卡片摺疊：逐張卡獨立開合，唔會再被「必須展開」嘅分組鎖死 */
+function toggleCard(cardId){
+  const card = money(cardId);
+  if (!card) return;
+  const willFold = cardIsOpen(card);
+  setCardOpen(cardId, !willFold);
+  syncGroupOpenFromCards();
+  persistFolds();
+}
+function updateEnergy(k){
+  const showPE = !S.keOnly;
+  const peRow = money('peRow'), etRow = money('etRow');
+  if (peRow) peRow.hidden = !showPE;
+  if (etRow) etRow.hidden = !showPE;
+  const set = (id, v) => { const e = money(id); if (e) e.textContent = v; };
+  const bar = (id, pct) => { const e = money(id); if (e) e.style.width = Math.max(0, Math.min(100, pct)).toFixed(2) + '%'; };
+
+  const ref = Math.max(1e-9, Math.abs(showPE ? k.PE : k.KE));
+  if (S.eMode === 'ratio' && showPE){
+    bar('barKE', 50); bar('barPE', 100); bar('barET', 50);
+    set('oKE', '1'); set('oPE', '−2'); set('oET', '−1');
+  } else if (S.eMode === 'abs'){
+    set('oKE', fmtEnergy(k.KE));
+    set('oPE', showPE ? fmtEnergy(k.PE) : '—');
+    set('oET', showPE ? fmtEnergy(k.ET) : '—');
+    const mx = showPE ? Math.max(Math.abs(k.KE), Math.abs(k.PE), Math.abs(k.ET)) : Math.abs(k.KE);
+    bar('barKE', Math.abs(k.KE) / mx * 100);
+    bar('barPE', Math.abs(k.PE) / mx * 100);
+    bar('barET', Math.abs(k.ET) / mx * 100);
+  } else {
+    set('oKE', fmtEnergyPerKg(k.KEpkg));
+    set('oPE', showPE ? fmtEnergyPerKg(k.PE / k.m) : '—');
+    set('oET', showPE ? fmtEnergyPerKg(k.ET / k.m) : '—');
+    const mx = showPE ? Math.max(Math.abs(k.KEpkg), Math.abs(k.PE / k.m), Math.abs(k.ET / k.m)) : Math.abs(k.KEpkg);
+    bar('barKE', Math.abs(k.KEpkg) / mx * 100);
+    bar('barPE', Math.abs(k.PE / k.m) / mx * 100);
+    bar('barET', Math.abs(k.ET / k.m) / mx * 100);
+  }
+  /* 說明 */
+  const note = money('energyNote');
+  if (note){
+    let txt = S.eMode === 'ratio' ? T('e.noteRatio')
+            : (S.eMode === 'abs' ? T('e.noteAbs') : T('e.notePerKg'));
+    if (!k.balanced) txt = '<b>' + T('e.noncirc') + '</b>';
+    note.innerHTML = txt;
+  }
+  /* 「定值」標記：只在穩定圓軌道顯示 */
+  const eb = money('ebar');
+  if (eb){
+    const old = eb.querySelector('.fixed');
+    if (old) old.remove();
+    if (k.balanced){
+      const sp = document.createElement('span');
+      sp.className = 'fixed'; sp.textContent = T('e.fixed');
+      const top = eb.querySelector('.erow .etop');
+      if (top) top.appendChild(sp);
+    }
+  }
+}
+
+/* ───────── 解題步驟 ───────── */
+function buildSolution(k){
+  const el = money('steps'); if (!el) return;
+  const f3 = x => sciD(x, 3);
+  const zh = S.lang === 'zh';
+  const mShow = k.m >= 1000 ? (k.m / 1000).toFixed(2) + ' × 10³' : k.m.toFixed(0);
+  let h = '';
+  /* 題型 1 */
+  h += '<div class="q"><b>' + T('sol.title') + '</b>：' + T('sol.q') + '</div>';
+  h += '<div class="sp"><b>(a) ' + (zh ? '質心距離' : 'Centre-to-centre distance') + '</b>：' +
+       '<span class="f">r = R + h = ' + f3(k.R) + ' + ' + f3(k.h) + ' = ' + f3(k.r) + ' m</span></div>';
+  h += '<div class="sp"><b>(b) ' + (zh ? '引力場強度' : 'Field strength') + '</b>：' +
+       '<span class="f">g = GM/r² = (' + f3(G) + ')(' + f3(k.b.M) + ')/(' + f3(k.r) + ')²</span> ⇒ ' +
+       '<span class="ans">g = ' + f3(k.g) + ' N kg⁻¹</span></div>';
+  h += '<div class="sp"><b>(c) ' + (zh ? '萬有引力' : 'Gravitational force') + '</b>：' +
+       '<span class="f">F = GMm/r² = g·m = ' + f3(k.g) + ' × ' + mShow + '</span> ⇒ ' +
+       '<span class="ans">F = ' + f3(k.F) + ' N</span></div>';
+  h += '<div class="sp"><b>(d) ' + (zh ? '圓軌道速率' : 'Orbital speed') + '</b>：' +
+       '<span class="f">GMm/r² = mv²/r</span> ⇒ <span class="f">v = √(GM/r) = √(' + f3(k.GM) + '/' + f3(k.r) + ')</span> ⇒ ' +
+       '<span class="ans">v = ' + f3(k.v) + ' m s⁻¹</span></div>';
+  h += '<div class="sp"><b>(e) ' + (zh ? '週期' : 'Period') + '</b>：' +
+       '<span class="f">T = 2πr/v = 2π(' + f3(k.r) + ')/' + f3(k.v) + '</span> ⇒ ' +
+       '<span class="ans">T = ' + f3(k.T) + ' s = ' + fmtT(k.T) + '</span></div>';
+  /* 題型 2 */
+  h += '<div class="q" style="margin-top:16px"><b>' + T('sol.title2') + '</b>：' + T('sol.q2') + '</div>';
+  h += '<div class="sp"><b>(a) ' + (zh ? '由兩式消去 v' : 'Eliminate v') + '</b>：' +
+       '<span class="f">v = 2πr/T</span> 代入 <span class="f">GMm/r² = mv²/r</span> ⇒ ' +
+       '<span class="f">GM/r² = (2πr/T)²/r</span></div>';
+  h += '<div class="sp"><b>(b) ' + (zh ? '整理得' : 'Rearranging') + '</b>：' +
+       '<span class="f">r³ = GMT²/(4π²)</span> ⇒ <span class="f">r = (GMT²/4π²)<sup>1/3</sup></span> ' +
+       '<span class="dim">（' + (zh ? '推導結果，不需背' : 'a derived result, not to memorise') + '）</span></div>';
+  h += '<div class="sp"><b>(c) ' + (zh ? '本題現況' : 'Current state') + '</b>：' +
+       '<span class="f">T = ' + f3(k.T) + ' s</span> ⇒ <span class="ans">r = ' + f3(k.r) + ' m</span>，' +
+       '<span class="f">h = r − R = ' + f3(k.h) + ' m</span></div>';
+  /* 題型 3 */
+  h += '<div class="q" style="margin-top:16px"><b>' + T('sol.title3') + '</b>：' + T('sol.q3') + '</div>';
+  h += '<div class="sp"><b>(a) ' + (zh ? '平方反比' : 'Inverse square') + '</b>：' +
+       '<span class="f">g₁/g₂ = (r₂/r₁)²</span>，<span class="f">F ∝ m/r²</span></div>';
+  h += '<div class="sp"><b>(b) ' + (zh ? '速率與週期' : 'Speed and period') + '</b>：' +
+       '<span class="f">v₁/v₂ = √(r₂/r₁)</span>，<span class="f">T₁/T₂ = (r₁/r₂)<sup>3/2</sup></span></div>';
+  h += '<div class="sp"><b>(c) ' + (zh ? '本題現況（雙衛星同軌道）' : 'Current state (two satellites, same orbit)') + '</b>：' +
+       '<span class="f">F₂/F₁ = m₂/m₁ = ' + (k.F2 / k.F).toFixed(3) + '</span>，' +
+       '<span class="ans">' + (zh ? '而 v、T、g 完全相同' : 'while v, T and g are identical') + '</span></div>';
+  el.innerHTML = h;
+}
+
+/* ───────── 概念小測 ───────── */
+function buildQuiz(){
+  const items = QUIZ[S.lang] || QUIZ.zh;
+  const ql = money('qlist'); if (!ql) return;
+  S.answered = {}; S.quizCorrect = 0;
+  ql.innerHTML = items.map((it, qi) =>
+    '<div class="qitem"><div class="qno">' + (S.lang === 'zh' ? '第 ' : 'Question ') + (qi + 1) + (S.lang === 'zh' ? ' 題' : '') + '</div>' +
+    '<div class="qtext">' + it.q + '</div><div class="qopts">' +
+    it.o.map((t, oi) => '<button class="qopt" type="button" data-q="' + qi + '" data-o="' + oi + '">' +
+      '<span class="key">' + 'ABCD'[oi] + '</span><span>' + t + '</span></button>').join('') +
+    '</div><div class="qexp" id="exp-' + qi + '"></div></div>').join('');
+  syncScore();
+}
+function syncScore(){
+  const sc = money('score'); if (!sc) return;
+  const n = (QUIZ[S.lang] || QUIZ.zh).length;
+  sc.textContent = T('score.quiz') + ' ' + (S.quizCorrect || 0) + ' / ' + n +
+                   '   ·   ' + T('score.calc') + ' ' + S.calcOk + ' / ' + S.calcDone;
+}
+function answerQuiz(qi, oi, btn){
+  const it = (QUIZ[S.lang] || QUIZ.zh)[qi];
+  if (S.answered[qi] !== undefined || !it) return;
+  S.answered[qi] = oi;
+  const ok = oi === it.a;
+  if (ok) S.quizCorrect = (S.quizCorrect || 0) + 1;
+  const box = btn.parentNode;
+  Array.prototype.forEach.call(box.querySelectorAll('.qopt'), b => {
+    b.disabled = true;
+    const bi = +b.dataset.o;
+    if (bi === it.a) b.classList.add('right');
+    else if (bi === oi) b.classList.add('wrong');
+  });
+  const ex = money('exp-' + qi);
+  if (ex){
+    ex.innerHTML = '<span class="verdict ' + (ok ? 'ok' : 'no') + '">' +
+      (ok ? T('quiz.ok') : T('quiz.no')) + '</span>' + it.e;
+    ex.classList.add('show');
+  }
+  syncScore();
+}
+
+/* ───────── 計算練習 ───────── */
+function calcTarget(){
+  const k = physics();
+  if (S.calc === 'F') return { v: k.F, unit: T('calc.unitF'), label: 'F =', dp: 3 };
+  if (S.calc === 'v') return { v: k.v, unit: T('calc.unitv'), label: 'v =', dp: 3 };
+  return { v: k.g, unit: T('calc.unitg'), label: 'g =', dp: 3 };
+}
+function checkCalc(){
+  const k = physics(), tg = calcTarget();
+  const inp = money('calcIn');
+  const raw = inp ? parseFloat(inp.value) : NaN;
+  const feed = money('calcFeed');
+  if (!feed) return;
+  feed.classList.add('show');
+  if (!isFinite(raw)){
+    feed.className = 'calcfeed show';
+    feed.innerHTML = '<div class="cf no">' + (S.lang === 'zh' ? '請先輸入一個數值。' : 'Please enter a number first.') + '</div>';
+    return;
+  }
+  const relErr = Math.abs(raw - tg.v) / Math.abs(tg.v);
+  if (relErr <= 0.02){
+    S.calcOk++; S.calcDone++;
+    feed.className = 'calcfeed show';
+    feed.innerHTML = '<div class="cf ok"><b>' + T('calc.ok') + '</b> ' +
+      T('calc.correctAns') + '：<span class="ans">' + sciD(tg.v, tg.dp) + ' ' + tg.unit + '</span>' +
+      '<br>' + T('calc.stepR') + '<span class="f">' + sciD(k.r, 3) + ' m</span>' +
+      '<br>' + T('calc.stepMid') + '<span class="f">' + sciD(tg.v, tg.dp) + ' ' + tg.unit + '</span></div>';
+    syncScore(); return;
+  }
+  /* 答錯 → 只給概念提示，永遠不給答案 */
+  const round = (S.answered['calc_' + S.calc] || 0) + 1;
+  S.answered['calc_' + S.calc] = round;
+  const prefix = S.calc === 'F' ? 'calc.hintF' : (S.calc === 'v' ? 'calc.hintv' : 'calc.hintg');
+  let tip = T(prefix + (round === 1 ? '1' : '2'));
+  let extra = '';
+  if (tg.v !== 0 && (Math.abs(raw / tg.v) > 10 || Math.abs(raw / tg.v) < 0.1)) extra = '<br>' + T('calc.mag');
+  if (round >= 3){
+    extra += '<br>' + T('calc.stepR') + '<span class="f">' + sciD(k.r, 3) + ' m</span>' +
+             '<br>' + T('calc.stepMid') + '<span class="f">r = R + h</span>';
+  }
+  feed.className = 'calcfeed show';
+  feed.innerHTML = '<div class="cf no"><b>' + T('calc.no') + '</b><br>' + tip + extra + '</div>';
+}
+function showCalcAns(){
+  const k = physics(), tg = calcTarget(), feed = money('calcFeed');
+  if (!feed) return;
+  S.calcSeen++;
+  feed.classList.add('show');
+  feed.className = 'calcfeed show';
+  feed.innerHTML = '<div class="cf"><b>' + T('calc.correctAns') + '</b>：' +
+    '<span class="ans">' + sciD(tg.v, tg.dp) + ' ' + tg.unit + '</span>' +
+    '<br>' + T('calc.seen') + '<br>' + T('calc.stepR') +
+    '<span class="f">' + sciD(k.r, 3) + ' m</span></div>';
+}
+
+/* ───────── 情境 / chips 同步 ───────── */
+function syncChips(){
+  Array.prototype.forEach.call(document.querySelectorAll('#bodyChips .chip'), c =>
+    c.classList.toggle('on', c.dataset.body === S.body));
+  Array.prototype.forEach.call(document.querySelectorAll('#plotChips .chip'), c =>
+    c.classList.toggle('on', c.dataset.plot === S.plot));
+  Array.prototype.forEach.call(document.querySelectorAll('#trailChips .chip'), c =>
+    c.classList.toggle('on', c.dataset.trail === S.trail));
+  Array.prototype.forEach.call(document.querySelectorAll('#fnChips .chip'), c =>
+    c.classList.toggle('on', +c.dataset.fn === S.fieldN));
+  Array.prototype.forEach.call(document.querySelectorAll('#enChips .chip'), c =>
+    c.classList.toggle('on', +c.dataset.en === S.equipN));
+  Array.prototype.forEach.call(document.querySelectorAll('#energyChips .chip'), c =>
+    c.classList.toggle('on', c.dataset.ek === S.eMode));
+  Array.prototype.forEach.call(document.querySelectorAll('#calcChips .chip'), c =>
+    c.classList.toggle('on', c.dataset.calc === (S.calc || 'g')));
+  Array.prototype.forEach.call(document.querySelectorAll('#sceneList .btn.demo'), c => {
+    const sc = SCENES.find(x => x.key === c.dataset.scene);
+    c.classList.toggle('on', !!(sc && sc.key === S.scene));
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.chips .chip[data-view]'), c =>
+    c.classList.toggle('on', c.dataset.view === S.view));
+  Array.prototype.forEach.call(document.querySelectorAll('#modeChips .chip'), c =>
+    c.classList.toggle('on', c.dataset.mode === S.mode));
+  Array.prototype.forEach.call(document.querySelectorAll('#awLatChips .chip'), c =>
+    c.classList.toggle('on', Math.abs(parseFloat(c.dataset.lat) - S.awLat) < 1e-9));
+  const awS = money('awSpin'); if (awS) awS.checked = S.awSpin;
+  const cb = money('customBox'); if (cb) cb.hidden = S.body !== 'custom';
+  const m2 = money('m2Ctl');    if (m2) m2.hidden = !S.twin;
+  const tl = money('trailLapCtl'); if (tl) tl.hidden = S.trail !== 'laps';
+  const cF = money('cField');  if (cF) cF.checked = S.field;
+  const cE = money('cEquip');  if (cE) cE.checked = S.equip;
+  const cEV = money('cEquipV'); if (cEV) cEV.checked = S.equipV;
+  const cPE = money('cPE');    if (cPE) cPE.checked = !S.keOnly;
+  const ct = money('cTwin');   if (ct) ct.checked = S.twin;
+  const cm = money('cMarks');  if (cm) cm.checked = S.marks;
+  const cSF = money('cShowF'); if (cSF) cSF.checked = S.showF;
+  const cSG = money('cShowG'); if (cSG) cSG.checked = S.showG;
+  const cSV = money('cShowV'); if (cSV) cSV.checked = S.showV;
+  const cSA = money('cShowA'); if (cSA) cSA.checked = S.showA;
+  const cSR = money('cShowFr'); if (cSR) cSR.checked = S.showFr;
+  const cHO = money('cHudOn'); if (cHO) cHO.checked = S.hudOn;
+  const cHF = money('cHudFold'); if (cHF) cHF.checked = S.hudCollapsed;
+  const ew = money('equipWarn'); if (ew) ew.hidden = !S.equip;
+  syncSliders();
+  const lbl = money('langLabel'); if (lbl) lbl.textContent = T('lang.label');
+}
+function buildDemos(){
+  const host = money('sceneList'); if (!host) return;
+  host.innerHTML = SCENES.map(sc =>
+    '<button class="btn demo" type="button" data-scene="' + sc.key + '">' +
+    T('sc.' + sc.key) + '<small>' + T('sc.' + sc.key + '.sub') + '</small></button>').join('');
+  const hint = document.createElement('div');
+  hint.className = 'hint'; hint.style.marginTop = '11px'; hint.textContent = T('hint.scene');
+  host.appendChild(hint);
+}
+function applyScene(key){
+  const sc = SCENES.find(x => x.key === key);
+  if (!sc) return;
+  S.scene = key;
+  sc.apply();
+  if (key === 'custom'){
+    S.customM = 1.0; S.customR = 1.0;
+  }
+  trail = []; trail2 = []; lapCount = 1; lapCount2 = 1;
+  S.rNow = 1;
+  syncChips(); syncSliders(); update();
+}
+
+/* ───────── 語言 ───────── */
+function applyLang(){
+  document.documentElement.setAttribute('data-lang', S.lang);
+  document.documentElement.setAttribute('lang', S.lang === 'zh' ? 'zh-Hant' : 'en');
+  Array.prototype.forEach.call(document.querySelectorAll('[data-i18n]'), el => {
+    const k = el.getAttribute('data-i18n');
+    const v = T(k);
+    if (k === 'tips'){
+      el.innerHTML = (v || []).map(t => '<li>' + t + '</li>').join('');
+    } else if (typeof v === 'string'){
+      el.innerHTML = v;
+    }
+  });
+  const tips = money('tips');
+  if (tips) tips.innerHTML = (T('tips') || []).map(t => '<li>' + t + '</li>').join('');
+  const lbl = money('langLabel'); if (lbl) lbl.textContent = T('lang.label');
+  buildDemos(); buildQuiz(); syncChips(); update();
+}
+
+/* ───────── 動畫主迴圈 ───────── */
+const STEP = 1 / 60;
+function tick(){
+  const k = physics();
+  if (S.run){
+    /* 相位推進：100% 速率 → 約 4 秒一圈 */
+    const dphase = (2 * Math.PI / 4) * STEP * (S.speed / 500) * S.vRatio;
+    S.phase += dphase;
+    if (S.twin) S.phase2 += dphase;
+    /* Scene B：速率比 ≠ 100% 時半徑單調變化（只做收縮 / 擴張，不做橢圓） */
+    if (!k.balanced){
+      S.rNow += (S.vRatio < 1 ? -1 : 1) * 0.06 * STEP * (S.speed / 500);
+      S.rNow = Math.max(0.55, Math.min(1.45, S.rNow));
+    } else S.rNow += (1 - S.rNow) * Math.min(1, 4 * STEP);
+    /* 圈數 */
+    if (S.phase > lapCount * 2 * Math.PI){ lapCount = Math.floor(S.phase / (2 * Math.PI)) + 1; }
+  }
+  update();
+  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(tick);
+}
+
+/* ───────── 事件綁定 ───────── */
+function bind(){
+  const on = (id, ev, fn) => { const e = money(id); if (e) e.addEventListener(ev, fn); };
+
+  on('langBtn', 'click', () => { S.lang = S.lang === 'zh' ? 'en' : 'zh'; applyLang(); });
+  on('play', 'click', () => {
+    S.run = !S.run;
+    const b = money('play'); if (b) b.textContent = T(S.run ? 'btn.pause' : 'btn.play');
+  });
+  on('step', 'click', () => {
+    S.run = false;
+    const b = money('play'); if (b) b.textContent = T('btn.play');
+    S.phase += 2 * Math.PI / 48; update();
+  });
+  on('reset', 'click', () => {
+    S.phase = 0; S.phase2 = Math.PI; S.rNow = 1;
+    trail = []; trail2 = []; lapCount = 1; lapCount2 = 1;
+    S.run = true;
+    const b = money('play'); if (b) b.textContent = T('btn.pause');
+    update();
+  });
+  on('clearTrail', 'click', () => { trail = []; trail2 = []; lapCount = 1; lapCount2 = 1; update(); });
+
+  /* 滑桿 */
+  on('sh', 'input', e => { S.hLog = parseFloat(e.target.value); S.scene = ''; trail = []; trail2 = []; cachedOrbit = null; update(); });
+  on('secc', 'input', e => { S.ecc = parseFloat(e.target.value); cachedOrbit = null; orbitCache = { key:'', table:null }; update(); });
+  on('sargp', 'input', e => { S.argp = parseFloat(e.target.value); cachedOrbit = null; orbitCache = { key:'', table:null }; update(); });
+  on('sh2', 'input', e => { S.h2Log = parseFloat(e.target.value); cachedOrbit = null; orbitCache = { key:'', table:null }; update(); });
+  /* 表觀視重 */
+  on('awslat', 'input', e => { S.awLat = parseFloat(e.target.value); update(); });
+  on('awsom', 'input', e => { S.awOmegaFrac = parseFloat(e.target.value); update(); });
+  on('awsm', 'input', e => { S.awMass = parseFloat(e.target.value); update(); });
+  on('awSpin', 'change', e => { S.awSpin = e.target.checked; update(); });
+  on('cHudOn', 'change', e => { S.hudOn = e.target.checked; update(); });
+  on('cHudFold', 'change', e => { S.hudCollapsed = e.target.checked; update(); });
+  on('sm', 'input', e => { S.mLog = parseFloat(e.target.value); update(); });
+  on('sm2', 'input', e => { S.m2Log = parseFloat(e.target.value); update(); });
+  on('svr', 'input', e => { S.vRatio = parseFloat(e.target.value) / 100; if (S.vRatio === 1) S.rNow = 1; update(); });
+  on('ssp', 'input', e => { S.speed = parseFloat(e.target.value); update(); });
+  on('sph', 'input', e => { S.phase = parseFloat(e.target.value) * Math.PI / 180; update(); });
+  on('sop', 'input', e => { S.hudAlpha = parseFloat(e.target.value) / 100; update(); });
+  on('slaps', 'input', e => { S.laps = parseFloat(e.target.value); update(); });
+  on('sta', 'input', e => { S.trailAlpha = parseFloat(e.target.value) / 100; update(); });
+  on('sfa', 'input', e => { S.fieldAlpha = parseFloat(e.target.value) / 100; update(); });
+  on('sea', 'input', e => { S.equipAlpha = parseFloat(e.target.value) / 100; update(); });
+  on('sM', 'input', e => {    const f = parseFloat(e.target.value);
+    BODIES.custom.M = Math.pow(10, M_LOG[0] + f * (M_LOG[1] - M_LOG[0]));
+    update();
+  });
+  on('sR', 'input', e => {
+    const f = parseFloat(e.target.value);
+    BODIES.custom.R = Math.pow(10, R_LOG[0] + f * (R_LOG[1] - R_LOG[0]));
+    update();
+  });
+
+  /* checkbox */
+  on('cTwin', 'change', e => { S.twin = e.target.checked; update(); });
+  on('cMarks', 'change', e => { S.marks = e.target.checked; update(); });
+  on('cField', 'change', e => { S.field = e.target.checked; update(); });
+  on('cEquip', 'change', e => { S.equip = e.target.checked; syncChips(); update(); });
+  on('cEquipV', 'change', e => { S.equipV = e.target.checked; update(); });
+  on('cPE', 'change', e => { S.keOnly = !e.target.checked; syncChips(); update(); });
+  on('cShowF', 'change', e => { S.showF = e.target.checked; update(); });
+  on('cShowG', 'change', e => { S.showG = e.target.checked; update(); });
+  on('cShowV', 'change', e => { S.showV = e.target.checked; update(); });
+  on('cShowA', 'change', e => { S.showA = e.target.checked; update(); });
+  on('cShowFr', 'change', e => { S.showFr = e.target.checked; update(); });
+
+  /* chips / 卡片收合 / 小測：事件委派到 document root
+     注意：部分 DOM 環境唔提供 document.addEventListener，故用 documentElement 作 root */
+  const root = (typeof document !== 'undefined' && document.documentElement &&
+                document.documentElement.addEventListener) ? document.documentElement : null;
+  const onRoot = (root && root.addEventListener) ? root.addEventListener.bind(root) : (() => {});
+  onRoot('click', e => {
+    const t = e.target;
+    if (!t || !t.closest) return;
+    const chip = t.closest('.chip');
+    if (chip){
+      if (chip.dataset.body){
+        S.body = chip.dataset.body;
+        trail = []; trail2 = [];
+        if (S.body === 'custom') applyScene('custom');
+        else { S.scene = ''; syncChips(); update(); }
+        return;
+      }
+      if (chip.dataset.plot){ S.plot = chip.dataset.plot; syncChips(); update(); return; }
+      if (chip.dataset.trail){ S.trail = chip.dataset.trail; if (S.trail === 'off'){ trail = []; trail2 = []; } syncChips(); update(); return; }
+      if (chip.dataset.fn){ S.fieldN = +chip.dataset.fn; syncChips(); update(); return; }
+      if (chip.dataset.en){ S.equipN = +chip.dataset.en; syncChips(); update(); return; }
+      if (chip.dataset.ek){ S.eMode = chip.dataset.ek; syncChips(); update(); return; }
+      if (chip.dataset.calc){ S.calc = chip.dataset.calc; syncChips(); update(); return; }
+      if (chip.dataset.view){ S.view = chip.dataset.view; syncChips(); update(); return; }
+      if (chip.dataset.mode){ S.mode = chip.dataset.mode; trail = []; trail2 = []; cachedOrbit = null; orbitCache = { key:'', table:null }; currentOrbit(); syncChips(); update(); return; }
+      if (chip.dataset.lat != null && chip.dataset.lat !== ''){
+        S.awLat = parseFloat(chip.dataset.lat); syncChips(); update(); return;
+      }
+    }
+    const demo = t.closest('.btn.demo');
+    if (demo && demo.dataset.scene){ applyScene(demo.dataset.scene); return; }
+    const opt = t.closest('.qopt');
+    if (opt && !opt.disabled){ answerQuiz(+opt.dataset.q, +opt.dataset.o, opt); return; }
+    const h2 = t.closest('.card h2.clickable, h2.clickable');
+    if (h2){
+      const card = (h2.closest && h2.closest('.card')) || (h2.closest && h2.closest('section'));
+      if (!card) return;
+      const gkey = CARD2GROUP[card.id];
+      /* 按標題本身 → 只摺疊／展開呢一張卡（逐張卡獨立，唔會被分組鎖住）
+         按右側箭頭 → 整組一齊開合（鍵盤亦可用） */
+      const onChevron = t.classList && t.classList.contains('fold-chevron');
+      if (onChevron && gkey && ACCORDION.length){
+        toggleGroup(gkey);
+      } else if (card.id){
+        toggleCard(card.id);
+      } else {
+        /* 無 id 嘅卡（畫布圖例）：直接切換 */
+        const willFold = cardIsOpen(card);
+        card.classList.toggle('folded', willFold);
+        const b = card.querySelector ? card.querySelector('.cardbody') : null;
+        if (b) b.style.display = willFold ? 'none' : bodyDisp(card);
+      }
+      return;
+    }
+  });
+
+  /* 計算練習 */
+  on('calcCheck', 'click', checkCalc);
+  on('calcShow', 'click', showCalcAns);
+  const ci = money('calcIn');
+  if (ci) ci.addEventListener('keydown', e => { if (e.key === 'Enter') checkCalc(); });
+  on('qreset', 'click', () => { buildQuiz(); S.calcOk = 0; S.calcDone = 0; S.answered = {}; syncScore(); });
+
+  /* Canvas 拖曳：衛星徑向拖動 / HUD 移動 */
+  let drag = null;
+  const down = e => {
+    const p = toCanvas(e);
+    /* 先檢查收起／展開切換鈕：唔可以當成拖動，否則一按就拖走成張卡 */
+    if (hitHudToggle(p)){
+      S.hudCollapsed = !S.hudCollapsed;
+      if (S.hudY + hudH() > CH - 6) S.hudY = Math.max(6, CH - hudH() - 6);
+      update();
+      return;
+    }
+    if (hitHUD(p)){ drag = { mode:'hud', dx: p.x - S.hudX, dy: p.y - S.hudY }; }
+    else {
+      const g = geom();
+      const d = Math.hypot(p.x - g.cx, p.y - g.cy);
+      if (d < g.P(g.rMax) + 40) drag = { mode:'sat' };
+    }
+    if (cv.setPointerCapture && e.pointerId != null) { try { cv.setPointerCapture(e.pointerId); } catch (err) {} }
+  };
+  const move = e => {
+    if (!drag) return;
+    const p = toCanvas(e);
+    if (drag.mode === 'hud'){
+      S.hudX = Math.max(6, Math.min(CW - HUD.w - 6, p.x - drag.dx));
+      /* 用實際卡高（收起時只 24px）限制，確保整張卡永遠留在畫布內 */
+      S.hudY = Math.max(6, Math.min(CH - hudH() - 6, p.y - drag.dy));
+    } else {
+      const g = geom();
+      const d = Math.min(g.P(g.rMax), Math.max(g.P(g.rMin), Math.hypot(p.x - g.cx, p.y - g.cy)));
+      /* 反解 r → h */
+      let f = (d - g.radMin) / (g.radMax - g.radMin);
+      f = Math.max(0, Math.min(1, f));
+      let rr;
+      if (g.compress) rr = g.rMin * Math.pow(g.rMax / g.rMin, f);
+      else rr = g.rMin + (g.rMax - g.rMin) * f;
+      const hNew = Math.max(0, rr - body().R);
+      S.hLog = logH(hNew);
+      S.scene = '';
+      const sh = money('sh'); if (sh) sh.value = S.hLog;
+    }
+    update();
+  };
+  const up = () => { drag = null; };
+  if (cv && cv.addEventListener){
+    cv.addEventListener('pointerdown', down);
+    cv.addEventListener('pointermove', move);
+    cv.addEventListener('pointerup', up);
+    cv.addEventListener('pointerleave', up);
+    cv.addEventListener('wheel', e => {
+      const p = toCanvas(e);
+      if (!hitHUD(p)) return;
+      e.preventDefault();
+      S.opacity = Math.max(0.15, Math.min(1, S.opacity + (e.deltaY > 0 ? -0.06 : 0.06)));
+      update();
+    }, { passive: false });
+  }
+  /* 鍵盤 */
+  if (window.addEventListener){
+    /* resize 加 debounce：避免拖動視窗時每個 event 都重繪（原本會連續觸發 canvas 重設） */
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      if (resizeTimer) return;
+      resizeTimer = setTimeout(() => { resizeTimer = null; update(); }, 140);
+    });
+    window.addEventListener('keydown', e => {
+      const tag = (e.target && e.target.tagName) || '';
+      if (tag === 'INPUT') return;
+      const kk = e.key;
+      if (kk === ' '){ e.preventDefault(); const b = money('play'); if (b) b.click(); }
+      else if (kk === 'ArrowRight'){ const b = money('step'); if (b) b.click(); }
+      else if (kk === 'ArrowLeft'){ const b = money('step'); if (b) b.click(); }
+      else if (kk === 'r' || kk === 'R'){ const b = money('reset'); if (b) b.click(); }
+      else if (kk === 'e' || kk === 'E'){ const c = money('cPE'); if (c){ c.checked = !c.checked; c.dispatchEvent({ type:'change', target:c }); } }
+      else if (kk === 'g' || kk === 'G'){ const c = money('cField'); if (c){ c.checked = !c.checked; c.dispatchEvent({ type:'change', target:c }); } }
+      else if (kk === 'v' || kk === 'V'){ const c = money('cEquip'); if (c){ c.checked = !c.checked; c.dispatchEvent({ type:'change', target:c }); } }
+      else if (/^[1-7]$/.test(kk)){ const sc = SCENES[+kk - 1]; if (sc) applyScene(sc.key); }
+    });
+    window.addEventListener('message', ev => {
+      const d = ev && ev.data; if (!d) return;
+      const act = d.action;
+      if (act === 'pause'){ S.run = false; }
+      else if (act === 'play'){ S.run = true; }
+      else if (act === 'reset'){ S.phase = 0; S.rNow = 1; trail = []; trail2 = []; S.run = true; }
+      else if (act === 'step'){ S.run = false; S.phase += 2 * Math.PI / 48; }
+      else if (act === 'scene' && d.value){ applyScene(d.value); }
+      else if (act === 'collapse'){
+        Array.prototype.forEach.call(document.querySelectorAll('.card'), c => c.classList.toggle('folded', !!d.value));
+      }
+      else if (act === 'lang' && d.value){ S.lang = d.value; applyLang(); }
+      else if (act === 'get'){ postState(ev); return; }
+      if (S.run){ const b = money('play'); if (b) b.textContent = T('btn.pause'); }
+      else { const b = money('play'); if (b) b.textContent = T('btn.play'); }
+      update();
+    });
+  }
+}
+function postState(ev){
+  const k = physics();
+  const msg = { type:'grav', event:'state', value:{
+    body:S.body, r:k.r, h:k.h, g:k.g, F:k.F, v:k.v, T:k.T, KE:k.KE, scene:S.scene, lang:S.lang } };
+  try {
+    if (ev && ev.source && ev.source.postMessage) ev.source.postMessage(msg, '*');
+    else if (window.parent && window.parent !== window) window.parent.postMessage(msg, '*');
+  } catch (e) {}
+}
+function persistFolds(){
+  try {
+    if (typeof localStorage === 'undefined') return;
+    const o = {};
+    ACCORDION.forEach(g => { o[g.key] = !!g.open; });
+    localStorage.setItem('grav_folds', JSON.stringify(o));
+  } catch (e){}
+}
+function loadFolds(){
+  /* 先套用 accordion 預設（只有參數控制展開），再處理 ?compact=1 */
+  applyFolds();
+  const params = new URLSearchParams((typeof location !== 'undefined' && location.search) || '');
+  if (params.get('compact') === '1'){
+    ACCORDION.forEach(g => { if (g.key !== 'params') g.open = false; });
+    syncFoldState();
+  }
+}
+
+/* ───────── URL 參數 ───────── */
+function applyURL(){
+  const params = new URLSearchParams((typeof location !== 'undefined' && location.search) || '');
+  if (params.get('embed') === '1') document.body.classList.add('embed');
+  const lang = params.get('lang'); if (lang === 'zh' || lang === 'en') S.lang = lang;
+  const scene = params.get('scene');
+  if (scene && SCENES.some(s => s.key === scene)) applyScene(scene);
+  const bd = params.get('body');
+  if (bd && BODIES[bd]) S.body = bd;
+  const num = k => { const v = params.get(k); const f = parseFloat(v); return isFinite(f) ? f : null; };
+  const Mv = num('M'), Rv = num('R');
+  if (Mv) BODIES.custom.M = Mv;
+  if (Rv) BODIES.custom.R = Rv;
+  const hv = num('h'); if (hv != null) S.hLog = logH(hv);
+  const mv = num('m'); if (mv) S.mLog = Math.log10(mv);
+  const m2v = num('m2'); if (m2v) S.m2Log = Math.log10(m2v);
+  const vv = num('v'); if (vv != null) S.vRatio = Math.min(1.3, Math.max(0.7, vv));
+  const en = params.get('energy');
+  if (en === '0' || en === '1'){ S.keOnly = false; }
+  if (en === '2') S.keOnly = true;
+  const ek = params.get('ek'); if (ek) S.eMode = ek;
+  if (params.get('fieldlines') === '1') S.field = true;
+  const fnv = num('fieldn'); if (fnv) S.fieldN = fnv;
+  if (params.get('equipot') === '1') S.equip = true;
+  const env = num('equipn'); if (env) S.equipN = env;
+  const tr = params.get('trail');
+  if (tr === '0') S.trail = 'off';
+  else if (tr === '永久' || tr === 'forever') S.trail = 'forever';
+  else { const tv = parseFloat(tr); if (isFinite(tv)) S.trail = 'laps'; if (isFinite(tv)) S.laps = tv; }
+  if (params.get('marks') === '0') S.marks = false;
+  const view = params.get('view'); if (view === 'true' || view === 'compress') S.view = view;
+  const mode = params.get('mode');
+  if (mode === 'circular' || mode === 'ellipse' || mode === 'hohmann') S.mode = mode;
+  const ecc = num('ecc'); if (ecc != null && ecc >= 0 && ecc <= 0.85) S.ecc = ecc;
+  const argp = num('argp'); if (argp != null) S.argp = argp;
+  const h2 = num('h2'); if (h2 != null) S.h2Log = logH(h2);
+  const plot = params.get('plot'); if (plot) S.plot = plot;
+  S.calc = S.calc || 'g';
+}
+
+/* ═════════ 嵌入模式 / URL 參數 ═════════ */
+const QS = new URLSearchParams(location.search);
+if (QS.get('embed') === '1' || QS.get('embed') === 'true') document.body.classList.add('embed');
+
+/* ═════════ 導航高亮（沿用全站） ═════════ */
+(function navHighlight(){
+  var key = document.body.dataset.nav || '';
+  document.querySelectorAll('#navLinks a').forEach(function (a) {
+    if (a.dataset.nav === key) a.classList.add('on');
+  });
+  var on = document.querySelector('#navLinks a.on');
+  if (on && on.scrollIntoView) on.scrollIntoView({ block:'nearest', inline:'center' });
+})();
+
+/* ───────── 初始化 ───────── */
+function init(){
+  applyURL();
+  buildQuiz();
+  applyLang();
+  bind();
+  loadFolds();
+  syncChips();
+  update();
+  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(tick);
+}
+init();
+
+/* ───────── 導出（供驗證腳本使用） ───────── */
+const __api = { update, drawPlot, draw, physics, S, L, T, applyLang, buildQuiz, syncChips,
+                buildDemos, applyScene, syncScore, checkCalc, showCalcAns, calcTarget,
+                answerQuiz, buildSolution, geom, logH, hAlt, rNow, body, hRange, BODIES,
+                G, SCENES, QUIZ, getTrail:() => trail, getTrail2:() => trail2,
+                demoBV: () => { const e = money('sh'); return e ? e.value : null; },
+                drawVectors };
+if (typeof globalThis !== 'undefined') globalThis.__gravApi = __api;
+if (typeof module !== 'undefined' && module.exports) module.exports = __api;
+</script>
+</body>
+</html>
