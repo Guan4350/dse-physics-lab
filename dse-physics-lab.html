@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-lang="zh">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -198,7 +198,39 @@ footer p{margin:0;font-size:12.5px;color:#7d7d85}
   .card.collapsible > .cbody{transition:none}
 }
 
-/* 嵌入模式 */
+/* ══ 概念小測卡 ══ */
+.quizbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.qchip{cursor:pointer;font-family:inherit;font-size:12.2px;font-weight:650;border-radius:20px;
+  padding:5px 13px;border:1px solid var(--line);background:#fff;color:var(--ink-soft);transition:.16s}
+.qchip:hover{border-color:var(--gold-bright);color:var(--gold-deep);background:#fdfaf1}
+.qchip.on{border-color:var(--gold);background:#fdf6e3;color:var(--gold-deep);font-weight:700}
+.qstat{font-size:12.4px;font-weight:700;color:var(--gold-deep);background:rgba(201,162,39,.15);
+  border:1px solid rgba(184,134,11,.35);border-radius:20px;padding:4px 13px;margin-left:auto;white-space:nowrap}
+.qnote{font-size:11.4px;color:var(--ink-soft);line-height:1.6;margin:0 0 11px}
+.qitem{border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin-bottom:11px;background:#fff}
+.qitem .qno{font-size:10.4px;letter-spacing:.18em;text-transform:uppercase;color:#9a9aa2;
+  display:flex;justify-content:space-between;gap:8px}
+.qitem .qno em{font-style:normal;color:var(--gold-deep);font-weight:700;letter-spacing:.06em}
+.qitem .qtext{font-size:13.4px;line-height:1.8;color:#2b2b30;margin:6px 0 11px}
+.qopt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;cursor:pointer;
+  background:#fbfbfd;border:1px solid #e2e2e6;border-radius:9px;padding:9px 12px;margin-bottom:6px;
+  font-size:13px;line-height:1.7;color:var(--ink);font-family:inherit;transition:.16s}
+.qopt:hover{border-color:var(--gold-bright);background:rgba(201,162,39,.07)}
+.qopt .key{flex:0 0 21px;height:21px;border-radius:50%;border:1.5px solid #c9c9d0;color:#77777f;
+  font-size:11.4px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.qopt.right{border-color:#2f9e6f;background:rgba(47,158,111,.10)}
+.qopt.right .key{border-color:#2f9e6f;background:#2f9e6f;color:#fff}
+.qopt.wrong{border-color:#c0455f;background:rgba(192,69,95,.09)}
+.qopt.wrong .key{border-color:#c0455f;background:#c0455f;color:#fff}
+.qopt[disabled]{cursor:default}
+.qexp{margin-top:9px;font-size:12.6px;line-height:1.85;color:#4a4a52;background:#fbf8ef;
+  border-left:3px solid var(--gold-bright);border-radius:0 8px 8px 0;padding:11px 14px;display:none}
+.qexp.show{display:block}
+.qexp .verdict{font-weight:700;display:block;margin-bottom:4px}
+.qexp .verdict.ok{color:#1f6b4a}.qexp .verdict.no{color:#a8443a}
+.qacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+/* ══ 頁腳：沿用網站規範 ══ */
 body.embed .topnav{display:none}
 body.embed .wrap{max-width:100%;padding:14px 16px 20px}
 body.embed .page-head{padding:6px 0 14px;text-align:left}
@@ -232,16 +264,18 @@ body.embed .sidebar{max-height:none}
     <p class="lede">依 DSE Physics syllabus 必修部分 1(f) Uniform circular motion 設計，涵蓋六大高頻考核模型。核心觀念：合力沿徑向指向圓心，<b>辨識邊個力提供 centripetal force</b> 才係得分關鍵。</p>
     <hr class="divider">
     <div class="panelctrl" id="panelCtrl" style="justify-content:center;margin-top:16px">
-      <span class="pc-label">儀表盤</span>
-      <button class="pcbtn" type="button" data-pc="models">模型</button>
-      <button class="pcbtn" type="button" data-pc="params">參數</button>
-      <button class="pcbtn" type="button" data-pc="values">數值</button>
-      <button class="pcbtn" type="button" data-pc="play">播放</button>
-      <button class="pcbtn" type="button" data-pc="insight">解讀</button>
-      <button class="pcbtn" type="button" data-pc="tips">重點</button>
-      <button class="pcbtn" type="button" data-pc="hud">圖內卡</button>
-      <button class="pcbtn" type="button" id="pcAll">全部收起</button>
-      <button class="pcbtn" type="button" id="pcReset">還原</button>
+      <span class="pc-label" data-i18n="pcLabel">儀表盤</span>
+      <button class="pcbtn" type="button" data-pc="models"  data-i18n="pc.models">模型</button>
+      <button class="pcbtn" type="button" data-pc="params"  data-i18n="pc.params">參數</button>
+      <button class="pcbtn" type="button" data-pc="values"  data-i18n="pc.values">數值</button>
+      <button class="pcbtn" type="button" data-pc="play"    data-i18n="pc.play">播放</button>
+      <button class="pcbtn" type="button" data-pc="insight" data-i18n="pc.insight">解讀</button>
+      <button class="pcbtn" type="button" data-pc="tips"    data-i18n="pc.tips">重點</button>
+      <button class="pcbtn" type="button" data-pc="quiz"    data-i18n="pc.quiz">小測</button>
+      <button class="pcbtn" type="button" data-pc="hud"     data-i18n="pc.hud">圖內卡</button>
+      <button class="pcbtn" type="button" id="pcAll"  data-i18n="pc.all">全部收起</button>
+      <button class="pcbtn lang" type="button" id="langBtn" data-i18n="pc.lang">EN</button>
+      <button class="pcbtn" type="button" id="pcReset" data-i18n="pc.reset">還原</button>
     </div>
   </header>
 
@@ -252,11 +286,11 @@ body.embed .sidebar{max-height:none}
       <div class="card" style="margin-top:13px">
         <h2>圖例 Legend</h2>
         <div class="lgd">
-          <span><i style="background:#1b6f96"></i>v 速度向量（切線）</span>
-          <span><i style="background:#a8443a"></i>a<sub>c</sub> 向心加速度</span>
-          <span><i style="background:#8a6a12"></i>F<sub>c</sub> 向心力</span>
+          <span><i style="background:#1b6f96"></i><span data-i18n="lg.v">v 速度向量（切線）</span></span>
+          <span><i style="background:#a8443a"></i><span data-i18n="lg.a">a_c 向心加速度</span></span>
+          <span><i style="background:#8a6a12"></i><span data-i18n="lg.f">F_c 向心力</span></span>
           <span><i style="background:#9c4136"></i>W = mg</span>
-          <span><i style="background:#c9a227"></i>軌跡拖尾</span>
+          <span><i style="background:#c9a227"></i><span data-i18n="lg.trail">軌跡拖尾</span></span>
         </div>
         <div class="hint">箭頭長度與量值成正比（同一次繪圖內），可據此比較 v、a<sub>c</sub>、F<sub>c</sub> 嘅相對大小。</div>
       </div>
@@ -265,21 +299,21 @@ body.embed .sidebar{max-height:none}
     <!-- ═══ 右（2 份）：側邊欄 ═══ -->
     <aside class="sidebar">
       <div class="card collapsible" data-panel="models">
-        <h2>模型 Model<span class="sub">6 個高頻考法</span></h2>
+        <h2><span data-i18n="h.models">模型 Model</span><span class="sub" data-i18n="h.models.sub">6 個高頻考法</span></h2>
         <div class="cbody"><div class="cbody-in">
         <div class="models" id="models"></div>
         </div></div>
       </div>
 
       <div class="card collapsible" data-panel="params">
-        <h2>參數 Parameters<span class="sub" id="pName"></span></h2>
+        <h2><span data-i18n="h.params">參數 Parameters</span><span class="sub" id="pName"></span></h2>
         <div class="cbody"><div class="cbody-in">
         <div id="ctls"></div>
         </div></div>
       </div>
 
       <div class="card collapsible" data-panel="values">
-        <h2>實時數值 Live Values</h2>
+        <h2><span data-i18n="h.values">實時數值 Live Values</span></h2>
         <div class="cbody"><div class="cbody-in">
         <div id="outs"></div>
         <div id="banner"></div>
@@ -287,31 +321,51 @@ body.embed .sidebar{max-height:none}
       </div>
 
       <div class="card collapsible" data-panel="play">
-        <h2>播放 Playback</h2>
+        <h2><span data-i18n="h.play">播放 Playback</span></h2>
         <div class="cbody"><div class="cbody-in">
         <div class="btns">
-          <button class="btn live" id="play" type="button">暫停</button>
-          <button class="btn" id="step" type="button">單幀</button>
-          <button class="btn" id="reset" type="button">重置</button>
+          <button class="btn live" id="play" type="button" data-i18n="btn.pause">暫停</button>
+          <button class="btn" id="step" type="button" data-i18n="btn.step">單幀</button>
+          <button class="btn" id="reset" type="button" data-i18n="btn.reset">重置</button>
         </div>
         <div class="ctl">
-          <div class="top"><span>顯示軌跡拖尾</span><b id="trailState">開</b></div>
+          <div class="top"><span data-i18n="p.trail">顯示軌跡拖尾</span><b id="trailState">開</b></div>
           <input type="range" id="trailLen" min="0" max="100" step="1" value="55">
         </div>
         </div></div>
       </div>
 
       <div class="card collapsible" data-panel="insight">
-        <h2>模型解讀 Model Insight</h2>
+        <h2><span data-i18n="h.insight">模型解讀 Model Insight</span></h2>
         <div class="cbody"><div class="cbody-in">
         <div class="sol" id="sol"></div>
         </div></div>
       </div>
 
       <div class="card collapsible" data-panel="tips">
-        <h2>DSE 應試重點 Exam Notes</h2>
+        <h2><span data-i18n="h.tips">DSE 應試重點 Exam Notes</span></h2>
         <div class="cbody"><div class="cbody-in">
         <ul class="tips" id="tips"></ul>
+        </div></div>
+      </div>
+
+      <div class="card collapsible" data-panel="quiz">
+        <h2><span data-i18n="h.quiz">概念小測 Concept Quiz</span><span class="sub" data-i18n="h.quiz.sub">分基礎／DSE 實戰兩級，每次輪換</span></h2>
+        <div class="cbody"><div class="cbody-in">
+        <div class="quizbar">
+          <button class="qchip on" type="button" data-level="basic" data-i18n="q.basic">基礎</button>
+          <button class="qchip" type="button" data-level="dse" data-i18n="q.dse">DSE 實戰</button>
+          <button class="qchip" type="button" data-level="all" data-i18n="q.all">全部</button>
+          <button class="qchip" type="button" id="qNew" data-i18n="q.newset">換一批</button>
+          <button class="qchip" type="button" id="qRetry" data-i18n="q.retry">重做錯題</button>
+          <span class="qstat" id="qScore">–</span>
+        </div>
+        <p class="qnote" id="qNote"></p>
+        <div id="qList"></div>
+        <div class="qacts">
+          <button class="btn" type="button" id="qReveal" data-i18n="q.reveal">顯示全部解答</button>
+          <button class="btn" type="button" id="qHide" data-i18n="q.hide">收起解答</button>
+        </div>
         </div></div>
       </div>
     </aside>
@@ -342,6 +396,56 @@ const CLR = {
   ink:'#3c3c43', soft:'#6b6b73', gold:'#8b6914', surface:'#fdfaf1'
 };
 
+/* ═════ 雙語引擎 ═════ */
+const I18N = {
+  zh:{
+    pcLabel:'儀表盤', 'pc.models':'模型','pc.params':'參數','pc.values':'數值','pc.play':'播放',
+    'pc.insight':'解讀','pc.tips':'重點','pc.quiz':'小測','pc.hud':'圖內卡','pc.all':'全部收起',
+    'pc.reset':'還原','pc.lang':'EN',
+    'h.models':'模型 Model','h.models.sub':'6 個高頻考法','h.params':'參數 Parameters',
+    'h.values':'實時數值 Live Values','h.play':'播放 Playback','h.insight':'模型解讀 Model Insight',
+    'h.tips':'DSE 應試重點 Exam Notes','h.quiz':'概念小測 Concept Quiz',
+    'h.quiz.sub':'分基礎／DSE 實戰兩級，每次輪換',
+    'btn.pause':'暫停','btn.play':'播放','btn.step':'單幀','btn.reset':'重置',
+    'p.trail':'顯示軌跡拖尾','trail.on':'開','trail.off':'關',
+    'lg.v':'v 速度向量（切線）','lg.a':'a_c 向心加速度','lg.f':'F_c 向心力','lg.trail':'軌跡拖尾',
+    'q.basic':'基礎','q.dse':'DSE 實戰','q.all':'全部','q.newset':'換一批',
+    'q.retry':'重做錯題','q.reveal':'顯示全部解答','q.hide':'收起解答',
+    'q.show':'顯示解答','q.hideone':'收起解答','q.score':'得分','q.correct':'正確',
+    'q.answer':'正確答案','q.done':'本批完成','q.empty':'此級別暫時無題目，請切換至其他級別。',
+    'q.rotate':'已看過 %n / %t 題，下次自動換新題。'
+  },
+  en:{
+    pcLabel:'Dashboard', 'pc.models':'Models','pc.params':'Parameters','pc.values':'Values',
+    'pc.play':'Playback','pc.insight':'Insight','pc.tips':'Exam Notes','pc.quiz':'Quiz',
+    'pc.hud':'HUD','pc.all':'Collapse All','pc.reset':'Reset','pc.lang':'中文',
+    'h.models':'Models','h.models.sub':'6 high-frequency models','h.params':'Parameters',
+    'h.values':'Live Values','h.play':'Playback','h.insight':'Model Insight',
+    'h.tips':'DSE Exam Notes','h.quiz':'Concept Quiz','h.quiz.sub':'Foundation / DSE level, rotates each time',
+    'btn.pause':'Pause','btn.play':'Play','btn.step':'Step','btn.reset':'Reset',
+    'p.trail':'Show trajectory trail','trail.on':'On','trail.off':'Off',
+    'lg.v':'v velocity (tangential)','lg.a':'a_c centripetal acceleration','lg.f':'F_c centripetal force',
+    'lg.trail':'Trajectory trail',
+    'q.basic':'Foundation','q.dse':'DSE Level','q.all':'All','q.newset':'New Set',
+    'q.retry':'Retry Wrong','q.reveal':'Show All Answers','q.hide':'Hide Answers',
+    'q.show':'Show Answer','q.hideone':'Hide Answer','q.score':'Score','q.correct':'Correct',
+    'q.answer':'Correct answer','q.done':'Set complete','q.empty':'No questions at this level yet — switch level.',
+    'q.rotate':'Seen %n / %t questions; a fresh set comes next time.'
+  }
+};
+let LANG = 'zh';
+const t   = k => (I18N[LANG] && I18N[LANG][k]) || k;
+const tt  = p => (p && (LANG === 'zh' ? p.zh : p.en)) || '';
+function applyI18n(){
+  document.documentElement.setAttribute('data-lang', LANG);
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-pair]').forEach(el => {
+    const i = el.getAttribute('data-i18n-pair');
+    const zh = el.getAttribute('data-zh'), en = el.getAttribute('data-en');
+    el.textContent = LANG === 'zh' ? zh : en;
+  });
+}
+
 /* ───────── 狀態 ───────── */
 const S = { model:'horizontal', t:0, th:0, run:true, trail:true, trailMax:180 };
 
@@ -349,7 +453,7 @@ const S = { model:'horizontal', t:0, th:0, run:true, trail:true, trailMax:180 };
 const MODELS = {
   /* 1. 水平圓周 · 繩張力 */
   horizontal: {
-    name:'水平圓周', en:'Horizontal circle · Tension',
+    name:{zh:'水平圓周',en:'Horizontal circle'}, en:{zh:'繩張力 · 高頻',en:'Tension · high frequency'},
     freq:'最高頻',
     params:{ m:1.5, r:1.2, v:6 },
     ctl:[['m','質量 m (kg)',0.2,10,0.1,1],['r','半徑 r (m)',0.3,2,0.05,2],['v','速率 v (m/s)',1,20,0.1,1]],
@@ -361,14 +465,14 @@ const MODELS = {
                        ['ω = v/r',w.toFixed(3)+' rad s⁻¹',''],
                        ['T = 2πr/v',(TAU/w).toFixed(2)+' s','']] };
     },
-    note:'繩張力係唯一水平力 ⇒ 全部提供 F_c。若 v 增至 2 倍，F_c 變 4 倍。',
+    note:{zh:'繩張力係唯一水平力 ⇒ 全部提供 F_c。若 v 增至 2 倍，F_c 變 4 倍。',en:'Tension is the only horizontal force, so it supplies all of F_c. Double v and F_c becomes 4 times as large.'},
     bad:()=>null,
     draw:k=>{ /* 於 drawCircleScene 內處理 */ }
   },
 
   /* 2. 轉盤 / 平面彎道 · 摩擦力 */
   turntable: {
-    name:'轉盤 · 摩擦', en:'Turntable · Friction',
+    name:{zh:'轉盤 · 摩擦',en:'Turntable · Friction'}, en:{zh:'摩擦力提供 F_c',en:'Friction supplies F_c'},
     freq:'高頻',
     params:{ m:0.5, r:0.4, w:5, mu:0.4 },
     ctl:[['m','質量 m (kg)',0.1,5,0.1,1],['r','距圓心 r (m)',0.1,1.5,0.05,2],
@@ -381,14 +485,14 @@ const MODELS = {
                        ['最大摩擦 μmg',fmax.toFixed(2)+' N','kvf'],
                        ['臨界 ω = √(μg/r)',Math.sqrt(p.mu*G/p.r).toFixed(2)+' rad s⁻¹','']] };
     },
-    note:'摩擦係唯一水平淨力 ⇒ 提供全部 F_c。所需 > μmg 就會打滑，題目常問臨界 ω。',
-    bad:k=>k.ok?null:'所需向心力 '+k.F.toFixed(2)+' N 超過最大摩擦 '+k.fmax.toFixed(2)+' N ⇒ 會打滑',
+    note:{zh:'摩擦係唯一水平淨力 ⇒ 提供全部 F_c。所需 > μmg 就會打滑，題目常問臨界 ω。',en:'Friction is the only horizontal net force, so it supplies all of F_c. If the required force exceeds μmg the object slips — the critical ω is a classic question.'},
+    bad:k=>k.ok?null:(LANG==='zh'?'所需向心力 '+k.F.toFixed(2)+' N 超過最大摩擦 '+k.fmax.toFixed(2)+' N ⇒ 會打滑':'Required centripetal force '+k.F.toFixed(2)+' N exceeds maximum friction '+k.fmax.toFixed(2)+' N ⇒ it slips'),
     draw:k=>{}
   },
 
   /* 3. 斜坡彎道 · 設計速率 */
   banked: {
-    name:'斜坡彎道', en:'Banked track',
+    name:{zh:'斜坡彎道',en:'Banked track'}, en:{zh:'設計速率 · 高頻',en:'Design speed · high frequency'},
     freq:'高頻',
     params:{ m:1200, r:60, th:15, v:12.5, mu:0.7 },
     ctl:[['m','質量 m (kg)',100,3000,50,0],['r','彎道半徑 r (m)',20,200,1,0],
@@ -405,14 +509,14 @@ const MODELS = {
                        ['所需摩擦 f',Math.abs(fr).toFixed(0)+' N','kvf'],
                        ['最低 μ',N>0?(Math.abs(fr)/N).toFixed(2):'—','']] };
     },
-    note:'設計速率時 f = 0，向心力全由法向力 N 嘅水平分量提供；車速大於設計速率時摩擦指向圓心。',
-    bad:k=>k.ok?null:'所需徑向力超過摩擦極限 ⇒ 打滑（最低 μ ≈ '+(k.fmax>0?(Math.abs(k.fr)/k.N).toFixed(2):'—')+'）',
+    note:{zh:'設計速率時 f = 0，向心力全由法向力 N 嘅水平分量提供；車速大於設計速率時摩擦指向圓心。',en:'At the design speed f = 0 and the horizontal component of the normal force N supplies all of F_c; above the design speed friction points towards the centre.'},
+    bad:k=>k.ok?null:(LANG==='zh'?'所需徑向力超過摩擦極限 ⇒ 打滑（最低 μ ≈ '+(k.fmax>0?(Math.abs(k.fr)/k.N).toFixed(2):'—')+'）':'Required radial force exceeds the friction limit ⇒ it slips (minimum μ ≈ '+(k.fmax>0?(Math.abs(k.fr)/k.N).toFixed(2):'—')+')'),
     draw:k=>{}
   },
 
   /* 4. 鉛垂圓周 · 臨界速度（非均勻速率，DSE 必考） */
   vertical: {
-    name:'鉛垂圓周', en:'Vertical circle',
+    name:{zh:'鉛垂圓周',en:'Vertical circle'}, en:{zh:'臨界速率 · 最高頻',en:'Critical speed · top frequency'},
     freq:'最高頻',
     params:{ m:0.5, r:0.8, vtop:2.8 },
     ctl:[['m','質量 m (kg)',0.05,5,0.05,2],['r','半徑 r (m)',0.2,2.5,0.05,2],
@@ -427,14 +531,14 @@ const MODELS = {
                        ['T_top = mv_top²/r − mg',(p.m*(p.vtop*p.vtop/p.r-G)).toFixed(2)+' N','kvf'],
                        ['T_bot = mv_bot²/r + mg',(p.m*(vbot*vbot/p.r+G)).toFixed(2)+' N','kvf']] };
     },
-    note:'最高點 T + mg = mv²/r，臨界時 T = 0 ⇒ v_top = √(gr)。能量守恆連接兩點：v_bot² = v_top² + 4gr。',
-    bad:k=>k.ok?null:'v_top < √(gr) = '+k.vc.toFixed(2)+' m s⁻¹ ⇒ 重力超過所需向心力，繩鬆、脫離圓軌跡',
+    note:{zh:'最高點 T + mg = mv²/r，臨界時 T = 0 ⇒ v_top = √(gr)。能量守恆連接兩點：v_bot² = v_top² + 4gr。',en:'At the top T + mg = mv²/r; at the critical case T = 0 so v_top = √(gr). Energy conservation links the two points: v_bot² = v_top² + 4gr.'},
+    bad:k=>k.ok?null:(LANG==='zh'?'v_top < √(gr) = '+k.vc.toFixed(2)+' m s⁻¹ ⇒ 重力超過所需向心力，繩鬆、脫離圓軌跡':'v_top < √(gr) = '+k.vc.toFixed(2)+' m s⁻¹ ⇒ gravity exceeds the required centripetal force: the string goes slack and the object leaves the circle'),
     draw:k=>{}
   },
 
   /* 5. 圓錐擺 · 張力分解 */
   pendulum: {
-    name:'圓錐擺', en:'Conical pendulum',
+    name:{zh:'圓錐擺',en:'Conical pendulum'}, en:{zh:'張力分解 · 高頻',en:'Force resolution · high frequency'},
     freq:'高頻',
     params:{ m:1.5, r:1.2, th:35 },
     ctl:[['m','質量 m (kg)',0.1,10,0.1,1],['r','圓周半徑 r (m)',0.2,2.5,0.05,2],
@@ -452,14 +556,14 @@ const MODELS = {
                        ['T = mg/cosθ',T.toFixed(2)+' N','kvf'],
                        ['T_p = 2π/ω',(TAU/w).toFixed(2)+' s','']] };
     },
-    note:'豎直 T cosθ = mg、水平 T sinθ = mω²r；相除消 T 得 tanθ = ω²r/g，與質量無關。',
-    bad:k=>k.th>70*D2R?'θ 接近 80°：cosθ → 0，T 急升 —— 繩會斷，DSE 常問「可否水平轉（θ = 90°）」':null,
+    note:{zh:'豎直 T cosθ = mg、水平 T sinθ = mω²r；相除消 T 得 tanθ = ω²r/g，與質量無關。',en:'Vertically T cosθ = mg and horizontally T sinθ = mω²r; dividing eliminates T giving tanθ = ω²r/g, independent of mass.'},
+    bad:k=>k.th>70*D2R?(LANG==='zh'?'θ 接近 80°：cosθ → 0，T 急升 —— 繩會斷，DSE 常問「可否水平轉（θ = 90°）」':'θ near 80°: cosθ → 0 so T rises sharply — the string would break. A classic question is whether θ = 90° is possible.'):null,
     draw:k=>{}
   },
 
   /* 6. 衞星軌道 · 引力提供向心力（syllabus 1(g) 交界高頻） */
   orbit: {
-    name:'衞星軌道', en:'Circular orbit',
+    name:{zh:'衞星軌道',en:'Circular orbit'}, en:{zh:'引力提供 F_c',en:'Gravity supplies F_c'},
     freq:'高頻',
     params:{ M:5.97e24, r:6.71e6, m:500 },
     ctl:[['r','軌道半徑 r (×10⁶ m)',7.5,42,0.01,2,1e6],['m','衞星質量 m (kg)',100,5000,100,0]],
@@ -474,7 +578,7 @@ const MODELS = {
                        ['地表 g₀',g0.toFixed(2)+' m s⁻²',''],
                        ['高度 h',((p.r-6.371e6)/1000).toFixed(0)+' km','']] };
     },
-    note:'引力係唯一作用力 ⇒ GMm/r² = mv²/r ⇒ v = √(GM/r)。半徑越大，速率越慢、週期越長。',
+    note:{zh:'引力係唯一作用力 ⇒ GMm/r² = mv²/r ⇒ v = √(GM/r)。半徑越大，速率越慢、週期越長。',en:'Gravity is the only force, so GMm/r² = mv²/r ⇒ v = √(GM/r). A larger radius means a slower speed and a longer period.'},
     bad:()=>null,
     draw:k=>{}
   }
@@ -489,6 +593,7 @@ function loadModel(key){
   P = Object.assign({}, M.params);
   buildCtrls(M);
   buildModelBtns();
+  if (typeof newBatch === 'function'){ QUIZ.answered = {}; QUIZ.correct = 0; newBatch(); }
   update();
 }
 function buildModelBtns(){
@@ -496,14 +601,14 @@ function buildModelBtns(){
   box.innerHTML = Object.keys(MODELS).map(k=>{
     const M = MODELS[k];
     return '<button class="mbtn'+(k===S.model?' on':'')+'" type="button" data-k="'+k+'">'+
-      '<b>'+M.name+'</b><i>'+M.en+'</i></button>';
+      '<b>'+tt(M.name)+'</b><i>'+tt(M.en)+'</i></button>';
   }).join('');
   box.querySelectorAll('.mbtn').forEach(b=>{
     b.addEventListener('click', ()=>loadModel(b.dataset.k));
   });
 }
 function buildCtrls(M){
-  $('pName').textContent = M.name + ' · ' + M.en;
+  $('pName').textContent = tt(M.name) + ' · ' + tt(M.en);
   const box = $('ctls');
   box.innerHTML = M.ctl.map(([k,label,min,max,step,dec,scale])=>
     '<div class="ctl" data-k="'+k+'" data-dec="'+dec+'" data-scale="'+(scale||1)+'">'+
@@ -528,15 +633,16 @@ function buildCtrls(M){
 
 /* ═════ 折疊引擎（儀表盤自定義） ═════ */
 const LSK = 'dse-cm-panels-v1';
-const PANELS = ['models','params','values','play','insight','tips'];
+const PANELS = ['models','params','values','play','insight','tips','quiz'];
 let LAY = loadLayout();
 function loadLayout(){
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(LSK) || '{}') || {}; } catch(e){ saved = {}; }
-  const o = { collapsed:{}, hudOpen:true, hud:{x:16, y:58} };
+  const o = { collapsed:{}, hudOpen:true, hud:{x:16, y:58}, lang:'zh' };
   PANELS.forEach(k => { o.collapsed[k] = !!(saved.collapsed && saved.collapsed[k]); });
   if (typeof saved.hudOpen === 'boolean') o.hudOpen = saved.hudOpen;
   if (saved.hud && isFinite(saved.hud.x) && isFinite(saved.hud.y)) o.hud = saved.hud;
+  if (saved.lang === 'zh' || saved.lang === 'en') o.lang = saved.lang;
   return o;
 }
 function saveLayout(){
@@ -567,7 +673,17 @@ function applyCollapsed(){
   });
   const anyOpen = PANELS.some(k => !LAY.collapsed[k]);
   const allBtn = $('pcAll');
-  if (allBtn) allBtn.textContent = anyOpen ? '全部收起' : '全部展開';
+  if (allBtn) allBtn.textContent = anyOpen
+    ? (LANG === 'zh' ? '全部收起' : 'Collapse All')
+    : (LANG === 'zh' ? '全部展開' : 'Expand All');
+  /* 圖內卡按鈕狀態 */
+  document.querySelectorAll('.pcbtn[data-pc="hud"]').forEach(b => b.classList.toggle('on', LAY.hudOpen));
+  /* 語言按鈕文字 */
+  const lb = $('langBtn');
+  if (lb) lb.textContent = LANG === 'zh' ? 'EN' : '中文';
+  /* 語速滑桿狀態 */
+  const ts = $('trailState');
+  if (ts) ts.textContent = t('trail.on');
 }
 function togglePanel(k){
   LAY.collapsed[k] = !LAY.collapsed[k];
@@ -599,7 +715,8 @@ function initCollapse(){
   });
   const rst = $('pcReset');
   if (rst) rst.addEventListener('click', () => {
-    LAY = { collapsed:{}, hudOpen:true, hud:{x:16, y:58} };
+    const keepLang = LAY.lang;
+    LAY = { collapsed:{}, hudOpen:true, hud:{x:16, y:58}, lang:keepLang };
     PANELS.forEach(k => { LAY.collapsed[k] = false; });
     saveLayout(); applyCollapsed(); draw();
   });
@@ -1047,24 +1164,670 @@ function update(){
   const bad = M.bad(K);
   $('banner').innerHTML = bad
     ? '<div class="banner bad">'+bad+'</div>'
-    : '<div class="banner ok">'+M.note+'</div>';
+    : '<div class="banner ok">'+tt(M.note)+'</div>';
   $('sol').innerHTML =
-    '<div class="q"><b>模型：</b>'+M.name+'（'+M.en+'）</div>'+
-    '<div class="sp"><b>核心關係</b>：合力沿徑向 = m v²/r = m ω² r ⇒ <span class="f">a_c = v²/r = ω²r</span></div>'+
-    '<div class="sp"><b>本次數值</b>：'+K.labels.slice(0,3).map(x=>x[0]+' = <span class="ans">'+x[1]+'</span>').join('　')+'</div>'+
-    '<div class="sp"><b>判讀重點</b>：'+M.note+'</div>';
-  $('tips').innerHTML = TIPS.map(x=>'<li>'+x+'</li>').join('');
+    '<div class="q"><b>'+(LANG==='zh'?'模型：':'Model: ')+'</b>'+tt(M.name)+'（'+tt(M.en)+'）</div>'+
+    '<div class="sp"><b>'+(LANG==='zh'?'核心關係':'Core relation')+'</b>：'+(LANG==='zh'?'合力沿徑向':'net force along the radius')+' = m v²/r = m ω² r ⇒ <span class="f">a_c = v²/r = ω²r</span></div>'+
+    '<div class="sp"><b>'+(LANG==='zh'?'本次數值':'Current values')+'</b>：'+K.labels.slice(0,3).map(x=>x[0]+' = <span class="ans">'+x[1]+'</span>').join('　')+'</div>'+
+    '<div class="sp"><b>'+(LANG==='zh'?'判讀重點':'Key reading')+'</b>：'+tt(M.note)+'</div>';
+  $('tips').innerHTML = TIPS[LANG].map(x=>'<li>'+x+'</li>').join('');
   draw();
 }
-const TIPS = [
-  '見到圓周運動，第一步必定問：<b>邊個力提供 centripetal force</b>（張力／摩擦／法向力／重力／引力），寫出該力 = mv²/r。',
-  '只寫「the centripetal force」而唔指出實際力來源 → <b>該分不給</b>。',
-  '<b>離心力（centrifugal force）係假想力</b>，DSE 一概不接受；乘客外傾要用 inertia 解釋。',
-  'v 固定 → F_c ∝ 1/r；ω 固定 → F_c ∝ r。先問「邊個量固定」再落公式。',
-  '臨界條件：設 T = 0 或 N = 0 或 f = μgN，只用重力提供 F_c ⇒ 鉛垂圓周 v_min = √(gr)。',
-  'ω 單位必須 rad s⁻¹；題目給 rpm 要先換算 ω = 2πn/60。',
-  '鉛垂圓周：最高點 T + mg = mv²/r、最低點 T − mg = mv²/r，兩點速率由 v_bot² = v_top² + 4gr 連繫。'
-];
+const TIPS = {
+  zh:[
+    '見到圓周運動，第一步必定問：<b>邊個力提供 centripetal force</b>（張力／摩擦／法向力／重力／引力），寫出該力 = mv²/r。',
+    '只寫「the centripetal force」而唔指出實際力來源 → <b>該分不給</b>。',
+    '<b>離心力（centrifugal force）係假想力</b>，DSE 一概不接受；乘客外傾要用 inertia 解釋。',
+    'v 固定 → F_c ∝ 1/r；ω 固定 → F_c ∝ r。先問「邊個量固定」再落公式。',
+    '臨界條件：設 T = 0 或 N = 0 或 f = μgN，只用重力提供 F_c ⇒ 鉛垂圓周 v_min = √(gr)。',
+    'ω 單位必須 rad s⁻¹；題目給 rpm 要先換算 ω = 2πn/60。',
+    '鉛垂圓周：最高點 T + mg = mv²/r、最低點 T − mg = mv²/r，兩點速率由 v_bot² = v_top² + 4gr 連繫。'
+  ],
+  en:[
+    'For any circular motion, first ask: <b>which force provides the centripetal force</b> (tension / friction / normal force / weight / gravity), then set that force = mv²/r.',
+    'Writing "the centripetal force" without naming the real force → <b>no marks awarded</b>.',
+    '<b>Centrifugal force is fictitious</b> and is never accepted in DSE; explain the outward lean of a passenger with <b>inertia</b>.',
+    'v fixed → F_c ∝ 1/r; ω fixed → F_c ∝ r. Decide which quantity is constant before substituting.',
+    'Critical condition: set T = 0 or N = 0 or f = μgN, letting gravity alone supply F_c ⇒ vertical circle v_min = √(gr).',
+    'ω must be in rad s⁻¹; convert rpm first with ω = 2πn/60.',
+    'Vertical circle: T + mg = mv²/r at the top, T − mg = mv²/r at the bottom, linked by v_bot² = v_top² + 4gr.'
+  ]
+};
+
+/* ═════ 概念小測題庫（雙語 · 兩級 · 定期輪換） ═════ */
+const QBANK = {
+  horizontal:{
+    basic:[
+      {zh:{q:"物體作等速率圓周運動期間，下列何者正確？",
+        o:["速度向量不變","加速度恆指向圓心，大小不變","加速度沿切線方向，使速率改變","合外力為零，因為速率不變"],
+        e:"方向不斷改變 ⇒ 必有加速度，且恆指向圓心，大小 a_c = v²/r。<b>陷阱：</b>「速率不變 ⇒ 合力為零」係最典型迷思。"},
+       en:{q:"An object moves in uniform circular motion. Which statement is correct?",
+        o:["The velocity vector is constant","The acceleration always points towards the centre and has constant magnitude","The acceleration is tangential and changes the speed","The net force is zero because the speed is constant"],
+        e:"The direction keeps changing, so there must be an acceleration — always towards the centre, with a_c = v²/r. <b>Trap:</b> \"constant speed ⇒ zero net force\" is the classic misconception."}, a:1},
+      {zh:{q:"m = 2.0 kg 小球以 r = 1.5 m 作等速率圓周運動、v = 3.0 m s⁻¹。向心加速度與繩張力為？",
+        o:["a_c = 3.0 m s⁻²、T = 6.0 N","a_c = 6.0 m s⁻²、T = 12 N","a_c = 6.0 m s⁻²、T = 6.0 N","a_c = 12 m s⁻²、T = 24 N"],
+        e:"a_c = v²/r = 3.0²/1.5 = 6.0 m s⁻²，T = m a_c = 2.0 × 6.0 = 12 N。水平面上張力係唯一水平力 ⇒ 全部提供 F_c。"},
+       en:{q:"A 2.0 kg ball moves in a horizontal circle, r = 1.5 m, v = 3.0 m s⁻¹. Find a_c and the tension T.",
+        o:["a_c = 3.0 m s⁻², T = 6.0 N","a_c = 6.0 m s⁻², T = 12 N","a_c = 6.0 m s⁻², T = 6.0 N","a_c = 12 m s⁻², T = 24 N"],
+        e:"a_c = v²/r = 3.0²/1.5 = 6.0 m s⁻² and T = m a_c = 2.0 × 6.0 = 12 N. On a horizontal surface the tension is the only horizontal force, so it supplies all of F_c."}, a:1},
+      {zh:{q:"速率不變、半徑不變，把速率加倍，繩張力變為原本幾倍？",
+        o:["1/2 倍","2 倍","4 倍","不變"],
+        e:"T = mv²/r，m、r 固定 ⇒ T ∝ v²，v 加倍 ⇒ T 變 4 倍。<b>陷阱：</b>答「2 倍」係把平方關係當線性。"},
+       en:{q:"With the radius unchanged, the speed is doubled. The tension becomes:",
+        o:["1/2","2 times","4 times","unchanged"],
+        e:"T = mv²/r with m and r fixed ⇒ T ∝ v², so doubling v gives 4T. <b>Trap:</b> answering \"2 times\" treats the square relation as linear."}, a:2},
+      {zh:{q:"唱片以 33⅓ rpm 轉動。求角速度。",
+        o:["3.49 rad s⁻¹","209 rad s⁻¹","33.3 rad s⁻¹","0.55 rad s⁻¹"],
+        e:"ω = 2πn/60 = 2π(33.33)/60 = 3.49 rad s⁻¹。<b>陷阱：</b>漏 ÷60 會得 209 rad s⁻¹。"},
+       en:{q:"A record turns at 33⅓ rpm. Find the angular velocity.",
+        o:["3.49 rad s⁻¹","209 rad s⁻¹","33.3 rad s⁻¹","0.55 rad s⁻¹"],
+        e:"ω = 2πn/60 = 2π(33.33)/60 = 3.49 rad s⁻¹. <b>Trap:</b> missing the ÷60 gives 209 rad s⁻¹."}, a:0},
+      {zh:{q:"物體作圓周運動，若把半徑減半而保持速率不變，向心加速度變為？",
+        o:["一半","兩倍","四倍","不變"],
+        e:"a_c = v²/r，v 固定 ⇒ a_c ∝ 1/r。r 減半則 a_c 加倍。<b>陷阱：</b>誤以為 a_c ∝ r。"},
+       en:{q:"For circular motion at constant speed, the radius is halved. The centripetal acceleration becomes:",
+        o:["half","twice","four times","unchanged"],
+        e:"a_c = v²/r with v fixed ⇒ a_c ∝ 1/r, so halving r doubles a_c. <b>Trap:</b> assuming a_c ∝ r."}, a:1},
+      {zh:{q:"圓周運動中，速度與加速度嘅夾角恆為？",
+        o:["0°","45°","90°","180°"],
+        e:"v 沿切線、a_c 沿半徑 ⇒ 兩者互相垂直，夾角恆為 90°。<b>得分關鍵：</b>夾角 90° 亦係「速率不變」嘅原因（無切線方向加速度）。"},
+       en:{q:"In uniform circular motion, the angle between the velocity and the acceleration is always:",
+        o:["0°","45°","90°","180°"],
+        e:"v is tangential and a_c is radial, so they are perpendicular: 90°. <b>Key:</b> this is also why the speed stays constant."}, a:2},
+      {zh:{q:"半徑 r 嘅圓周運動，週期 T 與角速度 ω 嘅關係係？",
+        o:["ω = 2π/T","ω = 2πT","ω = T/2π","ω = 1/T"],
+        e:"轉一圈 = 2π rad，用時 T ⇒ ω = 2π/T。<b>陷阱：</b>忘記 2π，或用 rpm 直接代入 ω。"},
+       en:{q:"For circular motion, how are the period T and angular velocity ω related?",
+        o:["ω = 2π/T","ω = 2πT","ω = T/2π","ω = 1/T"],
+        e:"One revolution is 2π rad in time T ⇒ ω = 2π/T. <b>Trap:</b> dropping the 2π or substituting rpm directly."}, a:0}
+    ],
+    dse:[
+      {zh:{q:"小球以固定速率 v 在半徑 r 的水平圓周作圓周運動，繩張力為 T。若保持 v 不變而把 r 增至 2r，張力變為？",
+        o:["4T","2T","T/2","T/4"],
+        e:"v 固定時 T = mv²/r ∝ 1/r ⇒ r 加倍則 T 減半。<b>得分關鍵：</b>先寫出「邊個量固定」，再判斷 ∝ 關係。"},
+       en:{q:"A ball moves at constant speed v on a horizontal circle of radius r with tension T. If v is unchanged and r is doubled, the tension becomes:",
+        o:["4T","2T","T/2","T/4"],
+        e:"With v fixed, T = mv²/r ∝ 1/r, so doubling r halves the tension. <b>Key:</b> state which quantity is constant before using the proportionality."}, a:2},
+      {zh:{q:"質量 m 小球以 1.5 m 繩在光滑水平面作圓周運動，繩最大張力 30 N 而不斷。求最大速率。",
+        o:["3.0 m s⁻¹","4.5 m s⁻¹","6.7 m s⁻¹","20 m s⁻¹"],
+        e:"T_max = mv_max²/r ⇒ v_max = √(T_max r/m)。設 m = 1.0 kg：√(30 × 1.5/1.0) = 6.7 m s⁻¹。<b>陷阱：</b>忘記「張力上限」對應「速率上限」。"},
+       en:{q:"A ball on a 1.5 m string moves in a horizontal circle. The string can take at most 30 N. Take m = 1.0 kg; find the maximum speed.",
+        o:["3.0 m s⁻¹","4.5 m s⁻¹","6.7 m s⁻¹","20 m s⁻¹"],
+        e:"T_max = mv_max²/r ⇒ v_max = √(T_max r/m) = √(30 × 1.5/1.0) = 6.7 m s⁻¹. <b>Trap:</b> forgetting that the tension limit sets the speed limit."}, a:2},
+      {zh:{q:"一部車在水平圓形跑道以最大不滑出速率行駛。若跑道半徑減至四分之一，最大速率變為原本幾倍？",
+        o:["1/4 倍","1/2 倍","2 倍","4 倍"],
+        e:"最大速率時 μmg = mv²/r ⇒ v_max = √(μgr) ∝ √r。r 變 1/4 ⇒ v_max 變 1/2。<b>陷阱：</b>誤用 ∝ r。"},
+       en:{q:"A car rounds a flat circular track at its maximum speed without sliding. If the radius is reduced to one quarter, the maximum speed becomes:",
+        o:["1/4","1/2","2 times","4 times"],
+        e:"At the limit μmg = mv²/r ⇒ v_max = √(μgr) ∝ √r. Reducing r to 1/4 gives v_max → 1/2. <b>Trap:</b> assuming v ∝ r."}, a:1},
+      {zh:{q:"m = 0.50 kg 小球以 r = 0.80 m、v = 4.0 m s⁻¹ 作水平圓周運動。繩張力為？",
+        o:["5.0 N","8.0 N","10 N","16 N"],
+        e:"T = mv²/r = 0.50 × 16/0.80 = 10 N。<b>陷阱：</b>忘記乘質量，或誤用 v（而非 v²）。"},
+       en:{q:"A 0.50 kg ball moves in a horizontal circle, r = 0.80 m, v = 4.0 m s⁻¹. The tension is:",
+        o:["5.0 N","8.0 N","10 N","16 N"],
+        e:"T = mv²/r = 0.50 × 16/0.80 = 10 N. <b>Trap:</b> forgetting the mass or using v instead of v²."}, a:2},
+      {zh:{q:"小球作水平圓周運動，速率加倍而質量、半徑不變。繩張力與週期分別變為？",
+        o:["張力 4 倍、週期減半","張力 2 倍、週期減半","張力 4 倍、週期不變","張力 4 倍、週期加倍"],
+        e:"T = mv²/r ∝ v² ⇒ 張力 4 倍；週期 = 2πr/v ∝ 1/v ⇒ 週期減半。<b>得分關鍵：</b>兩個量要分別判斷。"},
+       en:{q:"For a ball in a horizontal circle the speed doubles while m and r are fixed. Tension and period become:",
+        o:["tension ×4, period halved","tension ×2, period halved","tension ×4, period unchanged","tension ×4, period doubled"],
+        e:"T = mv²/r ∝ v² ⇒ ×4; period = 2πr/v ∝ 1/v ⇒ halved. <b>Key:</b> judge the two quantities separately."}, a:0},
+      {zh:{q:"1.2 m 繩在光滑水平面拉著 0.30 kg 小球作圓周運動。繩最大張力 18 N，最大角速度為？",
+        o:["5.0 rad s⁻¹","7.1 rad s⁻¹","12 rad s⁻¹","25 rad s⁻¹"],
+        e:"T = mω²r ⇒ ω = √(T/(mr)) = √(18/(0.30 × 1.2)) = 7.1 rad s⁻¹。<b>陷阱：</b>誤用 v 公式；ω 形式為 mω²r。"},
+       en:{q:"A 0.30 kg ball on a 1.2 m string moves in a circle on a smooth horizontal surface. Maximum tension 18 N; the maximum ω is:",
+        o:["5.0 rad s⁻¹","7.1 rad s⁻¹","12 rad s⁻¹","25 rad s⁻¹"],
+        e:"T = mω²r ⇒ ω = √(T/(mr)) = √(18/(0.30 × 1.2)) = 7.1 rad s⁻¹. <b>Trap:</b> using the v form; the ω form is mω²r."}, a:1}
+    ]
+  },
+  turntable:{
+    basic:[
+      {zh:{q:"轉盤上物體隨盤轉動。提供向心力嘅力係？",
+        o:["離心力","轉盤對物體嘅摩擦力","物體嘅重量","轉盤嘅法向力"],
+        e:"轉盤對物體嘅靜摩擦係唯一水平力 ⇒ 提供全部 F_c。<b>陷阱：</b>寫「離心力」會被扣分（假想力，不存在）。"},
+       en:{q:"An object turns with a turntable. Which force provides the centripetal force?",
+        o:["Centrifugal force","Friction from the turntable on the object","The weight of the object","The normal force from the turntable"],
+        e:"Static friction from the turntable is the only horizontal force, so it supplies all of F_c. <b>Trap:</b> \"centrifugal force\" scores nothing — it is fictitious."}, a:1},
+      {zh:{q:"物體距轉軸 r、角速度 ω。所需向心力為？",
+        o:["mrω²","mr/ω²","mω²/r","mr²ω"],
+        e:"a_c = ω²r ⇒ F_c = mω²r。已知 ω 時直接代入比先算 v 快。"},
+       en:{q:"An object is at distance r from the axis, turning at angular velocity ω. The required centripetal force is:",
+        o:["mrω²","mr/ω²","mω²/r","mr²ω"],
+        e:"a_c = ω²r ⇒ F_c = mω²r. When ω is given, substituting directly is faster than finding v first."}, a:0},
+      {zh:{q:"m = 0.50 kg、r = 0.40 m、ω = 5.0 rad s⁻¹，所需向心力為？",
+        o:["0.50 N","2.0 N","5.0 N","10 N"],
+        e:"F_c = mω²r = 0.50 × 25 × 0.40 = 5.0 N。"},
+       en:{q:"m = 0.50 kg, r = 0.40 m, ω = 5.0 rad s⁻¹. Find the required centripetal force.",
+        o:["0.50 N","2.0 N","5.0 N","10 N"],
+        e:"F_c = mω²r = 0.50 × 25 × 0.40 = 5.0 N."}, a:2},
+      {zh:{q:"臨界角速度（剛開始打滑）嘅條件係？",
+        o:["ω²r = μg","ω²r = g","ωr = μg","ω²r = μ/g"],
+        e:"所需 F_c = mω²r，最大摩擦 = μmg；界值 mω²r = μmg ⇒ ω²r = μg ⇒ ω = √(μg/r)。"},
+       en:{q:"The critical angular velocity (just about to slip) satisfies:",
+        o:["ω²r = μg","ω²r = g","ωr = μg","ω²r = μ/g"],
+        e:"Required F_c = mω²r and maximum friction = μmg; at the limit mω²r = μmg ⇒ ω²r = μg ⇒ ω = √(μg/r)."}, a:0},
+      {zh:{q:"物體在轉盤上唔打滑，轉盤對物體嘅摩擦力方向為？",
+        o:["沿切線向前","指向轉軸","背離轉軸","垂直向上"],
+        e:"摩擦力必須提供指向圓心嘅 F_c ⇒ 指向轉軸。<b>陷阱：</b>誤以為摩擦永遠與運動方向相反。"},
+       en:{q:"An object does not slip on a turntable. The friction on it acts:",
+        o:["tangentially forwards","towards the axis","away from the axis","vertically upwards"],
+        e:"Friction must supply F_c, which points towards the centre. <b>Trap:</b> assuming friction always opposes motion."}, a:1},
+      {zh:{q:"所需向心力超過最大摩擦力時，物體會？",
+        o:["向圓心滑入","沿切線飛出（看似向外滑）","靜止不動","向上飛起"],
+        e:"摩擦不足提供 F_c ⇒ 物體保持切線方向慣性，相對轉盤看似向外滑，實際路徑係切線。"},
+       en:{q:"When the required centripetal force exceeds the maximum friction the object:",
+        o:["slides inwards","flies off along the tangent (appearing to slide outwards)","stays at rest","flies upwards"],
+        e:"Friction can no longer supply F_c, so the object continues along the tangent by inertia."}, a:1},
+      {zh:{q:"m = 0.20 kg 物體距轉軸 0.30 m、ω = 4.0 rad s⁻¹。所需向心力為？",
+        o:["0.24 N","0.96 N","2.4 N","9.6 N"],
+        e:"F_c = mω²r = 0.20 × 16 × 0.30 = 0.96 N。<b>陷阱：</b>忘記平方 ω。"},
+       en:{q:"A 0.20 kg object is 0.30 m from the axis, ω = 4.0 rad s⁻¹. The required centripetal force is:",
+        o:["0.24 N","0.96 N","2.4 N","9.6 N"],
+        e:"F_c = mω²r = 0.20 × 16 × 0.30 = 0.96 N. <b>Trap:</b> forgetting to square ω."}, a:1}
+    ],
+    dse:[
+      {zh:{q:"轉盤轉速慢慢增加，物體最終滑出。滑出前一刻所需向心力與最大摩擦嘅關係係？",
+        o:["所需 < 最大摩擦","所需 = 最大摩擦","所需 > 最大摩擦","兩者無關"],
+        e:"臨界時所需向心力恰好等於最大靜摩擦；再增加就 μmg 不夠提供 F_c ⇒ 打滑。<b>得分關鍵：</b>必須寫出「摩擦提供向心力」再列 μmg = mω²r。"},
+       en:{q:"A turntable spins faster until the object finally slides off. At the instant just before sliding:",
+        o:["required < maximum friction","required = maximum friction","required > maximum friction","they are unrelated"],
+        e:"At the critical point the required centripetal force exactly equals the maximum static friction; beyond that μmg cannot supply F_c and the object slips. <b>Key:</b> state \"friction provides the centripetal force\" then write μmg = mω²r."}, a:1},
+      {zh:{q:"一部車以 v 行駛半徑 r 嘅水平彎道，路面與輪胎之間 μ = 0.70。求最大安全速率（r = 50 m）。",
+        o:["8.6 m s⁻¹","18.5 m s⁻¹","34.3 m s⁻¹","50 m s⁻¹"],
+        e:"μmg = mv²/r ⇒ v = √(μgr) = √(0.70 × 9.81 × 50) = 18.5 m s⁻¹。<b>陷阱：</b>忘記質量 m 會消去，而誤以為需要車輛質量。"},
+       en:{q:"A car rounds a flat bend of radius 50 m with μ = 0.70. Find the maximum safe speed.",
+        o:["8.6 m s⁻¹","18.5 m s⁻¹","34.3 m s⁻¹","50 m s⁻¹"],
+        e:"μmg = mv²/r ⇒ v = √(μgr) = √(0.70 × 9.81 × 50) = 18.5 m s⁻¹. <b>Trap:</b> m cancels — the mass of the car is not needed."}, a:1},
+      {zh:{q:"同一物體在轉盤上，若把 ω 加倍而 r 不變，所需向心力變為幾倍？",
+        o:["1/2 倍","2 倍","4 倍","不變"],
+        e:"F_c = mω²r，ω 固定關係為 ∝ ω² ⇒ ω 加倍則 F_c 變 4 倍；但最大摩擦不變 ⇒ 必定打滑。"},
+       en:{q:"The same object on a turntable: if ω doubles with r unchanged, the required centripetal force becomes:",
+        o:["1/2","2 times","4 times","unchanged"],
+        e:"F_c = mω²r ∝ ω², so doubling ω gives 4F_c; maximum friction is unchanged, so it must slip."}, a:2},
+      {zh:{q:"0.20 kg 物體距軸 0.30 m、μs = 0.50、ω = 4.0 rad s⁻¹。會否打滑？",
+        o:["會打滑：0.96 N > 0.98 N","唔會：0.96 N < 0.98 N","唔會，摩擦無限大","資料不足"],
+        e:"所需 F_c = 0.96 N；最大靜摩擦 = μmg = 0.50 × 0.20 × 9.81 = 0.98 N。0.96 < 0.98 ⇒ 剛好唔打滑（極接近臨界，係 DSE 常見題型）。"},
+       en:{q:"A 0.20 kg object is 0.30 m from the axis, μs = 0.50, ω = 4.0 rad s⁻¹. Does it slip?",
+        o:["Yes: 0.96 N > 0.98 N","No: 0.96 N < 0.98 N","No, friction is unlimited","Not enough information"],
+        e:"Required 0.96 N, maximum static friction = μmg = 0.98 N. Since 0.96 < 0.98 it just holds — a classic near-critical setup."}, a:1},
+      {zh:{q:"承上，物體移至距軸 0.80 m（μs 不變），臨界角速度為？",
+        o:["1.75 rad s⁻¹","2.48 rad s⁻¹","3.50 rad s⁻¹","6.26 rad s⁻¹"],
+        e:"ω = √(μg/r) = √(0.50 × 9.81/0.80) = 2.48 rad s⁻¹。<b>陷阱：</b>沿用舊半徑 0.30 m。"},
+       en:{q:"The object moves to 0.80 m from the axis with μs unchanged. The critical ω is:",
+        o:["1.75 rad s⁻¹","2.48 rad s⁻¹","3.50 rad s⁻¹","6.26 rad s⁻¹"],
+        e:"ω = √(μg/r) = √(0.50 × 9.81/0.80) = 2.48 rad s⁻¹. <b>Trap:</b> reusing the old radius 0.30 m."}, a:1},
+      {zh:{q:"車以最大安全速率通過半徑 30 m 水平圓形跑道，μ = 0.80。最大速率為？",
+        o:["5.4 m s⁻¹","15.3 m s⁻¹","24.5 m s⁻¹","30 m s⁻¹"],
+        e:"v = √(μgr) = √(0.80 × 9.81 × 30) = 15.3 m s⁻¹。<b>得分關鍵：</b>質量 m 會消去，題目通常刻意不給車嘅質量。"},
+       en:{q:"A car takes a flat circular track of radius 30 m at maximum safe speed with μ = 0.80. The maximum speed is:",
+        o:["5.4 m s⁻¹","15.3 m s⁻¹","24.5 m s⁻¹","30 m s⁻¹"],
+        e:"v = √(μgr) = √(0.80 × 9.81 × 30) = 15.3 m s⁻¹. <b>Key:</b> m cancels — the mass is deliberately omitted."}, a:1}
+    ]
+  },
+  banked:{
+    basic:[
+      {zh:{q:"汽車以設計速率（design speed）通過斜坡彎道，不倚賴摩擦力。提供向心力嘅力係？",
+        o:["路面摩擦力","法向力 N 嘅水平分量","車重 mg 嘅水平分量","離心力"],
+        e:"設計速率時 N sinθ = mv²/r、N cosθ = mg；向心力全由 N 嘅水平分量提供。<b>陷阱：</b>mg 鉛垂向下，無水平分量。"},
+       en:{q:"A car takes a banked bend at the design speed without relying on friction. Which force provides the centripetal force?",
+        o:["Friction from the road","The horizontal component of the normal force N","The horizontal component of the weight mg","Centrifugal force"],
+        e:"At the design speed N sinθ = mv²/r and N cosθ = mg, so the horizontal component of N supplies all of F_c. <b>Trap:</b> mg acts vertically and has no horizontal component."}, a:1},
+      {zh:{q:"斜坡彎道嘅設計速率公式係？",
+        o:["v = √(rg tanθ)","v = √(rg sinθ)","v = √(rg/ tanθ)","v = rg tanθ"],
+        e:"相除 N sinθ = mv²/r 與 N cosθ = mg 得 tanθ = v²/(rg) ⇒ v = √(rg tanθ)。"},
+       en:{q:"The design speed of a banked bend is:",
+        o:["v = √(rg tanθ)","v = √(rg sinθ)","v = √(rg / tanθ)","v = rg tanθ"],
+        e:"Dividing N sinθ = mv²/r by N cosθ = mg gives tanθ = v²/(rg) ⇒ v = √(rg tanθ)."}, a:0},
+      {zh:{q:"斜坡彎道上 N 與 mg 嘅關係係？",
+        o:["N = mg","N < mg","N > mg","N = 0"],
+        e:"豎直方向 N cosθ 必須同時支持重力並配合徑向分量 ⇒ N = mg cosθ + (mv²/r) sinθ > mg cosθ。<b>陷阱：</b>直接寫 N = mg 係最常見失分。"},
+       en:{q:"For a car on a banked bend, how does the normal force N compare with mg?",
+        o:["N = mg","N < mg","N > mg","N = 0"],
+        e:"Vertically N cosθ must support the weight while also contributing radially, giving N = mg cosθ + (mv²/r) sinθ > mg cosθ. <b>Trap:</b> writing N = mg is the most common lost mark."}, a:2},
+      {zh:{q:"路面傾角增大（其他不變），設計速率會？",
+        o:["增大","減小","不變","變成零"],
+        e:"v = √(rg tanθ)，θ 增大 ⇒ tanθ 增大 ⇒ 設計速率增大。"},
+       en:{q:"If the banking angle θ increases (all else unchanged), the design speed:",
+        o:["increases","decreases","stays the same","becomes zero"],
+        e:"v = √(rg tanθ); a larger θ gives a larger tanθ, hence a larger design speed."}, a:0},
+      {zh:{q:"斜坡彎道嘅傾斜設計目的係？",
+        o:["增加摩擦力","利用法向力分量提供向心力，減少倚賴摩擦","減低車速","增加車重"],
+        e:"路面傾斜令 N 有水平分量指向圓心，設計速率時完全唔需要摩擦。<b>陷阱：</b>答「增加摩擦」。"},
+       en:{q:"Why are bends banked?",
+        o:["To increase friction","To use a component of the normal force as the centripetal force","To reduce the speed","To increase the weight"],
+        e:"Banking gives N a horizontal component towards the centre, so at the design speed no friction is needed."}, a:1},
+      {zh:{q:"斜面傾角 θ，重力 mg 沿斜面方向嘅分量為？",
+        o:["mg sinθ","mg cosθ","mg tanθ","零"],
+        e:"沿斜面分量為 mg sinθ（下坡），垂直斜面為 mg cosθ。<b>陷阱：</b>sin／cos 調轉係斜坡題最常見失分。"},
+       en:{q:"On a slope of angle θ, the component of the weight along the slope is:",
+        o:["mg sinθ","mg cosθ","mg tanθ","zero"],
+        e:"Along the slope it is mg sinθ; perpendicular to it mg cosθ. <b>Trap:</b> swapping sin and cos."}, a:0},
+      {zh:{q:"車以設計速率通過斜坡彎道時，摩擦力為？",
+        o:["最大","零","等於 mg","等於 N"],
+        e:"設計速率嘅定義就係「唔需要摩擦」：N sinθ = mv²/r 已提供全部 F_c。"},
+       en:{q:"A car takes a banked bend at the design speed. The friction is:",
+        o:["maximum","zero","equal to mg","equal to N"],
+        e:"The design speed is defined so that no friction is needed."}, a:1}
+    ],
+    dse:[
+      {zh:{q:"r = 80 m、θ = 20° 嘅斜坡彎道，設計速率約為？",
+        o:["9.8 m s⁻¹","16.9 m s⁻¹","29.0 m s⁻¹","80 m s⁻¹"],
+        e:"v = √(rg tanθ) = √(80 × 9.81 × tan20°) = 16.9 m s⁻¹。<b>得分關鍵：</b>緊記 tanθ = v²/(rg)，唔好誤用 sinθ。"},
+       en:{q:"A banked bend with r = 80 m and θ = 20°. The design speed is about:",
+        o:["9.8 m s⁻¹","16.9 m s⁻¹","29.0 m s⁻¹","80 m s⁻¹"],
+        e:"v = √(rg tanθ) = √(80 × 9.81 × tan20°) = 16.9 m s⁻¹. <b>Key:</b> remember tanθ = v²/(rg) — do not use sinθ."}, a:1},
+      {zh:{q:"車速大於設計速率時，摩擦力方向為？",
+        o:["沿斜面向下（指向圓心一側）","沿斜面向上（遠離圓心一側）","垂直斜面","零"],
+        e:"車有向外滑出趨勢 ⇒ 摩擦沿斜面向下坡（即向圓心一側）補充不足嘅 F_c。<b>陷阱：</b>低估現時路段需要「額外」向心力。"},
+       en:{q:"When the car travels faster than the design speed, the friction on it acts:",
+        o:["down the slope (towards the centre side)","up the slope (away from the centre side)","perpendicular to the slope","zero"],
+        e:"The car tends to slide outwards, so friction acts down the slope (towards the centre) to supply the extra F_c. <b>Trap:</b> forgetting the extra inward force needed above the design speed."}, a:0},
+      {zh:{q:"一段彎道設計速率 15 m s⁻¹，某車以 20 m s⁻¹ 通過時所需額外摩擦係數 μ_min 取決於？",
+        o:["μ_min = |(mv²/r)cosθ − mg sinθ| / N","μ_min = v²/(rg)","μ_min = tanθ","μ_min = g/(ω²r)"],
+        e:"先求所需摩擦 f = (mv²/r)cosθ − mg sinθ，再 μ_min = f/N，其中 N = mg cosθ + (mv²/r)sinθ。要分別列寫兩個方向嘅方程，唔可以只寫一條。"},
+       en:{q:"For a car exceeding the design speed, the minimum friction coefficient μ_min is given by:",
+        o:["μ_min = |(mv²/r)cosθ − mg sinθ| / N","μ_min = v²/(rg)","μ_min = tanθ","μ_min = g/(ω²r)"],
+        e:"First find the required friction f = (mv²/r)cosθ − mg sinθ, then μ_min = f/N with N = mg cosθ + (mv²/r)sinθ. You must write the two directions separately."}, a:0},
+      {zh:{q:"θ = 15°、r = 50 m 嘅斜坡彎道，設計速率為？",
+        o:["8.1 m s⁻¹","10.7 m s⁻¹","11.5 m s⁻¹","14.2 m s⁻¹"],
+        e:"v = √(rg tanθ) = √(50 × 9.81 × tan15°) = 10.7 m s⁻¹。<b>陷阱：</b>誤用 sin15° 得 11.3 m s⁻¹。"},
+       en:{q:"A banked bend with θ = 15° and r = 50 m. The design speed is:",
+        o:["8.1 m s⁻¹","10.7 m s⁻¹","11.5 m s⁻¹","14.2 m s⁻¹"],
+        e:"v = √(rg tanθ) = √(50 × 9.81 × tan15°) = 10.7 m s⁻¹. <b>Trap:</b> using sin15° gives 11.3 m s⁻¹."}, a:1},
+      {zh:{q:"承上，車以 20 m s⁻¹（高於設計速率）通過，所需摩擦方向為？",
+        o:["沿斜面向上坡","沿斜面向下坡","垂直斜面","零"],
+        e:"車速高於設計速率 ⇒ 有向外滑出趨勢 ⇒ 需額外向內力，摩擦沿斜面向下坡（向圓心一側）。<b>得分關鍵：</b>必須明確指出方向。"},
+       en:{q:"A car takes the same bend at 20 m s⁻¹, above the design speed. The required friction acts:",
+        o:["up the slope","down the slope","perpendicular to the slope","zero"],
+        e:"Above the design speed an extra inward force is needed, so friction acts down the slope. <b>Key:</b> state the direction explicitly."}, a:1},
+      {zh:{q:"理想斜坡彎道（無摩擦）上，法向力 N 與 mg 嘅大小關係恆為？",
+        o:["N = mg","N = mg cosθ","N = mg/cosθ","N = mg sinθ"],
+        e:"無摩擦時豎直方向只有 N cosθ 支持重力 ⇒ N = mg/cosθ > mg。<b>陷阱：</b>誤寫 N = mg cosθ（該式只適用於無徑向加速度）。"},
+       en:{q:"On an ideal banked bend (no friction), how does N compare with mg?",
+        o:["N = mg","N = mg cosθ","N = mg/cosθ","N = mg sinθ"],
+        e:"With no friction, vertically N cosθ supports the weight ⇒ N = mg/cosθ > mg. <b>Trap:</b> writing N = mg cosθ."}, a:2}
+    ]
+  },
+  vertical:{
+    basic:[
+      {zh:{q:"小球以繩在鉛垂面作圓周運動。最高點嘅力方程係？",
+        o:["T + mg = mv²/r","T − mg = mv²/r","mg − T = mv²/r","T = mg"],
+        e:"最高點張力與重力都向下（指向圓心）⇒ T + mg = mv²/r。"},
+       en:{q:"A ball moves in a vertical circle on a string. The force equation at the top is:",
+        o:["T + mg = mv²/r","T − mg = mv²/r","mg − T = mv²/r","T = mg"],
+        e:"At the top both tension and weight point downwards (towards the centre) ⇒ T + mg = mv²/r."}, a:0},
+      {zh:{q:"最高點繩剛好鬆（just slack）時，速率為？",
+        o:["√(gr)","√(2gr)","√(gr/2)","零"],
+        e:"臨界時 T = 0 ⇒ mg = mv²/r ⇒ v = √(gr)。<b>陷阱：</b>未說明「T = 0 才是臨界」而直接引用 √(gr) 會失步驟分。"},
+       en:{q:"At the top the string is just slack. The speed is:",
+        o:["√(gr)","√(2gr)","√(gr/2)","zero"],
+        e:"At the critical point T = 0 ⇒ mg = mv²/r ⇒ v = √(gr). <b>Trap:</b> quoting √(gr) without stating \"T = 0 defines the critical case\" loses method marks."}, a:0},
+      {zh:{q:"鉛垂圓周全程速率？",
+        o:["不變","最高點最快","最低點最快","與位置無關"],
+        e:"重力做功 ⇒ 速率處處不同：最高點最慢、最低點最快，兩點由 v_bot² = v_top² + 4gr 連繫。"},
+       en:{q:"For a ball moving in a vertical circle, the speed:",
+        o:["is constant","is greatest at the top","is greatest at the bottom","is independent of position"],
+        e:"Gravity does work, so the speed varies: slowest at the top, fastest at the bottom, linked by v_bot² = v_top² + 4gr."}, a:2},
+      {zh:{q:"v_top = √(gr) 時，最高點張力為？",
+        o:["mg","2mg","mg/2","零"],
+        e:"代入 T + mg = mv²/r 且 v² = gr ⇒ T + mg = mg ⇒ T = 0，即臨界狀態。"},
+       en:{q:"When v_top = √(gr), the tension at the top is:",
+        o:["mg","2mg","mg/2","zero"],
+        e:"Substituting v² = gr into T + mg = mv²/r gives T + mg = mg ⇒ T = 0, the critical state."}, a:3},
+      {zh:{q:"鉛垂圓周最低點嘅力方程係？",
+        o:["T + mg = mv²/r","T − mg = mv²/r","mg − T = mv²/r","T = mg"],
+        e:"最低點張力向上、重力向下，合力向上指向圓心 ⇒ T − mg = mv²/r。<b>陷阱：</b>與最高點調轉。"},
+       en:{q:"The force equation at the bottom of a vertical circle is:",
+        o:["T + mg = mv²/r","T − mg = mv²/r","mg − T = mv²/r","T = mg"],
+        e:"At the bottom tension is up and weight is down, so T − mg = mv²/r. <b>Trap:</b> swapping with the top."}, a:1},
+      {zh:{q:"鉛垂圓周中，張力最大出現在？",
+        o:["最高點","最低點","水平位置","處處相同"],
+        e:"最低點速率最大（v_bot² = v_top² + 4gr）而張力同時要支持重力 ⇒ T 最大。"},
+       en:{q:"In a vertical circle the tension is greatest at:",
+        o:["the top","the bottom","the horizontal positions","the same everywhere"],
+        e:"At the bottom the speed is greatest and the tension must also support the weight."}, a:1},
+      {zh:{q:"0.20 kg 小球在 r = 0.50 m 鉛垂圓周最低點，v = 4.0 m s⁻¹。張力為？",
+        o:["4.4 N","6.4 N","8.4 N","10 N"],
+        e:"T = mv²/r + mg = 0.20 × 16/0.50 + 0.20 × 9.81 = 6.4 + 1.96 = 8.4 N。<b>陷阱：</b>漏加 mg。"},
+       en:{q:"A 0.20 kg ball is at the bottom of a vertical circle, r = 0.50 m, v = 4.0 m s⁻¹. The tension is:",
+        o:["4.4 N","6.4 N","8.4 N","10 N"],
+        e:"T = mv²/r + mg = 6.4 + 1.96 = 8.4 N. <b>Trap:</b> omitting the mg term."}, a:2}
+    ],
+    dse:[
+      {zh:{q:"r = 0.80 m 鉛垂圓周，能完成整圈嘅最低最高點速率為？",
+        o:["2.80 m s⁻¹","3.96 m s⁻¹","6.26 m s⁻¹","8.86 m s⁻¹"],
+        e:"v_min = √(gr) = √(9.81 × 0.80) = 2.80 m s⁻¹。<b>得分關鍵：</b>先寫臨界條件 T = 0，再列 mg = mv²/r。"},
+       en:{q:"For a vertical circle with r = 0.80 m, the minimum top speed to complete the loop is:",
+        o:["2.80 m s⁻¹","3.96 m s⁻¹","6.26 m s⁻¹","8.86 m s⁻¹"],
+        e:"v_min = √(gr) = √(9.81 × 0.80) = 2.80 m s⁻¹. <b>Key:</b> state the critical condition T = 0 first, then mg = mv²/r."}, a:0},
+      {zh:{q:"承上，臨界情況下最低點速率為？",
+        o:["2.80 m s⁻¹","4.43 m s⁻¹","6.26 m s⁻¹","9.81 m s⁻¹"],
+        e:"能量守恆，高度差 = 直徑 = 2r ⇒ v_bot² = v_top² + 4gr = gr + 4gr = 5gr ⇒ v_bot = √(5 × 9.81 × 0.80) = 6.26 m s⁻¹。<b>陷阱：</b>高度差誤用 r 而非 2r。"},
+       en:{q:"In the same critical case, the speed at the bottom is:",
+        o:["2.80 m s⁻¹","4.43 m s⁻¹","6.26 m s⁻¹","9.81 m s⁻¹"],
+        e:"Energy conservation with height difference = diameter = 2r gives v_bot² = v_top² + 4gr = 5gr ⇒ v_bot = 6.26 m s⁻¹. <b>Trap:</b> using r instead of 2r for the height."}, a:2},
+      {zh:{q:"承上，最低點張力為多少倍 mg？",
+        o:["2 倍","4 倍","6 倍","8 倍"],
+        e:"T_bot − mg = mv_bot²/r = 5mg ⇒ T_bot = 6mg。<b>得分關鍵：</b>最低點張力向上、重力向下，兩者方向相反，方程為 T − mg。"},
+       en:{q:"In the same case, the tension at the bottom equals:",
+        o:["2mg","4mg","6mg","8mg"],
+        e:"T_bot − mg = mv_bot²/r = 5mg ⇒ T_bot = 6mg. <b>Key:</b> at the bottom tension is up and weight is down, so the equation is T − mg."}, a:2},
+      {zh:{q:"若 v_top 低於 √(gr)，小球會？",
+        o:["繼續完成整圈，只是變慢","在到達最高點前已離開圓軌跡","在最點靜止","張力變負"],
+        e:"所需向心力 mv²/r < mg，重力超過所需 ⇒ 繩無法推球，小球在最高點前已脫離圓軌跡。<b>陷阱：</b>以為速率不足只會「慢一點」。"},
+       en:{q:"If v_top is less than √(gr), the ball will:",
+        o:["still complete the loop, just more slowly","leave the circular path before reaching the top","stop at the top","experience negative tension"],
+        e:"The required centripetal force mv²/r is less than mg, so gravity is more than enough and the string cannot push the ball — it leaves the circle before the top."}, a:1},
+      {zh:{q:"r = 0.50 m 鉛垂圓周，能完成整圈嘅最低點速率為？",
+        o:["2.21 m s⁻¹","4.95 m s⁻¹","7.00 m s⁻¹","9.90 m s⁻¹"],
+        e:"v_bot = √(5gr) = √(5 × 9.81 × 0.50) = 4.95 m s⁻¹。<b>得分關鍵：</b>先由最高點 T = 0 得 v_top = √(gr)，再用能量守恆加 4gr。"},
+       en:{q:"For a vertical circle with r = 0.50 m, the minimum speed at the bottom to complete the loop is:",
+        o:["2.21 m s⁻¹","4.95 m s⁻¹","7.00 m s⁻¹","9.90 m s⁻¹"],
+        e:"v_bot = √(5gr) = 4.95 m s⁻¹. <b>Key:</b> get v_top = √(gr) from T = 0 first, then add 4gr by energy conservation."}, a:1},
+      {zh:{q:"鉛垂圓周中，最低點與最高點張力之差恆為？",
+        o:["取決於速率","6mg","2mg","零"],
+        e:"T_top = mv_top²/r − mg、T_bot = mv_bot²/r + mg，代入 v_bot² = v_top² + 4gr 得 T_bot − T_top = 6mg（恆等式，與速率無關）。"},
+       en:{q:"In a vertical circle, the difference between the bottom and top tensions is:",
+        o:["depends on the speed","always 6mg","always 2mg","always zero"],
+        e:"T_bot − T_top = 6mg by combining the two equations with v_bot² = v_top² + 4gr — an identity independent of speed."}, a:1},
+      {zh:{q:"小球在鉛垂圓周最高點速率剛好等於 √(gr)。此時加速度為？",
+        o:["零","g，方向向下","2g，方向向下","g，方向向上"],
+        e:"最高點只剩重力（T = 0）⇒ a = g 向下，即指向圓心。<b>陷阱：</b>答「加速度為零」——最高點速率最小但唔等於零。"},
+       en:{q:"A ball at the top of a vertical circle has speed exactly √(gr). Its acceleration is:",
+        o:["zero","g downwards","2g downwards","g upwards"],
+        e:"Only gravity acts (T = 0) ⇒ a = g downwards, towards the centre. <b>Trap:</b> answering \"zero acceleration\"."}, a:1}
+    ]
+  },
+  pendulum:{
+    basic:[
+      {zh:{q:"圓錐擺嘅豎直方向方程係？",
+        o:["T cosθ = mg","T sinθ = mg","T = mg","T cosθ = mω²r"],
+        e:"豎直方向無加速度 ⇒ T cosθ = mg。水平方向 T sinθ = mω²r 提供 F_c。<b>陷阱：</b>忘記豎直方程就無法消去 T。"},
+       en:{q:"For a conical pendulum, the vertical equation is:",
+        o:["T cosθ = mg","T sinθ = mg","T = mg","T cosθ = mω²r"],
+        e:"No vertical acceleration ⇒ T cosθ = mg, while horizontally T sinθ = mω²r supplies F_c. <b>Trap:</b> omitting the vertical equation leaves T unsolvable."}, a:0},
+      {zh:{q:"圓周半徑 r 與繩長 L、夾角 θ 嘅關係係？",
+        o:["r = L sinθ","r = L cosθ","r = L tanθ","r = L"],
+        e:"半徑係水平圓周半徑 r = L sinθ。<b>陷阱：</b>用繩長 L 當半徑代入 F_c 係經典失分。"},
+       en:{q:"How is the circle radius r related to the string length L and angle θ?",
+        o:["r = L sinθ","r = L cosθ","r = L tanθ","r = L"],
+        e:"The radius is the horizontal circle radius r = L sinθ. <b>Trap:</b> substituting the string length L as the radius is a classic lost mark."}, a:0},
+      {zh:{q:"圓錐擺嘅張力 T 等於？",
+        o:["mg/cosθ","mg cosθ","mg sinθ","mg"],
+        e:"T cosθ = mg ⇒ T = mg/cosθ，恆大於 mg。<b>陷阱：</b>誤以為 T = mg 只在 θ → 0 時近似成立。"},
+       en:{q:"The tension in a conical pendulum equals:",
+        o:["mg/cosθ","mg cosθ","mg sinθ","mg"],
+        e:"T cosθ = mg ⇒ T = mg/cosθ, always greater than mg. <b>Trap:</b> T = mg is only a small-angle approximation."}, a:0},
+      {zh:{q:"小球質量加倍（ω、r 不變），夾角 θ 會？",
+        o:["增大","減小","不變","變零"],
+        e:"tanθ = ω²r/g 與質量無關 ⇒ θ 不變，只有張力 T 加倍。<b>陷阱：</b>以為「重啲會擺低啲」。"},
+       en:{q:"The mass is doubled with ω and r unchanged. The angle θ:",
+        o:["increases","decreases","stays the same","becomes zero"],
+        e:"tanθ = ω²r/g has no mass term ⇒ θ is unchanged; only the tension doubles. <b>Trap:</b> assuming a heavier bob hangs lower."}, a:2},
+      {zh:{q:"圓錐擺嘅水平方向方程係？",
+        o:["T cosθ = mω²r","T sinθ = mω²r","T = mω²r","T sinθ = mg"],
+        e:"水平方向張力分量 T sinθ 提供 F_c ⇒ T sinθ = mω²r。<b>陷阱：</b>與豎直方程調轉。"},
+       en:{q:"The horizontal equation for a conical pendulum is:",
+        o:["T cosθ = mω²r","T sinθ = mω²r","T = mω²r","T sinθ = mg"],
+        e:"The horizontal component T sinθ supplies F_c. <b>Trap:</b> swapping with the vertical equation."}, a:1},
+      {zh:{q:"圓錐擺張力與 mg 比較？",
+        o:["T < mg","T = mg","T > mg","T = 0"],
+        e:"T = mg/cosθ，cosθ < 1 ⇒ T > mg。豎直分量只需等於 mg，但 T 仲要提供水平分量。"},
+       en:{q:"How does the tension of a conical pendulum compare with mg?",
+        o:["T < mg","T = mg","T > mg","T = 0"],
+        e:"T = mg/cosθ with cosθ < 1 ⇒ T > mg."}, a:2},
+      {zh:{q:"圓錐擺嘅週期取決於？",
+        o:["小球質量","繩長與夾角","繩嘅材質","以上全部"],
+        e:"tanθ = ω²r/g 與質量無關；週期 = 2π√(r/(g tanθ)) 只取決於 r（或 L）與 θ。<b>陷阱：</b>以為質量會影響週期。"},
+       en:{q:"The period of a conical pendulum depends on:",
+        o:["the mass of the bob","the string length and the angle","the material of the string","all of the above"],
+        e:"No mass term appears: the period depends only on r (or L) and θ."}, a:1}
+    ],
+    dse:[
+      {zh:{q:"圓錐擺繩長 2.0 m、夾角 30°，小球質量 1.5 kg。繩張力為？",
+        o:["12.7 N","14.7 N","17.0 N","29.4 N"],
+        e:"T = mg/cosθ = 1.5 × 9.81/cos30° = 17.0 N。<b>得分關鍵：</b>先寫 T cosθ = mg，再代入；切勿用 T sinθ。"},
+       en:{q:"A conical pendulum has L = 2.0 m, θ = 30° and m = 1.5 kg. The tension is:",
+        o:["12.7 N","14.7 N","17.0 N","29.4 N"],
+        e:"T = mg/cosθ = 1.5 × 9.81/cos30° = 17.0 N. <b>Key:</b> start from T cosθ = mg; do not use sinθ."}, a:2},
+      {zh:{q:"承上，小球嘅圓周半徑與角速度為？",
+        o:["r = 1.00 m、ω = 2.38 rad s⁻¹","r = 1.73 m、ω = 2.38 rad s⁻¹","r = 1.00 m、ω = 4.12 rad s⁻¹","r = 0.87 m、ω = 2.38 rad s⁻¹"],
+        e:"r = L sinθ = 2.0 sin30° = 1.00 m；ω = √(g tanθ/r) = √(9.81 tan30°/1.00) = 2.38 rad s⁻¹。<b>陷阱：</b>把 L 當 r。"},
+       en:{q:"In the same case, the radius and angular velocity are:",
+        o:["r = 1.00 m, ω = 2.38 rad s⁻¹","r = 1.73 m, ω = 2.38 rad s⁻¹","r = 1.00 m, ω = 4.12 rad s⁻¹","r = 0.87 m, ω = 2.38 rad s⁻¹"],
+        e:"r = L sinθ = 2.0 sin30° = 1.00 m and ω = √(g tanθ/r) = √(9.81 tan30°/1.00) = 2.38 rad s⁻¹. <b>Trap:</b> taking L as the radius."}, a:0},
+      {zh:{q:"若把同一圓錐擺帶到 g 較小嘅環境（例如月球），夾角 θ（ω、r 不變）會？",
+        o:["增大","減小","不變","變 90°"],
+        e:"tanθ = ω²r/g，g 減小 ⇒ tanθ 增大 ⇒ θ 增大。與質量無關但與 g 有關。"},
+       en:{q:"The same conical pendulum is taken where g is smaller (e.g. the Moon), with ω and r unchanged. The angle θ:",
+        o:["increases","decreases","stays the same","becomes 90°"],
+        e:"tanθ = ω²r/g, so a smaller g gives a larger tanθ and thus a larger θ. It depends on g but not on mass."}, a:0},
+      {zh:{q:"r = 0.50 m、θ = 30° 嘅圓錐擺，角速度為？",
+        o:["2.38 rad s⁻¹","3.36 rad s⁻¹","4.76 rad s⁻¹","9.81 rad s⁻¹"],
+        e:"ω = √(g tanθ/r) = √(9.81 × tan30°/0.50) = 3.36 rad s⁻¹。<b>陷阱：</b>誤用 sinθ 或忘記開方。"},
+       en:{q:"A conical pendulum has r = 0.50 m and θ = 30°. Its angular velocity is:",
+        o:["2.38 rad s⁻¹","3.36 rad s⁻¹","4.76 rad s⁻¹","9.81 rad s⁻¹"],
+        e:"ω = √(g tanθ/r) = 3.36 rad s⁻¹. <b>Trap:</b> using sinθ or forgetting the square root."}, a:1},
+      {zh:{q:"同一圓錐擺（r 不變），θ 增大時張力與角速度分別？",
+        o:["T 增大、ω 增大","T 增大、ω 減小","T 減小、ω 增大","兩者皆不變"],
+        e:"T = mg/cosθ，θ 增大 ⇒ cosθ 減小 ⇒ T 增大；ω = √(g tanθ/r)，θ 增大 ⇒ tanθ 增大 ⇒ ω 增大。"},
+       en:{q:"For the same conical pendulum with r fixed, if θ increases then:",
+        o:["T increases, ω increases","T increases, ω decreases","T decreases, ω increases","both unchanged"],
+        e:"T = mg/cosθ rises as θ grows; ω = √(g tanθ/r) also rises."}, a:0},
+      {zh:{q:"r = 0.50 m、θ = 30° 嘅圓錐擺，懸點至圓周平面嘅高度 h 為？",
+        o:["0.50 m","0.87 m","1.00 m","1.73 m"],
+        e:"h = r/tanθ = 0.50/tan30° = 0.87 m。<b>陷阱：</b>誤用 h = r sinθ 或 r cosθ；緊記 tanθ = r/h。"},
+       en:{q:"For a conical pendulum with r = 0.50 m and θ = 30°, the height h from the pivot to the plane of the circle is:",
+        o:["0.50 m","0.87 m","1.00 m","1.73 m"],
+        e:"h = r/tanθ = 0.87 m. <b>Trap:</b> using r sinθ or r cosθ — the relation is tanθ = r/h."}, a:1}
+    ]
+  },
+  orbit:{
+    basic:[
+      {zh:{q:"圓軌道衞星嘅向心力由乜嘢提供？",
+        o:["引力 GMm/r²","大氣阻力","離心力","火箭推力"],
+        e:"圓軌道衞星只受引力 ⇒ GMm/r² = mv²/r。<b>陷阱：</b>寫「離心力」會被扣分。"},
+       en:{q:"What provides the centripetal force for a satellite in a circular orbit?",
+        o:["Gravitational force GMm/r²","Air resistance","Centrifugal force","Rocket thrust"],
+        e:"A satellite in a circular orbit is acted on only by gravity ⇒ GMm/r² = mv²/r. <b>Trap:</b> \"centrifugal force\" scores nothing."}, a:0},
+      {zh:{q:"軌道速率公式係？",
+        o:["v = √(GM/r)","v = √(GM r)","v = GM/r","v = √(r/GM)"],
+        e:"GMm/r² = mv²/r ⇒ v² = GM/r ⇒ v = √(GM/r)。半徑越大，速率越慢。"},
+       en:{q:"The orbital speed is given by:",
+        o:["v = √(GM/r)","v = √(GM r)","v = GM/r","v = √(r/GM)"],
+        e:"GMm/r² = mv²/r ⇒ v² = GM/r ⇒ v = √(GM/r). A larger radius means a slower speed."}, a:0},
+      {zh:{q:"軌道週期 T 與半徑 r 嘅關係係？",
+        o:["T² ∝ r³","T ∝ r²","T ∝ r","T² ∝ r"],
+        e:"T = 2πr/v = 2π√(r³/GM) ⇒ T² ∝ r³。"},
+       en:{q:"How does the orbital period T depend on the radius r?",
+        o:["T² ∝ r³","T ∝ r²","T ∝ r","T² ∝ r"],
+        e:"T = 2πr/v = 2π√(r³/GM) ⇒ T² ∝ r³."}, a:0},
+      {zh:{q:"軌道半徑增大，衞星嘅速率與週期會？",
+        o:["速率增大、週期減小","速率減小、週期增大","兩者都增大","兩者都減小"],
+        e:"v = √(GM/r) 隨 r 減小；T ∝ r^{3/2} 隨 r 增大。<b>陷阱：</b>誤以為「軌道越高越快」。"},
+       en:{q:"If the orbital radius increases, the speed and period:",
+        o:["speed up, period shorter","speed down, period longer","both increase","both decrease"],
+        e:"v = √(GM/r) decreases with r while T ∝ r^{3/2} increases. <b>Trap:</b> assuming a higher orbit means a faster satellite."}, a:1},
+      {zh:{q:"地球同步衞星嘅週期為？",
+        o:["1 小時","12 小時","24 小時","365 日"],
+        e:"同步衞星要與地球自轉同步才能固定在同一位置 ⇒ 24 小時。<b>陷阱：</b>回答 365 日（地球公轉）。"},
+       en:{q:"The period of a geostationary satellite is:",
+        o:["1 hour","12 hours","24 hours","365 days"],
+        e:"It must match the Earth's rotation to stay over one point ⇒ 24 hours."}, a:2},
+      {zh:{q:"軌道速率 v 與軌道半徑 r 嘅關係係？",
+        o:["v ∝ r","v ∝ 1/r","v ∝ r^(−1/2)","v ∝ r²"],
+        e:"v = √(GM/r) ∝ r^(−1/2)：半徑越大速率越慢。<b>陷阱：</b>直覺以為「離地越高越快」。"},
+       en:{q:"How does orbital speed v depend on radius r?",
+        o:["v ∝ r","v ∝ 1/r","v ∝ r^(−1/2)","v ∝ r²"],
+        e:"v = √(GM/r) ∝ r^(−1/2): a larger radius means a slower speed."}, a:2},
+      {zh:{q:"距地心 2R 處嘅引力場強度（地表為 g₀）為？",
+        o:["g₀/2","g₀/4","2g₀","4g₀"],
+        e:"g = GM/r² ∝ 1/r²，距地心 2R ⇒ g = g₀/4。<b>陷阱：</b>誤用 ∝ 1/r。"},
+       en:{q:"The gravitational field strength at 2R from the centre (surface value g₀) is:",
+        o:["g₀/2","g₀/4","2g₀","4g₀"],
+        e:"g ∝ 1/r², so at 2R it is g₀/4. <b>Trap:</b> using ∝ 1/r."}, a:1}
+    ],
+    dse:[
+      {zh:{q:"地球質量 5.97 × 10²⁴ kg、軌道半徑 6.71 × 10⁶ m。求軌道速率（G = 6.67 × 10⁻¹¹ N m² kg⁻²）。",
+        o:["3.85 km s⁻¹","7.70 km s⁻¹","11.2 km s⁻¹","15.4 km s⁻¹"],
+        e:"v = √(GM/r) = √(6.67e-11 × 5.97e24 / 6.71e6) = 7.70 × 10³ m s⁻¹。<b>陷阱：</b>用地面半徑 6.371 × 10⁶ m 當軌道半徑（未加高度）。"},
+       en:{q:"M = 5.97 × 10²⁴ kg, r = 6.71 × 10⁶ m, G = 6.67 × 10⁻¹¹ N m² kg⁻². The orbital speed is:",
+        o:["3.85 km s⁻¹","7.70 km s⁻¹","11.2 km s⁻¹","15.4 km s⁻¹"],
+        e:"v = √(GM/r) = √(6.67e-11 × 5.97e24 / 6.71e6) = 7.70 × 10³ m s⁻¹. <b>Trap:</b> using the Earth radius 6.371×10⁶ m instead of the orbital radius."}, a:1},
+      {zh:{q:"承上，該衞星嘅軌道週期約為？",
+        o:["45.6 min","91.2 min","144 min","24.0 h"],
+        e:"T = 2πr/v = 2π × 6.71e6/7.70e3 = 5.47 × 10³ s ≈ 91.2 min。<b>得分關鍵：</b>必須用軌道半徑，而非地面半徑。"},
+       en:{q:"For the same satellite, the orbital period is about:",
+        o:["45.6 min","91.2 min","144 min","24.0 h"],
+        e:"T = 2πr/v = 2π × 6.71e6/7.70e3 = 5.47 × 10³ s ≈ 91.2 min. <b>Key:</b> use the orbital radius, not the Earth radius."}, a:1},
+      {zh:{q:"兩顆衞星在同一中心天體嘅圓軌道，半徑比 1 : 4。速率比與週期比為？",
+        o:["v 比 2 : 1、T 比 1 : 8","v 比 1 : 2、T 比 1 : 8","v 比 2 : 1、T 比 8 : 1","v 比 1 : 2、T 比 8 : 1"],
+        e:"v ∝ r^{-1/2} ⇒ r 變 4 倍則 v 變 1/2；T ∝ r^{3/2} ⇒ r 變 4 倍則 T 變 8 倍。<b>陷阱：</b>把 T ∝ r³ 當成 T ∝ r。"},
+       en:{q:"Two satellites orbit the same central body with radius ratio 1 : 4. Their speed and period ratios are:",
+        o:["v = 2 : 1, T = 1 : 8","v = 1 : 2, T = 1 : 8","v = 2 : 1, T = 8 : 1","v = 1 : 2, T = 8 : 1"],
+        e:"v ∝ r^{-1/2} so quadrupling r halves v; T ∝ r^{3/2} so quadrupling r multiplies T by 8. <b>Trap:</b> confusing T ∝ r³ with T ∝ r."}, a:1},
+      {zh:{q:"某衞星軌道速率 3.1 km s⁻¹（地球 M = 5.97 × 10²⁴ kg）。軌道半徑約為？",
+        o:["1.3 × 10⁷ m","4.1 × 10⁷ m","6.7 × 10⁶ m","1.5 × 10¹¹ m"],
+        e:"r = GM/v² = 6.67e-11 × 5.97e24/(3100)² = 4.1 × 10⁷ m。<b>得分關鍵：</b>由 GMm/r² = mv²/r 反推 r。"},
+       en:{q:"A satellite orbits at 3.1 km s⁻¹ (Earth M = 5.97 × 10²⁴ kg). Its orbital radius is about:",
+        o:["1.3 × 10⁷ m","4.1 × 10⁷ m","6.7 × 10⁶ m","1.5 × 10¹¹ m"],
+        e:"r = GM/v² = 4.1 × 10⁷ m. <b>Key:</b> derive r from GMm/r² = mv²/r."}, a:1},
+      {zh:{q:"兩衞星在同一中心天體圓軌道，速率比 1 : 2。半徑比與週期比為？",
+        o:["r 1 : 4、T 1 : 8","r 4 : 1、T 1 : 8","r 4 : 1、T 8 : 1","r 1 : 4、T 8 : 1"],
+        e:"v ∝ r^(−1/2) ⇒ r 比 4 : 1；T = 2πr/v ⇒ T₂/T₁ = (1/4)/(2/1) = 1/8 ⇒ T 比 8 : 1。<b>得分關鍵：</b>用 T = 2πr/v 直接算比值。"},
+       en:{q:"Two satellites orbit the same body with speeds 1 : 2. Their radius and period ratios are:",
+        o:["r = 1 : 4, T = 1 : 8","r = 4 : 1, T = 1 : 8","r = 4 : 1, T = 8 : 1","r = 1 : 4, T = 8 : 1"],
+        e:"v ∝ r^(−1/2) gives r = 4 : 1; then T = 2πr/v gives T = 8 : 1. <b>Key:</b> use T = 2πr/v for ratios."}, a:2},
+      {zh:{q:"圓軌道衞星嘅週期 T 與軌道半徑 r 嘅關係係？",
+        o:["T² ∝ r³","T² ∝ r","T ∝ r²","T ∝ r³"],
+        e:"T = 2πr/v = 2π√(r³/GM) ⇒ T² = 4π²r³/(GM) ⇒ T² ∝ r³（Kepler 第三定律形式）。"},
+       en:{q:"For a satellite in a circular orbit, how are T and r related?",
+        o:["T² ∝ r³","T² ∝ r","T ∝ r²","T ∝ r³"],
+        e:"T = 2πr/v = 2π√(r³/GM) ⇒ T² ∝ r³ (Kepler's third law)."}, a:0}
+    ]
+  }
+};
+;
+
+/* ═════ 小測引擎（分級 · 輪換 · 雙語） ═════ */
+const QS_KEY = 'dse-cm-quiz-v1';
+let QUIZ = { level:'basic', active:0, answered:{}, correct:0, seen:{} };
+let QBATCH = [];
+function loadQuizState(){
+  let s = {};
+  try { s = JSON.parse(localStorage.getItem(QS_KEY) || '{}') || {}; } catch(e){ s = {}; }
+  QUIZ.level = (s.level === 'dse' || s.level === 'all' || s.level === 'basic') ? s.level : 'basic';
+  QUIZ.seen = s.seen || {};
+  QUIZ.active = s.active | 0;
+  if (s.seen) Object.keys(s.seen).forEach(k => { if (s.seen[k] > 4000) s.seen[k] = 0; });
+}
+function saveQuizState(){
+  try { localStorage.setItem(QS_KEY, JSON.stringify({ level:QUIZ.level, seen:QUIZ.seen, active:QUIZ.active })); } catch(e){}
+}
+function qKey(m, lv, i){ return m + '|' + lv + '|' + i; }
+function qPool(model, level){
+  const m = QBANK[model]; if (!m) return [];
+  let out = [];
+  if (level === 'basic' || level === 'all') out = out.concat(m.basic.map((q,i)=>[q,'basic',i]));
+  if (level === 'dse'   || level === 'all') out = out.concat(m.dse.map((q,i)=>[q,'dse',i]));
+  return out;
+}
+function shuffle(a){ for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function newBatch(){
+  const pool = qPool(S.model, QUIZ.level);
+  if (!pool.length){ QBATCH = []; renderQuiz(); return; }
+  const unseen = pool.filter(([q,lv,i]) => !QUIZ.seen[qKey(S.model,lv,i)]);
+  const use = unseen.length >= 4 ? unseen : pool;
+  if (use === pool && unseen.length < 4) QUIZ.seen = {};   /* 全部看過 ⇒ 重設輪換 */
+  const picked = shuffle(use.slice()).slice(0, Math.min(4, use.length));
+  picked.forEach(([q,lv,i]) => { QUIZ.seen[qKey(S.model,lv,i)] = (QUIZ.seen[qKey(S.model,lv,i)]||0) + 1; });
+  QBATCH = picked.map(([q,lv,i]) => ({ q, lv, idx:i }));
+  QUIZ.answered = {}; QUIZ.correct = 0;
+  saveQuizState();
+  renderQuiz();
+}
+function renderQuiz(){
+  const list = $('qList'), items = QBATCH;
+  $('qScore').textContent = t('q.score') + ' ' + QUIZ.correct + ' / ' + items.length;
+  const bank = qPool(S.model, QUIZ.level);
+  const seenN = bank.filter(([q,lv,i]) => QUIZ.seen[qKey(S.model,lv,i)]).length;
+  $('qNote').textContent = t('q.rotate').replace('%n', seenN).replace('%t', bank.length);
+  if (!items.length){ list.innerHTML = '<p class="qnote">' + t('q.empty') + '</p>'; return; }
+  list.innerHTML = items.map((it, qi) => {
+    const z = it.q[LANG] || it.q.zh;
+    const opts = z.o.map((o, oi) =>
+      '<button class="qopt" type="button" data-q="'+qi+'" data-o="'+oi+'">' +
+      '<span class="key">'+'ABCD'[oi]+'</span><span>'+o+'</span></button>').join('');
+    return '<div class="qitem"><div class="qno"><span>' + t('q.'+it.lv) + '</span>' +
+      '<em>Q' + (qi+1) + '</em></div>' +
+      '<div class="qtext">' + z.q + '</div>' + opts +
+      '<div class="qexp" data-exp="'+qi+'"></div></div>';
+  }).join('');
+  /* 還原已作答狀態 */
+  Object.keys(QUIZ.answered).forEach(qi => revealAnswer(+qi, QUIZ.answered[qi], true));
+}
+function revealAnswer(qi, oi, silent){
+  const it = QBATCH[qi]; if (!it) return;
+  const z = it.q[LANG] || it.q.zh;
+  if (QUIZ.answered[qi] === undefined){
+    QUIZ.answered[qi] = oi;
+    if (oi === it.q.a) QUIZ.correct++;
+  }
+  $('qScore').textContent = t('q.score') + ' ' + QUIZ.correct + ' / ' + QBATCH.length;
+  const list = $('qList');
+  list.querySelectorAll('.qopt[data-q="'+qi+'"]').forEach(b => {
+    b.disabled = true;
+    const bo = +b.dataset.o;
+    if (bo === it.q.a) b.classList.add('right');
+    else if (bo === oi) b.classList.add('wrong');
+  });
+  const ex = list.querySelector('.qexp[data-exp="'+qi+'"]');
+  if (ex){
+    const ok = oi === it.q.a;
+    ex.innerHTML = '<span class="verdict '+(ok?'ok':'no')+'">' +
+      (ok ? t('q.correct') : t('q.answer') + '：' + 'ABCD'[it.q.a]) + '</span>' + z.e;
+    ex.classList.add('show');
+  }
+}
+function initQuiz(){
+  loadQuizState();
+  document.querySelectorAll('.qchip[data-level]').forEach(b => {
+    b.classList.toggle('on', b.dataset.level === QUIZ.level);
+    b.addEventListener('click', () => {
+      QUIZ.level = b.dataset.level; QUIZ.seen = {}; saveQuizState();
+      document.querySelectorAll('.qchip[data-level]').forEach(x => x.classList.toggle('on', x === b));
+      newBatch();
+    });
+  });
+  $('qList').addEventListener('click', e => {
+    const b = e.target.closest('.qopt'); if (!b) return;
+    const qi = +b.dataset.q;
+    if (QUIZ.answered[qi] !== undefined) return;
+    revealAnswer(qi, +b.dataset.o);
+  });
+  $('qNew').addEventListener('click', newBatch);
+  $('qRetry').addEventListener('click', () => {
+    const wrong = QBATCH.filter((it,i) => QUIZ.answered[i] !== undefined && QUIZ.answered[i] !== it.q.a);
+    if (!wrong.length){ newBatch(); return; }
+    QBATCH = wrong; QUIZ.answered = {}; QUIZ.correct = 0; renderQuiz();
+  });
+  $('qReveal').addEventListener('click', () => {
+    QBATCH.forEach((it,qi) => { if (QUIZ.answered[qi] === undefined) revealAnswer(qi, it.q.a); });
+  });
+  $('qHide').addEventListener('click', () => {
+    $('qList').querySelectorAll('.qexp').forEach(x => x.classList.remove('show'));
+  });
+  newBatch();
+}
+/* 語言切換 */
+function setLang(l){
+  LANG = (l === 'en') ? 'en' : 'zh';
+  LAY.lang = LANG; saveLayout();
+  applyI18n(); applyCollapsed();
+  buildModelBtns(); buildCtrls(MODELS[S.model]);
+  renderQuiz();
+  update();
+}
 
 /* ═════ 動畫 ═════ */
 let last = performance.now();
@@ -1091,6 +1854,7 @@ $('step').addEventListener('click', ()=>{
 $('reset').addEventListener('click', ()=>{
   S.th = 0; S.t = 0; T.pts.length = 0; update();
 });
+$('langBtn').addEventListener('click', ()=>{ setLang(LANG === 'zh' ? 'en' : 'zh'); });
 $('trailLen').addEventListener('input', e=>{
   S.trailMax = parseFloat(e.target.value);
 });
@@ -1164,8 +1928,14 @@ if (QS.get('embed') === '1' || QS.get('embed') === 'true') document.body.classLi
   cv.style.aspectRatio = W + ' / ' + H;
 })();
 initCollapse();
+LANG = LAY.lang || 'zh';
+applyI18n();
+initQuiz();
 loadModel('horizontal');
 requestAnimationFrame(loop);
 </script>
+<!-- ── 共用增強模塊：移動端滑動修復 + B 站式懸浮小窗 ── -->
+<script src="sim-enhancer.js"></script>
+
 </body>
 </html>
