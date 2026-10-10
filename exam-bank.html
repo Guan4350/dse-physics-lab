@@ -256,6 +256,25 @@
   border-radius:20px;padding:2px 9px;cursor:help}
 .bicov.full{color:#1f6b4a;background:rgba(47,158,111,.1);border-color:rgba(47,158,111,.3)}
 </style>
+
+<style>
+/* ══ 個人化事實圖表報告入口 ══ */
+.miscon-bar{margin-top:14px;padding:14px 16px;background:#fbfaf7;
+  border:1px solid #ece7d6;border-left:3px solid var(--gold, #b8860b);
+  border-radius:0 10px 10px 0}
+.miscon-head{display:flex;align-items:center;gap:9px;font-size:14.5px;color:var(--gold-deep, #8b6914)}
+.miscon-head b{font-family:"Songti TC","Noto Serif TC",Georgia,serif}
+.miscon-tag{font-size:10.5px;font-weight:800;letter-spacing:.14em;color:#fff;
+  background:var(--gold, #b8860b);border-radius:20px;padding:2px 9px}
+.miscon-desc{margin:7px 0 0;font-size:12.4px;line-height:1.85;color:#7d7d85}
+.miscon-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:11px}
+.miscon-count{font-size:12.2px;color:#a8a8b0}
+.miscon-count.on{color:var(--gold-deep, #8b6914);font-weight:650}
+.miscon-sid{font-size:11.6px;color:#8c8c93;display:flex;align-items:center;gap:6px}
+.miscon-sid input{font:inherit;font-size:12px;padding:5px 9px;border:1px solid var(--line, #d4d4d8);
+  border-radius:8px;background:#fff;color:#3c3c43;width:150px}
+.miscon-sid input:focus{outline:none;border-color:var(--gold-bright, #c9a227)}
+</style>
 </head>
 <body data-nav="exam">
 
@@ -306,6 +325,19 @@
           </div>
         </div>
         <div class="filters"></div>
+        <div id="misconBar" class="miscon-bar">
+          <div class="miscon-head">
+            <span class="miscon-tag">PER</span>
+            <b>個人化事實圖表報告</b>
+          </div>
+          <p class="miscon-desc">作答記錄以「題號 + 你實際揀嘅選項 ID」儲存（唔止對／錯），
+            用嚟統計錯題中出現嘅思考模式佔比 —— 分母係「觸發迷思的錯題計次總和」，唔係總作答題數。</p>
+          <div class="miscon-row">
+            <span id="misconCount" class="miscon-count">完成一題 MC 之後，就可以生成迷思分佈圖。</span>
+            <label class="miscon-sid">學生代號 <input id="misconSid" type="text" maxlength="24" placeholder="自動產生"></label>
+            <a id="misconLink" class="btn primary" href="#" target="_blank" rel="noopener">查看個人化事實圖表報告</a>
+          </div>
+        </div>
       </div>
 
       <div id="qlist"></div>
@@ -434,6 +466,545 @@
 </script>
 
 <script>
+/* ══════════ 個人化事實圖表報告引擎（bank/miscon/engine.js 自動內嵌，勿手改） ══════════ */
+/* ══════════════════════════════════════════════════════════════════════
+   miscon/engine.js — 個人化事實圖表報告 · 輕量計數引擎 v1.0.0
+   ──────────────────────────────────────────────────────────────────────
+   理論來源（只准引用以下三份 PDF）：
+     H1985  Halloun & Hestenes (1985), Common sense concepts about motion
+     J2026  Jielili et al. (2026), Dual-diagnostic approach (TS-MC-DINA-H)
+     S1994  Smith, diSessa & Roschelle (1993/94), Misconceptions reconceived
+
+   硬性規則（見 _miscon/ATTRIBUTES-SPEC.md）：
+     ① 分母 = 觸發迷思的錯題總數，不是總作答題數
+     ② total_misconception_trigger = 0 → special_case_no_data，不渲染扇形
+     ③ 餅圖最多 6 扇形；share < 5% 合併為「其他迷思」
+     ④ 同一題重複作答以最後一次選擇為準
+     ⑤ 干擾項掛兩個 M 標籤時，兩項各計 1，分母同步 +2
+   ──────────────────────────────────────────────────────────────────────
+   瀏覽器：window.MisconEngine       Node：module.exports
+   ══════════════════════════════════════════════════════════════════════ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.MisconEngine = factory();
+}(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+  var ENGINE_VERSION = '1.0.0';
+  var SHARE_MIN_PIE = 6;          /* < 6% 合併為「其他迷思」；硬性規則要求所有 <5% 必須合併，6% 已滿足 */
+  var THRESHOLD_PRIMARY = 25;     /* > 25% 觸發對應策略（硬性規則） */
+  var THRESHOLD_SECONDARY = 10;   /* 10–25% 次要提醒（補充，非取代硬性規則） */
+  var MAX_PIE_SLICES = 6;
+  var OTHER_ID = 'MOTHER';
+
+  var OTHER_ENTRY = {
+    id: OTHER_ID, name: '其他迷思', family: '合併項',
+    desc: '多個佔比低於 ' + SHARE_MIN_PIE + '% 的迷思已合併顯示，避免餅圖扇形過多而無法辨讀',
+    theory: [], template: '', strategy: null
+  };
+
+  /* ── 報告內固定引用的理論句（全部逐字來自三份 PDF） ── */
+  var THEORY = {
+    lim1: { src: 'J2026', text: '本系統是 TS-MC-DINA-H 的輕量計數原型，沒有實作完整貝氏認知診斷 CDM 模型；未來可升級 GDINA 套件取得後驗概率。' },
+    lim2: { src: 'J2026', cite: 'p.15', text: '每個選項對迷思 M 的標籤依賴專家人工審核，存在主觀性。' },
+    lim3: { src: 'S1994', text: '單次選到某干擾項不等於學生一定持有該迷思，依靠多次作答累計頻率。' },
+    lim4: { src: 'J2026', cite: 'p.2', text: '此套迷思診斷僅支援 MC 多項選擇題；開放式作答無法自動分析迷思。' }
+  };
+
+  /* ── 小工具 ── */
+  function pct(n, d) { return d > 0 ? (n / d) * 100 : 0; }
+  function round1(x) { return Math.round(x * 10) / 10; }
+
+  function indexBy(arr, key) {
+    var out = {};
+    (arr || []).forEach(function (x) { out[x[key]] = x; });
+    return out;
+  }
+
+  /* Q-matrix：bank[] × tag[] → { qid: {concept:[A], distractors:{letter:{m:[M],note}}, ci} } */
+  function buildQMatrix(bank, tags, opts) {
+    opts = opts || {};
+    var tagMap = indexBy(tags, 'id');
+    var warn = [];
+    var out = {};
+    (bank || []).forEach(function (item) {
+      if (item.kind !== 'mc' || !item.o) return;
+      var tag = tagMap[item.id];
+      if (!tag) {
+        warn.push('缺少選項級標註：' + item.id);
+        return;
+      }
+      var letters = 'ABCDEFGH'.slice(0, item.o.length).split('');
+      var concept = tag.concept || [];
+      /* 量表容許正確選項掛 1–2 個 A 屬性（J2026 的 concept vector 本身可多欄） */
+      if (concept.length < 1 || concept.length > 2) {
+        warn.push(item.id + '：正確選項掛 ' + concept.length + ' 個 A 屬性（量表容許 1–2 個）');
+      }
+      var distr = {};
+      letters.forEach(function (L, i) {
+        if (i === item.ci) return;
+        var d = (tag.distractors || {})[L];
+        if (!d) { warn.push(item.id + ' 選項 ' + L + ' 未標註'); distr[L] = { m: [], note: '' }; return; }
+        distr[L] = { m: (d.m || []).slice(), note: d.note || '' };
+      });
+      out[item.id] = {
+        id: item.id, ci: item.ci, topic: item.t, grp: item.grp, sub: item.sub,
+        l: item.l, nOptions: item.o.length,
+        concept: concept.slice(), conceptNote: tag.conceptNote || '',
+        distractors: distr
+      };
+    });
+    return { matrix: out, warnings: warn };
+  }
+
+  /* 依實際題庫覆蓋率壓縮 A 屬性（已下線的不輸出，避免出現空欄） */
+  function conceptCoverage(qmatrix) {
+    var hits = {};
+    Object.keys(qmatrix).forEach(function (qid) {
+      qmatrix[qid].concept.forEach(function (a) { hits[a] = (hits[a] || 0) + 1; });
+    });
+    return hits;
+  }
+
+  /* ── 主函數 ── */
+  function buildReport(input) {
+    input = input || {};
+    var bank = input.bank || [];
+    var tags = input.tags || [];
+    var attributes = input.attributes || { misconceptions: [], concepts: {} };
+    var records = input.records || [];
+    var studentId = input.student_id || 'unknown';
+    var builtAt = input.built_at || new Date().toISOString();
+
+    var mcBanks = bank.filter(function (x) { return x.kind === 'mc' && x.o; });
+    var bankById = indexBy(mcBanks, 'id');
+    var built = buildQMatrix(bank, tags, {});
+    var qmatrix = built.matrix;
+    var warnings = built.warnings.slice();
+
+    /* 迷思登錄表 */
+    var mreg = indexBy(attributes.misconceptions || [], 'id');
+    var integrity = [];
+    (attributes.misconceptions || []).forEach(function (m) {
+      if (!m.strategy) integrity.push('M 屬性 ' + m.id + ' 缺少 strategy 欄位，無法產生策略（違反硬性規則 4）');
+      if (m.strategy && (!m.strategy.activities || !m.strategy.activities.length)) {
+        integrity.push('M 屬性 ' + m.id + ' 的 strategy.activities 為空');
+      }
+    });
+
+    /* ④ 同一題重複作答以最後一次為準 */
+    var lastOf = {};
+    var order = [];
+    records.forEach(function (r, i) {
+      if (!r || !r.question_id) return;
+      var key = String(r.question_id);
+      if (!(key in lastOf)) order.push(key);
+      lastOf[key] = { rec: r, idx: i };
+    });
+
+    /* 統整每題最後一次作答 */
+    var answered = [];       /* 用於區塊1 */
+    var triggers = [];       /* {qid, letter, m:[...], topic, ts} */
+    var unlabeledWrong = []; /* 掛不到 M 的錯題 */
+    var skipped = [];
+
+    order.forEach(function (qid) {
+      var rec = lastOf[qid].rec;
+      var item = bankById[qid];
+      var qm = qmatrix[qid];
+      if (!item || !qm) { skipped.push(qid); return; }
+      var letters = 'ABCDEFGH'.slice(0, item.o.length).split('');
+      var raw = (rec.option_choosed_id == null ? '' : String(rec.option_choosed_id)).trim().toUpperCase();
+      var idx = letters.indexOf(raw);
+      if (idx < 0) { skipped.push(qid + '(' + rec.option_choosed_id + ')'); return; }
+      var correct = (idx === item.ci);
+      answered.push({ question_id: qid, letter: letters[idx], correct: correct, topic: item.t });
+
+      if (!correct) {
+        var d = qm.distractors[letters[idx]];
+        var ms = (d && d.m) ? d.m.filter(function (m) { return m !== 'M99'; }) : [];
+        if (ms.length) {
+          triggers.push({ qid: qid, letter: letters[idx], m: ms, topic: item.t, note: (d && d.note) || '' });
+        } else {
+          unlabeledWrong.push({ question_id: qid, letter: letters[idx], reason: d ? 'M99（未歸類）' : '未標註' });
+        }
+      }
+    });
+
+    /* ── 統計 ── */
+    var total = answered.length;
+    var right = answered.filter(function (a) { return a.correct; }).length;
+    var wrong = total - right;
+    var uniqueWrongQuestions = wrong;
+    var totalTrigger = 0;
+    triggers.forEach(function (t) { totalTrigger += t.m.length; });
+    var uniqueTriggeredQuestions = triggers.length;
+
+    /* 迷思計數 */
+    var counts = {}, questionsOf = {};
+    triggers.forEach(function (t) {
+      t.m.forEach(function (mid) {
+        counts[mid] = (counts[mid] || 0) + 1;
+        (questionsOf[mid] = questionsOf[mid] || []).push(t.qid);
+      });
+    });
+
+    var fullItems = Object.keys(counts).map(function (mid) {
+      var reg = mreg[mid] || { id: mid, name: mid, family: '未登錄', template: '你的錯題中有 {pct}% 呈現【' + mid + '】的思考模式', theory: [], strategy: null };
+      return {
+        id: mid,
+        name: reg.name,
+        family: reg.family,
+        desc: reg.desc || '',
+        paperRef: reg.paperRef || 'extension',
+        theory: (reg.theory || []).slice(),
+        count: counts[mid],
+        share: round1(pct(counts[mid], totalTrigger)),
+        share_exact: totalTrigger ? counts[mid] / totalTrigger : 0,
+        questions: questionsOf[mid].slice(),
+        template: reg.template || '',
+        strategy: reg.strategy || null
+      };
+    });
+
+    fullItems.sort(function (a, b) { return b.count - a.count || (a.id < b.id ? -1 : 1); });
+
+    /* ③ 合併 < 5% 為「其他迷思」，最多 6 扇形 */
+    var major = fullItems.filter(function (x) { return x.share >= SHARE_MIN_PIE; });
+    var minor = fullItems.filter(function (x) { return x.share < SHARE_MIN_PIE; });
+
+    /* 主要扇形本身可能多過 6 個 → 由小到大擠入「其他」 */
+    var overflow = [];
+    if (major.length > MAX_PIE_SLICES) {
+      overflow = major.slice(MAX_PIE_SLICES);
+      major = major.slice(0, MAX_PIE_SLICES);
+    }
+    var mergedList = minor.concat(overflow);
+    /* 邊界：若「其他」本身會是唯一扇形，則不應合併（否則餅圖只有一塊「其他」沒有資訊） */
+    if (major.length === 0 && mergedList.length) { major = mergedList.slice(0, 1); mergedList = mergedList.slice(1); }
+
+    var pieData = major.map(function (x) { return numify(x); });
+    if (mergedList.length) {
+      var mCount = mergedList.reduce(function (a, x) { return a + x.count; }, 0);
+      pieData.push({
+        id: OTHER_ID,
+        name: OTHER_ENTRY.name,
+        family: OTHER_ENTRY.family,
+        desc: OTHER_ENTRY.desc,
+        paperRef: 'n/a',
+        theory: [],
+        count: mCount,
+        share: round1(pct(mCount, totalTrigger)),
+        share_exact: totalTrigger ? mCount / totalTrigger : 0,
+        questions: mergedList.reduce(function (a, x) { return a.concat(x.questions); }, []),
+        member_ids: mergedList.map(function (x) { return x.id; }),
+        template: '',
+        strategy: null
+      });
+    }
+    if (pieData.length > 1) {
+      /* 補回四捨五入造成的 100 誤差：讓最大扇形吸收，並標記 adjusted */
+      var sum = pieData.reduce(function (a, x) { return a + x.share; }, 0);
+      var diff = round1(100 - sum);
+      if (diff !== 0) {
+        var big = pieData.reduce(function (a, b) { return b.share > a.share ? b : a; }, pieData[0]);
+        big.share = round1(big.share + diff);
+        big.share_adjusted = true;
+      }
+    }
+
+    function numify(x) {
+      return {
+        id: x.id, name: x.name, family: x.family, desc: x.desc,
+        paperRef: x.paperRef, theory: x.theory,
+        count: x.count, share: x.share, share_exact: x.share_exact,
+        questions: x.questions, template: x.template, strategy: x.strategy
+      };
+    }
+
+    /* ── 區塊3：診斷文字（Smith 1994 句式） ── */
+    var dominant = fullItems[0] || null;
+    var narrative = buildNarrative({
+      studentId: studentId, total: total, right: right, wrong: wrong,
+      uniqueTriggeredQuestions: uniqueTriggeredQuestions, totalTrigger: totalTrigger,
+      band: pieData, dominant: dominant, fullItems: fullItems
+    });
+
+    /* ── 區塊4：策略（閾值觸發） ── */
+    var suggestionList = [];
+    fullItems.forEach(function (x) {
+      if (x.share > THRESHOLD_PRIMARY && x.strategy) {
+        suggestionList.push({
+          level: 'primary', misconception_id: x.id, name: x.name, family: x.family,
+          share: x.share, trigger_rule: 'share > ' + THRESHOLD_PRIMARY + '%',
+          focus: x.strategy.focus, activities: x.strategy.activities.slice(),
+          avoid: x.strategy.avoid, theory: x.theory.slice(), paperRef: x.paperRef
+        });
+      } else if (x.share >= THRESHOLD_SECONDARY && x.share <= THRESHOLD_PRIMARY && x.strategy) {
+        suggestionList.push({
+          level: 'secondary', misconception_id: x.id, name: x.name, family: x.family,
+          share: x.share, trigger_rule: THRESHOLD_SECONDARY + '% ≤ share ≤ ' + THRESHOLD_PRIMARY + '%',
+          focus: x.strategy.focus,
+          activities: (x.strategy.activities || []).slice(0, 2),
+          avoid: x.strategy.avoid, theory: x.theory.slice(), paperRef: x.paperRef
+        });
+      }
+    });
+    suggestionList.sort(function (a, b) {
+      if (a.level !== b.level) return a.level === 'primary' ? -1 : 1;
+      return b.share - a.share;
+    });
+
+    var noData = (totalTrigger === 0);
+
+    var caution = '備註：本圖呈現作答錯題當中出現的思考模式佔比，不等於絕對判定學生持有某迷思，僅作為學習參考；單一選項不足以確認迷思，需要多次作答累計觀察。';
+
+    /* ── 標準 JSON 物件（區塊2） ── */
+    var chart = {
+      chart_meta: {
+        report_title: '個人化事實圖表報告',
+        chart_type: 'pie',
+        chart_purpose: '只視覺化各迷思概念的錯題觸發佔比（不做二元標籤）',
+        engine_version: ENGINE_VERSION,
+        built_at: builtAt,
+        denominator_definition: 'total_misconception_trigger（所有觸發迷思的錯題計次總和），不是學生總作答題數',
+        share_formula: 'share = count ÷ total_misconception_trigger × 100%',
+        threshold_primary: THRESHOLD_PRIMARY,
+        threshold_secondary: THRESHOLD_SECONDARY,
+        min_pie_share: SHARE_MIN_PIE,
+        max_pie_slices: MAX_PIE_SLICES,
+        other_bucket_id: OTHER_ID,
+        caution: caution,
+        allowed_sources: ['H1985', 'J2026', 'S1994'],
+        attribute_count: {
+          concept_attributes_in_bank: Object.keys(conceptCoverage(qmatrix)).length,
+          misconception_attributes_registered: (attributes.misconceptions || []).length,
+          questions_tagged: Object.keys(qmatrix).length,
+          questions_in_bank: mcBanks.length
+        },
+        data_integrity: integrity.concat(warnings).concat(skipped.length ? ['已跳過無法對應的作答記錄：' + skipped.join(', ')] : []),
+        calibration_note: '本站 A/M 編號屬本站題庫命名空間；Jielili et al. (2026) 原生的 A1–A6、M1–M44 只經 paperRef 對照引用，兩者不可互相改寫。'
+      },
+      student_meta: {
+        student_id: studentId,
+        attempt_window: attemptWindow(records),
+        total_answered: total,
+        total_correct: right,
+        total_wrong: wrong,
+        unique_wrong_questions: uniqueWrongQuestions,
+        wrong_questions_with_misconception_evidence: uniqueTriggeredQuestions,
+        wrong_questions_without_misconception_tag: unlabeledWrong.length,
+        wrong_questions_with_concept_evidence: wrong,
+        total_misconception_trigger: totalTrigger,
+        unique_triggered_questions: uniqueTriggeredQuestions,
+        trigger_density: uniqueWrongQuestions ? round1(uniqueTriggeredQuestions / uniqueWrongQuestions * 100) : 0,
+        coverage_note: 'concept 證據來自正確選項；misconception 證據來自干擾項，兩者分開呈現（J2026 兩階段診斷邏輯）',
+        concept_attribute_hits: conceptCoverage(qmatrix)
+      },
+      pie_data: noData ? [] : pieData,
+      suggestion_list: noData ? [] : suggestionList,
+      special_case_no_data: noData,
+      special_case_message: noData
+        ? (total === 0
+          ? '此學生在此期間沒有可用的作答記錄，無法產生迷思分佈圖。'
+          : '在本次作答中，所有錯題的干擾項都未有計入迷思觸發（正確題不計），因此沒有迷思分佈可呈現。')
+        : null,
+      /* ── 區塊3 ── */
+      diagnosis_text: noData ? [narrative.noDataText] : narrative.paragraphs,
+      /* ── 區塊4 的理論提醒 ── */
+      theory_reminders: theoryReminders(pieData, studentId),
+      /* ── 系統局限 ── */
+      system_limitations: limitations(),
+      /* 附錄：完整計數與未成扇形者 */
+      appendix: {
+        all_misconception_counts: fullItems.map(function (x) {
+          return { id: x.id, name: x.name, family: x.family, count: x.count, share: x.share, paperRef: x.paperRef, questions: x.questions };
+        }),
+        merged_into_other: mergedList.map(function (x) { return x.id; }),
+        wrong_without_misconception_tag: unlabeledWrong,
+        integrity_warnings: integrity.concat(warnings)
+      }
+    };
+
+    return {
+      ok: !noData,
+      chart: chart,
+      /* 供頁面直接使用的內部結構 */
+      debug: { fullItems: fullItems, answered: answered, triggers: triggers, qmatrix: qmatrix }
+    };
+  }
+
+  function attemptWindow(records) {
+    var ts = (records || []).map(function (r) { return r && r.ts; }).filter(Boolean).sort();
+    if (!ts.length) return { from: null, to: null };
+    return { from: ts[0], to: ts[ts.length - 1] };
+  }
+
+  function buildNarrative(ctx) {
+    var t = ctx.total, r = ctx.right, w = ctx.wrong, tt = ctx.totalTrigger;
+    var paras = [];
+    var sid = ctx.studentId;
+
+    /* 段落 1：客觀事實 */
+    paras.push({
+      id: 'D1-facts',
+      heading: '你這次作答的事實',
+      text: '學生 ' + sid + ' 是次作答共 ' + t + ' 題，正確 ' + r + ' 題，錯誤 ' + w +
+        ' 題。在這些錯題之中，共有 ' + ctx.uniqueTriggeredQuestions + ' 題（' + tt +
+        ' 次計次）對應到目前已建檔的迷思屬性；正確題不計入迷思分佈，因為它們提供的是概念掌握的證據，而不是迷思的證據。'
+    });
+
+    if (tt > 0) {
+      /* 段落 2：分佈（Smith 句式） */
+      var lines = ctx.band.map(function (x) {
+        if (x.id === OTHER_ID) {
+          return '有 ' + x.share + '% 的計次落在多個佔比較小的思考模式上（' + (x.member_ids || []).join('、') + '），已合併為「其他迷思」顯示 —— 這一塊代表「一次性的長尾」，不是單一強勢模式。';
+        }
+        var tpl = x.template || ('你的錯題中有 {pct}% 呈現【' + x.name + '】的思考模式');
+        return tpl.replace('{pct}', x.share).replace('{name}', x.name) +
+          '（' + x.count + ' 次，對應題目 ' + x.questions.join('、') + '）';
+      });
+      paras.push({
+        id: 'D2-pattern-distribution',
+        heading: '在錯題中觀察到的思考模式分佈',
+        text: '以下是本次作答中、出現頻率較高的思考模式。這描述的是「你的錯題之中有多少比例出現這種推理」，' +
+          '而不是判定你「擁有」某一種迷思：',
+        bullets: lines
+      });
+
+      /* 段落 3：Halloun 1985 情境不一致提醒 */
+      paras.push({
+        id: 'D3-context-dependence',
+        heading: '為什麼同一種思考模式在不同題目會忽隱忽現',
+        text: 'Halloun & Hestenes (1985) 分析 478 名大學物理學生的作答後指出，學生的常識概念體系「much less internal coherence than the Aristotelian and Impetus systems」，' +
+          '最貼切的描述是「bundles of loosely related and sometimes inconsistent concepts」；' +
+          '他們的訪談亦發現，「nearly every student used some mixture of concepts from the three theories, and appeared to be inconsistent in applying the same concept in different situations」(p.5)。' +
+          '所以同一種思考模式在你某些題目出現、在另一些題目不出現，是預期之中的現象，' +
+          '亦意味著分佈圖上的百分比會隨題目組合而變動——需要多次作答累計觀察，而不是一次定論。',
+        quotes: [
+          { src: 'H1985', cite: 'p.5', text: 'nearly every student used some mixture of concepts from the three theories, and appeared to be inconsistent in applying the same concept in different situations.' },
+          { src: 'H1985', cite: 'p.5', text: 'The CS conceptual systems of the students have much less internal coherence than the Aristotelian and Impetus systems. They can best be described as bundles of loosely related and sometimes inconsistent concepts.' }
+        ]
+      });
+
+      /* 段落 4：J2026 同分不同輪廓 */
+      paras.push({
+        id: 'D4-same-score-different-profile',
+        heading: '同樣分數，可以是很不同的學習狀況',
+        text: 'Jielili et al. (2026) 以 TS-MC-DINA-H 模型分析 492 名高中生的作答後指出，' +
+          '「students with identical total scores often exhibited different mastery-misconception profiles」(p.1)，' +
+          '而且「equal total scores can hide very different cognitive profiles」(p.14)。' +
+          '所以這份報告刻意不以總分為主軸，而是看你「選了哪些選項」——正確選項顯示概念掌握的證據，' +
+          '每個干擾項則對應一個被設計來捕捉的迷思屬性。',
+        quotes: [
+          { src: 'J2026', cite: 'p.13', text: 'Thus, identical total scores can arise from very different patterns of evidence, which CDM captures but a sum score cannot.' }
+        ]
+      });
+    } else {
+      paras.push({
+        id: 'D2-no-pattern',
+        heading: '本次沒有可呈現的思考模式分佈',
+        text: '在本次作答記錄中，錯題的選項沒有落在目前已建檔的迷思屬性上，因此沒有迷思分佈可顯示。' +
+          '這表示「本次沒有觀察到」，不代表「一定沒有」——單次作答的題目組合有限，仍需要累積更多作答。' +
+          '若你這次全部答對，那正確題本身只提供概念掌握的證據，本來就不會計入迷思分佈。'
+      });
+    }
+
+    /* 段落 5：Smith 1994 收束 */
+    paras.push({
+      id: 'D5-reflection-not-verdict',
+      heading: '這份報告不是判決書',
+      text: 'Smith, diSessa & Roschelle (1993/94) 指出，直觀知識往往來自真實情境中有效的經驗：' +
+        '「misconceptions, especially those that are most robust, have their roots in productive and effective knowledge. The key is context—where and how those conceptions are used.」' +
+        '問題不在於它「錯」，而在於它被推得太遠、用在不適用的邊界上。' +
+        '他們主張「instruction should help students reflect on their present commitments, find new productive contexts for existing knowledge, and refine parts of their knowledge for specific scientific and mathematical purposes.」' +
+        '因此這裡只描述「思考模式出現的頻率」，不會把你標記為「患有某迷思」。' +
+        '你可以把上面的分佈當成一份線索清單：哪些推理習慣在壓力下最容易跑出來，值得在哪些情境刻意練習。',
+      quotes: [
+        { src: 'S1994', cite: '—', text: 'misconceptions, especially those that are most robust, have their roots in productive and effective knowledge. The key is context—where and how those conceptions are used.' },
+        { src: 'S1994', cite: '—', text: 'instruction should help students reflect on their present commitments, find new productive contexts for existing knowledge, and refine parts of their knowledge for specific scientific and mathematical purposes.' }
+      ]
+    });
+
+    return {
+      paragraphs: paras,
+      noDataText: (t === 0
+        ? '此學生在此期間沒有可用的作答記錄，因此無法產生迷思分佈圖，亦不會渲染任何扇形。'
+        : paras[1].text)
+    };
+  }
+
+  function theoryReminders(pieData, sid) {
+    var out = [];
+    out.push({
+      src: 'H1985', cite: 'p.1, p.6',
+      text: '常識信念不是隨意或微不足道的錯誤：「CS misconceptions are not arbitrary or trivial mistakes.」(p.1)；' +
+        '而且單靠示範難以改變：「As a rule, students held firm to mistaken beliefs even when confronted with phenomena that contradicted those beliefs.」(p.6)'
+    });
+    out.push({
+      src: 'J2026', cite: 'p.3, p.5',
+      text: '兩階段邏輯：概念未達掌握時，才用所選干擾項推斷迷思；「The mastery of a given concept attribute excludes possessing its corresponding misconception attribute.」(p.3)。' +
+        '本站原型以輕量計數近似此邏輯，未實作貝氏 CDM。'
+    });
+    out.push({
+      src: 'S1994', cite: '—',
+      text: '迷思多數不是要被刪除替換的錯誤，而是原本有用的直觀知識被過度泛化；學習是重組知識元件、調整適用邊界，' +
+        '因此策略重點在「分辨直觀想法的適用邊界」，而不是直接背正確公式。'
+    });
+    return out;
+  }
+
+  function limitations() {
+    return [
+      { id: 'L1', category: '模型層級', text: '本系統是 TS-MC-DINA-H 的輕量計數原型，沒有實作完整貝氏認知診斷 CDM 模型；未來可升級 GDINA 套件取得後驗概率。', src: 'J2026' },
+      { id: 'L2', category: '標註主觀性', text: '每個選項對迷思 M 的標籤依賴專家人工審核，存在主觀性。', src: 'J2026', cite: 'p.15' },
+      { id: 'L3', category: '推論強度', text: '單次選到某干擾項不等於學生一定持有該迷思，依靠多次作答累計頻率。', src: 'S1994' },
+      { id: 'L4', category: '題型限制', text: '此套迷思診斷僅支援 MC 多項選擇題；開放式作答無法自動分析迷思。', src: 'J2026' }
+    ];
+  }
+
+  /* ── 作答記錄工具（供 exam-bank 寫入、報告頁讀取共用） ── */
+  var ANS_KEY = 'dseBankAnswers_v1';
+  var SID_KEY = 'dseBankStudentId_v1';
+
+  function makeLog() {
+    return { version: 1, student_id: null, records: [] };
+  }
+
+  function pushAnswer(log, questionId, optionLetter, meta) {
+    log = log || makeLog();
+    log.records = log.records || [];
+    log.records.push(Object.assign({
+      student_id: log.student_id || null,
+      question_id: questionId,
+      option_choosed_id: String(optionLetter || '').toUpperCase(),
+      ts: new Date().toISOString()
+    }, meta || {}));
+    return log;
+  }
+
+  return {
+    ENGINE_VERSION: ENGINE_VERSION,
+    SHARE_MIN_PIE: SHARE_MIN_PIE,
+    THRESHOLD_PRIMARY: THRESHOLD_PRIMARY,
+    THRESHOLD_SECONDARY: THRESHOLD_SECONDARY,
+    MAX_PIE_SLICES: MAX_PIE_SLICES,
+    OTHER_ID: OTHER_ID,
+    buildQMatrix: buildQMatrix,
+    conceptCoverage: conceptCoverage,
+    buildReport: buildReport,
+    theoryReminders: theoryReminders,
+    limitations: limitations,
+    THEORY: THEORY,
+    ANS_KEY: ANS_KEY,
+    SID_KEY: SID_KEY,
+    makeLog: makeLog,
+    pushAnswer: pushAnswer
+  };
+}));
+
+</script>
+<script>
 /* ══════════ 題庫資料（由 bank/bank.json 自動注入，勿手改） ══════════ */
 const BANK = [
  {
@@ -455,7 +1026,6 @@ const BANK = [
   "cross": [],
   "q": "兩小球 A 與 B 同時由大廈頂射出。A 以 10 m s⁻¹ 水平射出；B 以 20 m s⁻¹、與水平成 60° 向上射出。兩者在同一平面內運動，空氣阻力可忽略。在空中飛行時，下列陳述何者正確？ (1) A、B 在相同時間內走相同豎直距離 (2) A、B 在相同時間內走相同水平距離 (3) A、B 永遠不會相遇",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/PM-M01.jpg",
   "o": [
    "只有 (1)",
    "只有 (3)",
@@ -516,7 +1086,8 @@ const BANK = [
    "(2) horizontal velocities are both 10 m s⁻¹ ⇒ horizontal distances in equal times are equal ⇒ correct",
    "(3) same g but different vertical initial velocities ⇒ B is always above A ⇒ they never meet ⇒ correct",
    "Answer: D"
-  ]
+  ],
+  "img": "PM-M01.jpg"
  },
  {
   "id": "CM-M01",
@@ -537,7 +1108,6 @@ const BANK = [
   "cross": [],
   "q": "部分賽車跑道的彎位會築成與水平成一個角度的斜坡（banked）。下列哪一項是這項設計的優點？ (1) 減低汽車與跑道之間的摩擦力 (2) 減低汽車以某一給定速率安全行駛時所需的跑道曲率半徑 (3) 增加汽車重量指向路徑圓心方向的分量",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/CM-M01.jpg",
   "o": [
    "只有 (1)",
    "只有 (3)",
@@ -598,7 +1168,8 @@ const BANK = [
    "The available a is larger; a = v²/r ⇒ r can be smaller at the same v ⇒ (2) correct",
    "W is vertical ⇒ no horizontal component ⇒ it can never supply the centripetal force ⇒ (3) wrong",
    "Answer: C"
-  ]
+  ],
+  "img": "CM-M01.jpg"
  },
  {
   "id": "PM-M02",
@@ -621,7 +1192,6 @@ const BANK = [
   ],
   "q": "一小粒子由 P 點釋放，沿光滑曲面滑至桌面邊緣 Q 點（桌面高 2 m），其後水平飛出，自由落下至地面 R 點，R 距 Q 的水平距離為 3 m。求 P 相對 Q 的豎直高度 h。",
   "fig": "示意圖：P 點位於高處，粒子沿光滑曲面下滑至桌邊的 Q 點；桌面高 2 m，Q 至 R 的水平距離為 3 m，虛線顯示粒子由 Q 至 R 的拋物線軌跡，h 為 P 相對 Q 的豎直高度。",
-  "img": "bank-img/PM-M02.jpg",
   "o": [
    "1.13 m",
    "1.33 m",
@@ -682,7 +1252,8 @@ const BANK = [
    "P→Q: mgh = ½mu² ⇒ (9.81)h = ½(4.70)²",
    "h = 11.045 / 9.81 = 1.126 ≈ 1.13 m",
    "Answer: A"
-  ]
+  ],
+  "img": "PM-M02.jpg"
  },
  {
   "id": "CM-M02",
@@ -703,7 +1274,6 @@ const BANK = [
   "cross": [],
   "q": "一重量為 W 的粒子縛在一條不能伸長的 string 上，並在一個豎直圓周內擺動。在它路徑的最高點（topmost point），string 的張力為 T、向心力為 F。下列哪一個陳述正確？",
   "fig": "一個豎直圓周（細實線圓）；圓心有一個黑點，由黑點向上有一條直線標示 T、向下有一支箭頭標示 F，另有一支向下箭頭標示 W。（原卷圖示的箭頭方向含糊，見備註。）",
-  "img": "bank-img/CM-M02.jpg",
   "o": [
    "F = W + T",
    "F = W − T",
@@ -763,7 +1333,8 @@ const BANK = [
    "B's F = W − T is the form for the lowest point (T − W = mv²/r)",
    "C and D treat the centripetal force as an extra force ⇒ double counting ⇒ wrong",
    "Answer: A"
-  ]
+  ],
+  "img": "CM-M02.jpg"
  },
  {
   "id": "PM-M03",
@@ -784,7 +1355,6 @@ const BANK = [
   "cross": [],
   "q": "一球以 20 m s⁻¹ 由大廈頂水平拋出。3 s 後該球的速率是多少？（g = 9.81 m s⁻²）",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/PM-M03.jpg",
   "o": [
    "20.0 m s⁻¹",
    "25.0 m s⁻¹",
@@ -843,7 +1413,8 @@ const BANK = [
    "v = √(20² + 29.43²)",
    "v = √1266.1 = 35.58 ≈ 35.6 m s⁻¹",
    "Answer: D"
-  ]
+  ],
+  "img": "PM-M03.jpg"
  },
  {
   "id": "CM-M03",
@@ -866,7 +1437,6 @@ const BANK = [
   ],
   "q": "上圖為一部車輛以勻速率在一條水平道路上行駛、繞過一個彎位時的正視圖，該彎位的曲率中心在 P。下列哪一支箭頭最能代表道路施於汽車的合力方向？",
   "fig": "左方有一點標示 P（曲率中心）；中央為一部車輛（巴士／貨車）的正視簡圖，畫在一條水平線上（代表路面）。四個選項：A 為水平向右的箭頭、B 為水平向左的箭頭、C 為指向右上約 45° 的箭頭、D 為指向左上約 45° 的箭頭。",
-  "img": "bank-img/CM-M03.jpg",
   "o": [
    "水平向右的箭頭",
    "水平向左的箭頭",
@@ -927,7 +1497,8 @@ const BANK = [
    "N ⊥ f ⇒ adding them as vectors ⇒ the resultant points up and to the left",
    "A to the right, B purely to the left and C up and to the right are all wrong",
    "Answer: D"
-  ]
+  ],
+  "img": "CM-M03.jpg"
  },
  {
   "id": "PM-M04",
@@ -950,7 +1521,6 @@ const BANK = [
   ],
   "q": "一粒子由 P 點以 10 m s⁻¹、與水平成 30° 向下射出，P 點離地 10 m。粒子在 Q 點撞地後反彈（碰撞為完全彈性，地面光滑），最後在 R 點再次撞地。求 QR 的水平距離。（g = 10 m s⁻²）",
   "fig": "示意圖：P 點位於地面以上 10 m，粒子以 10 m s⁻¹、與水平成 30° 向下射出；粒子沿斜線落至地面上的 Q 點後反彈，形成一段拋物線，最終於 R 點再次撞地。",
-  "img": "bank-img/PM-M04.jpg",
   "o": [
    "10.0 m",
    "13.0 m",
@@ -1015,7 +1585,8 @@ const BANK = [
    "Q→R vertical displacement = 0: 0 = 15t − 5t² ⇒ t = 3 s",
    "QR = (10cos30°)(3) = 26.0 m",
    "Answer: C"
-  ]
+  ],
+  "img": "PM-M04.jpg"
  },
  {
   "id": "CM-M04",
@@ -1036,7 +1607,6 @@ const BANK = [
   "cross": [],
   "q": "一質量 m 的玩具車沿一條軌道行駛，該軌道為豎直圓周（半徑 r）的一段圓弧。在弧的最低點，車的速率為 v。此時軌道施於車的鉛直力（vertical force）為多少？",
   "fig": "一條 U 形（下半段圓弧）軌道；弧底有一部小汽車；由弧的圓心（弧上方一點黑點）向弧底的車畫有一條虛線（代表半徑，鉛直向下）。題目中「vertical force」與「radius r」被手繪橢圓圈住。",
-  "img": "bank-img/CM-M04.jpg",
   "o": [
    "m v² / r",
    "m g",
@@ -1099,7 +1669,8 @@ const BANK = [
    "N = mv²/r + mg",
    "At the bottom N must exceed mg ⇒ the mg term must be added",
    "Answer: D"
-  ]
+  ],
+  "img": "CM-M04.jpg"
  },
  {
   "id": "PM-M05",
@@ -1120,7 +1691,6 @@ const BANK = [
   "cross": [],
   "q": "獵人用槍瞄準靜止於 M 點的猴子，槍管與水平成 θ 角。開槍一刻，猴子由 M 點以零初速自由落下。為使子彈能擊中猴子，角度 θ 取決於 (1) 子彈的初速 u (2) 猴子在槍口水平以上的高度 h (3) 槍與猴子之間的水平距離 d",
   "fig": "示意圖：槍位於左下方，槍管與水平成 θ 角向上瞄向 M 點；u 標示子彈的初速，d 為槍與猴子之間的水平距離，h 為 M 點在槍口水平以上的高度；虛線顯示子彈的拋物線軌跡與猴子自 M 點下墜的軌跡相交。",
-  "img": "bank-img/PM-M05.jpg",
   "o": [
    "只有 (1)",
    "只有 (3)",
@@ -1181,7 +1751,8 @@ const BANK = [
    "Meeting conditions: x_b = d and y_b = y_m",
    "From tanθ = h/d the two conditions are automatically satisfied, independently of u",
    "Answer: D"
-  ]
+  ],
+  "img": "PM-M05.jpg"
  },
  {
   "id": "CM-M05",
@@ -1202,7 +1773,6 @@ const BANK = [
   "cross": [],
   "q": "一粒小 marble 在一個光滑的倒圓錐容器（conical container）內沿一個水平圓周轉動，容器的鉛直軸為 AB。鉛直軸與錐面成 30°。若 marble 的速率為 v、轉動半徑為 r，下列哪一個關係必定正確？",
   "fig": "漏斗／倒圓錐容器，錐頂向下（頂點標示 B），頂部為橢圓形開口（標示 A），A 至 B 為鉛直軸；容器左內側有一黑點標示 marble；錐頂 B 附近標示軸與錐面之間的角度 30°。另有一幅手繪力圖：黑點受一支指向鉛直軸的水平箭頭（旁標 r）與一支鉛直向下的箭頭（旁標 mg）。",
-  "img": "bank-img/CM-M05.jpg",
   "o": [
    "v² = g r sin 30°",
    "v² = g r tan 30°",
@@ -1265,7 +1835,8 @@ const BANK = [
    "Vertical: R sin 30° = mg; horizontal: R cos 30° = mv²/r",
    "Divide: tan 30° = gr/v² ⇒ v² = gr / tan 30°",
    "Answer: C"
-  ]
+  ],
+  "img": "CM-M05.jpg"
  },
  {
   "id": "PM-M06",
@@ -1288,7 +1859,6 @@ const BANK = [
   ],
   "q": "兩小球 A、B 放在桌邊。A 被輕推後豎直落下；B 同時被水平拋出，沿拋物線路徑到達地面。忽略空氣阻力，下列陳述何者正確？ (1) A、B 同時到達地面 (2) A、B 在空中運動時加速度相同 (3) A、B 到達地面時豎直速度相同",
   "fig": "示意圖：桌邊放有小球 A 與 B；A 被輕推後沿豎直虛線落下，B 被水平拋出後沿拋物線虛線路徑到達地面，圖中以箭頭標示兩者的運動方向。",
-  "img": "bank-img/PM-M06.jpg",
   "o": [
    "只有 (3)",
    "只有 (1) 及 (2)",
@@ -1349,7 +1919,8 @@ const BANK = [
    "(2) the net force on each = mg ⇒ a = g ⇒ correct",
    "(3) v_y = gt with the same g and t ⇒ the same v_y ⇒ correct",
    "Answer: D"
-  ]
+  ],
+  "img": "PM-M06.jpg"
  },
  {
   "id": "CM-M06",
@@ -1370,7 +1941,6 @@ const BANK = [
   "cross": [],
   "q": "一質量 0.25 kg 的小粒子縛在一條不能伸長的 string 一端，另一端固定在天花板上。當粒子被設成作水平圓周運動時，string 的張力為 3.5 N。String 與鉛直線之間的夾角為",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/CM-M06.jpg",
   "o": [
    "25.5°",
    "32.5°",
@@ -1433,7 +2003,8 @@ const BANK = [
    "3.5 cos θ = (0.25)(9.81) ⇒ cos θ = 0.7007",
    "θ = 45.5°",
    "Answer: C"
-  ]
+  ],
+  "img": "CM-M06.jpg"
  },
  {
   "id": "PM-M07",
@@ -1454,7 +2025,6 @@ const BANK = [
   "cross": [],
   "q": "轟炸機以恆定速度水平向右飛行，每隔固定時間投放一個炸彈，共投放三個。忽略空氣阻力，下列哪一幅圖最能顯示某一時刻轟炸機與三個炸彈的位置？",
   "fig": "選項 A–D 各為一幅示意圖，每幅均畫有向右飛行的轟炸機、三個炸彈的位置，以及底部以斜線陰影表示的地面：A 的炸彈沿斜線散在飛機後方、豎直間距向下遞增；B 的炸彈沿斜線散在飛機後方、豎直間距相等；C 的炸彈在飛機正下方同一鉛垂線上、豎直間距相等；D 的炸彈在飛機正下方同一鉛垂線上、豎直間距向下遞增。",
-  "img": "bank-img/PM-M07.jpg",
   "o": [
    "炸彈沿斜線散在飛機後方，豎直間距向下遞增",
    "炸彈沿斜線散在飛機後方，豎直間距相等",
@@ -1513,7 +2083,8 @@ const BANK = [
    "Vertical: y = ½gt², the earlier the release the larger t ⇒ the lower the bomb",
    "The spacing between neighbours ∝ the difference in t² ⇒ it increases downwards",
    "Answer: D"
-  ]
+  ],
+  "img": "PM-M07.jpg"
  },
  {
   "id": "CM-M07",
@@ -1536,7 +2107,6 @@ const BANK = [
   ],
   "q": "一質量 0.05 kg 的小粒子由一個光滑半球形碗（semi-spherical bowl，半徑 10 cm）的碗邊由靜止釋放。求當它經過碗底時碗施於該物體的力。",
   "fig": "一個 U 形圓弧（半球形碗的截面），弧的左端頂點處有一個黑點（代表釋放點／碗邊）。",
-  "img": "bank-img/CM-M07.jpg",
   "o": [
    "0.5 N",
    "1.0 N",
@@ -1599,7 +2169,8 @@ const BANK = [
    "At the bottom of the bowl: R − mg = mv²/r",
    "R = mg + mv²/r = 3mg = 3(0.05)(9.81) = 1.47 N ≈ 1.5 N",
    "Answer: C"
-  ]
+  ],
+  "img": "CM-M07.jpg"
  },
  {
   "id": "PM-M08",
@@ -1622,7 +2193,6 @@ const BANK = [
   ],
   "q": "一球由桌面以初速 u 水平拋出，落地時速率為 v。忽略空氣阻力，該球在空中飛行的時間是多少？",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/PM-M08.jpg",
   "o": [
    "(v − u)/(2g)",
    "(v − u)/g",
@@ -1683,7 +2253,8 @@ const BANK = [
    "√(v² − u²) = gt",
    "t = √(v² − u²) / g",
    "Answer: D"
-  ]
+  ],
+  "img": "PM-M08.jpg"
  },
  {
   "id": "CM-M08",
@@ -1704,7 +2275,6 @@ const BANK = [
   "cross": [],
   "q": "一架飛機以 175 m s⁻¹ 的恆速率沿一個半徑 15 km 的水平圓周飛行。求它的機翼與水平之間的夾角。取 g = 10 m s⁻²。",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/CM-M08.jpg",
   "o": [
    "11.5°",
    "12.5°",
@@ -1769,7 +2339,8 @@ const BANK = [
    "r = 15 × 10³ m, g = 10 ⇒ tan θ = 30625/150000 = 0.2042",
    "θ = 11.5°",
    "Answer: A"
-  ]
+  ],
+  "img": "CM-M08.jpg"
  },
  {
   "id": "PM-M09",
@@ -1790,7 +2361,6 @@ const BANK = [
   "cross": [],
   "q": "一粒子以水平方向射向 1.2 m 外的垂直牆，撞牆點較最初水平位置低 0.8 m。忽略空氣阻力，該粒子撞牆時的速率是多少？",
   "fig": "示意圖：粒子由左方水平射出，右方為垂直牆（標示 wall）；圖中以尺寸線標示水平距離 1.2 m，以及撞擊點較最初水平位置低 0.8 m，虛線顯示粒子的拋物線軌跡。",
-  "img": "bank-img/PM-M09.jpg",
   "o": [
    "2.65 m s⁻¹",
    "3.45 m s⁻¹",
@@ -1853,7 +2423,8 @@ const BANK = [
    "Vertical velocity: v_y = gt = (9.81)(0.4038) = 3.961 ≈ 3.96 m s⁻¹",
    "Resultant: v = √(2.972² + 3.961²) = √24.52 = 4.952 ≈ 4.95 m s⁻¹",
    "Answer: D"
-  ]
+  ],
+  "img": "PM-M09.jpg"
  },
  {
   "id": "CM-M09",
@@ -1874,7 +2445,6 @@ const BANK = [
   "cross": [],
   "q": "圖中顯示一部汽車以 12 m 的半徑在一條傾角 18° 的斜坡道路（banked road）上轉彎。在什麼速率下，汽車沿 OA 方向會沒有摩擦力作用？取 g = 10 m s⁻²。",
   "fig": "右方一條向右上傾斜的斜面（代表路基），斜面右端標示 A；斜面上有一部車輛（正視圖）。由斜面底部 O（左下方）向上畫一條鉛直虛線，另由 O 向右畫一條水平線（地面），O 點標示水平線與斜面之間的角度 18°。一條標示 12 m 的尺寸箭頭由鉛直虛線水平指向車上的黑點。圖左上另有一個弧形箭頭表示轉向方向。",
-  "img": "bank-img/CM-M09.jpg",
   "o": [
    "4.8 m s⁻¹",
    "5.4 m s⁻¹",
@@ -1939,7 +2509,8 @@ const BANK = [
    "v² = tan 18° × (10)(12) = 38.99",
    "v = 6.2 m s⁻¹",
    "Answer: C"
-  ]
+  ],
+  "img": "CM-M09.jpg"
  },
  {
   "id": "PM-M10",
@@ -1962,7 +2533,6 @@ const BANK = [
   ],
   "q": "一球以與水平成 45° 的仰角拋出，初動能為 E₀。忽略空氣阻力，當球升到一半高度時，其動能是多少？",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/PM-M10.jpg",
   "o": [
    "¼E₀",
    "½E₀",
@@ -2025,7 +2595,8 @@ const BANK = [
    "Halfway up ⇒ half of the vertical kinetic energy is used up ⇒ ¼E₀ remains",
    "Total kinetic energy = ½E₀ + ¼E₀ = ¾E₀",
    "Answer: D"
-  ]
+  ],
+  "img": "PM-M10.jpg"
  },
  {
   "id": "CM-M10",
@@ -2048,7 +2619,6 @@ const BANK = [
   ],
   "q": "兩個相同的小硬幣 P 與 Q 放在一個繞中心 O 以恆角速率轉動的水平轉盤（turntable）上。Q 距中心的半徑是 P 的兩倍。下列哪些陳述正確？ (1) Q 的動能是 P 的四倍 (2) 作用在 Q 的摩擦力是作用在 P 的兩倍 (3) 若轉盤的角速率逐漸增加，Q 會先過 P 滑動",
   "fig": "一個大圓（俯視的轉盤）；圓心有一個小黑點標示 O；由 O 向右沿水平直線依次有兩個小圓（硬幣，內部有斜線陰影），較近 O 者標示 P、較遠者標示 Q。",
-  "img": "bank-img/CM-M10.jpg",
   "o": [
    "只有 (3)",
    "只有 (1) 及 (2)",
@@ -2107,7 +2677,8 @@ const BANK = [
    "(2) f = mrω² ∝ r ⇒ f_Q = 2 f_P ⇒ correct",
    "(3) f_max = μmg is the same; Q requires more ⇒ Q slips first ⇒ correct",
    "Answer: D"
-  ]
+  ],
+  "img": "CM-M10.jpg"
  },
  {
   "id": "PM-M11",
@@ -2128,7 +2699,6 @@ const BANK = [
   "cross": [],
   "q": "一小粒子被水平拋入空氣中。圖中顯示頻閃照片的一部分。方格紙每格邊長 5 cm。估算所用頻閃燈的頻率。（忽略空氣阻力，g = 10 m s⁻²）",
   "fig": "頻閃照片示意圖：一個 10 格乘 10 格的方格紙，左下角以「5 cm」及雙箭頭標示每格的邊長；圖中有三個影像點，第一與第二個影像的豎直間距為 3 格（0.15 m）、水平間距為 3 格，第一與第三個影像的豎直間距為 8 格（0.40 m）、水平間距為 6 格。",
-  "img": "bank-img/PM-M11.jpg",
   "o": [
    "5.8 Hz",
    "7.1 Hz",
@@ -2193,7 +2763,8 @@ const BANK = [
    "② − 2 × ①: 0.10 = 10T² ⇒ T = 0.1 s",
    "f = 1/T = 1/0.1 = 10 Hz",
    "Answer: C"
-  ]
+  ],
+  "img": "PM-M11.jpg"
  },
  {
   "id": "CM-M11",
@@ -2214,7 +2785,6 @@ const BANK = [
   "cross": [],
   "q": "在示範向心力的實驗中，一個 rubber bung 被掄成水平圓周運動。Rubber bung 縛在一條 string 的一端，string 穿過一條開口光滑的玻璃管（glass tube），另一端掛一個重量為 W 的負載。Rubber bung 以角速率 ω 轉動，而玻璃管上開口以外的 string 長度為 L，這段 string 與鉛直線成角 θ。下列哪些陳述正確？ (1) 若 L 保持不變，θ 會隨 ω 增加而減少 (2) 若 θ 保持不變，L 會隨 ω 增加而增加 (3) 若負載的重量 W 增加，θ 會增加",
   "fig": "一個水平虛線橢圓（代表 rubber bung 的圓周軌跡）；橢圓左方有一條垂直的玻璃管（旁標 glass tube）；一條 string 由玻璃管上端開口斜向右下連到一個小方塊（標 rubber bung），這段標示 L，並與通過管口的鉛直線成角 θ；rubber bung 旁有一個弧形箭頭標示 ω；string 另一端由玻璃管向下垂，末端掛一個方形負載標示 W。",
-  "img": "bank-img/CM-M11.jpg",
   "o": [
    "只有 (1)",
    "只有 (2)",
@@ -2277,7 +2847,8 @@ const BANK = [
    "(2) θ fixed ⇒ T fixed; L = T/(mω²) ∝ 1/ω² ⇒ ω ↑ gives L ↓ ⇒ saying 「increase」 is wrong",
    "(3) W ↑ ⇒ T ↑ ⇒ cos θ ↓ ⇒ θ ↑ ⇒ correct",
    "Answer: C"
-  ]
+  ],
+  "img": "CM-M11.jpg"
  },
  {
   "id": "PM-M12",
@@ -2298,7 +2869,6 @@ const BANK = [
   "cross": [],
   "q": "如圖所示，一枝槍直接瞄準 40 m 外的一點 P。槍管與鉛垂線成 θ 角。若子彈的速率為 50 m s⁻¹，求當子彈位於 P 點鉛垂下方時，子彈與 P 點之間的距離。（忽略空氣阻力，取 g = 10 m s⁻²）",
   "fig": "示意圖：槍在左下方，瞄向點 P（水平距離 40 m，槍管與鉛垂線夾角 θ）；虛線顯示子彈的拋物線軌跡，以及它在 P 點鉛垂下方時的位置。",
-  "img": "bank-img/PM-M12.jpg",
   "o": [
    "3.2 m",
    "4.8 m",
@@ -2365,7 +2935,8 @@ const BANK = [
    "s = ½(10)(0.8)² = 3.2 m",
    "Check: bullet y = 40cosθ − 3.2, P is at height 40cosθ ⇒ difference 3.2 m",
    "Answer: A"
-  ]
+  ],
+  "img": "PM-M12.jpg"
  },
  {
   "id": "CM-M12",
@@ -2386,7 +2957,6 @@ const BANK = [
   "cross": [],
   "q": "一輛質量為 m 的車輛以速率 v 在一條斜坡道路（banked road）上沿水平半徑為 r 的圓周路徑行駛。道路的傾角為 θ。若向心力完全由道路的法向反作用力 R 的一個分量提供，下列哪一個關係正確？",
   "fig": "一條向右下傾斜的斜面（代表路基），斜面底部有一條水平線（地面），兩線的夾角標示 θ（在斜面底端）；斜面上有一輛車輛（正視圖，車輪位置有斜線陰影）；由車輛畫一支垂直斜面、指向上方的箭頭標示 R；由車輛畫一條水平線向右，線段兩端均有箭頭，中段標示 r，右端到達一條鉛直虛線（圓心軸），虛線頂端有一個弧形箭頭。",
-  "img": "bank-img/CM-M12.jpg",
   "o": [
    "R cos θ = m g",
    "R = m g cos θ",
@@ -2447,7 +3017,8 @@ const BANK = [
    "Vertical: R cos θ = mg ⇒ A correct, B wrong",
    "Horizontal: R sin θ = mv²/r ⇒ combining gives v² = g r tan θ ⇒ C and D wrong",
    "Answer: A"
-  ]
+  ],
+  "img": "CM-M12.jpg"
  },
  {
   "id": "PM-M13",
@@ -2468,7 +3039,6 @@ const BANK = [
   "cross": [],
   "q": "五個炸彈由一架以恆定速度水平飛行的轟炸機投下，它們每隔一秒逐個投下。忽略空氣阻力，試指出 (1) 任何時刻五個炸彈在空中的位置；(2) 五個炸彈在地面上的落點位置。",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/PM-M13.jpg",
   "o": [
    "它們位於一條拋物線上。／它們之間間距均等。",
    "它們位於一條拋物線上。／它們之間間距不均等。",
@@ -2529,7 +3099,8 @@ const BANK = [
    "Landing spacing = v_x × Δt = v_x × 1 s",
    "v_x constant and Δt constant ⇒ spacing even",
    "Answer: C"
-  ]
+  ],
+  "img": "PM-M13.jpg"
  },
  {
   "id": "CM-M13",
@@ -2552,7 +3123,6 @@ const BANK = [
   ],
   "q": "一個小擺錘（bob）繫在一條不能伸長的線上。線被拉至水平，然後由靜止釋放，釋放時線拉直。當線到達鉛直位置時，下列哪一項關於線的張力的陳述不正確？",
   "fig": "左端有一個小圓點（固定點），由該點有一條虛線鉛直向下，末端有一個虛線小圓；由固定點向右有一條水平實線（代表線），末端是一個實心黑點（擺錘），黑點右方標示 string with bob in horizontal position；黑點下方有一個弧形箭頭，表示釋放後的擺動方向。",
-  "img": "bank-img/CM-M13.jpg",
   "o": [
    "張力的大小等於擺錘的重量",
    "張力達到其最大值",
@@ -2613,7 +3183,8 @@ const BANK = [
    "T = mg + 2mg = 3mg",
    "A is wrong (3mg ≠ mg); B, C and D are all right",
    "Answer: A"
-  ]
+  ],
+  "img": "CM-M13.jpg"
  },
  {
   "id": "PM-M14",
@@ -2636,7 +3207,6 @@ const BANK = [
   ],
   "q": "如圖所示，一小球由房間內牆上一點 P 以 1.6 m s⁻¹ 的速率水平射出。小球在光滑水平地板的 Q 點反彈到對面牆上的 R 點。若忽略空氣阻力，下列陳述何者必定正確？",
   "fig": "房間剖面圖：由左牆的 P 點（距地面 0.6 m）以 1.6 m s⁻¹ 水平射出小球，小球落在地面的 Q 點後反彈，再射到右牆的 R 點；圖中標示兩段水平距離 0.6 m 與 0.2 m。",
-  "img": "bank-img/PM-M14.jpg",
   "o": [
    "小球在 Q 點碰撞時沒有動能損失。",
    "小球以水平速度撞到 R 點。",
@@ -2705,7 +3275,8 @@ const BANK = [
    "B is wrong: R need not be the highest point ⇒ the velocity need not be purely horizontal",
    "D is wrong: both the horizontal speed and the horizontal distance are unchanged ⇒ the time is unchanged",
    "Answer: C"
-  ]
+  ],
+  "img": "PM-M14.jpg"
  },
  {
   "id": "CM-M14",
@@ -2726,7 +3297,6 @@ const BANK = [
   "cross": [],
   "q": "一架飛機以恆速率在半徑 12 km 的水平圓周上飛行。若其機翼與水平傾斜成 23.5°，求飛機的速率。",
   "fig": "左方有一個黑點，點的左邊標示 centre of the horizontal circle；由黑點向右有一條水平虛線，線段上方標示 12 km，虛線右端到達一個圓形符號（內有十字，代表飛機），其右上方標示 aircraft；由飛機畫一支斜向左上的箭頭（垂直於機翼）標示 lift force；機翼（一條斜線）與水平虛線之間標示夾角 23.5°。",
-  "img": "bank-img/CM-M14.jpg",
   "o": [
    "280 m s⁻¹",
    "226 m s⁻¹",
@@ -2791,7 +3361,8 @@ const BANK = [
    "v² = 0.43481 × (9.81)(12000) = 5.12 × 10⁴",
    "v = 226 m s⁻¹",
    "Answer: B"
-  ]
+  ],
+  "img": "CM-M14.jpg"
  },
  {
   "id": "PM-M15",
@@ -2814,7 +3385,6 @@ const BANK = [
   ],
   "q": "一小粒子以水平方向射向 2.5 m 外的垂直牆，於較最初水平位置低 1.5 m 處撞牆。求該粒子撞牆時的速度與鉛垂線的夾角。",
   "fig": "示意圖：粒子由左方水平射出，右方為垂直牆；水平距離為 2.5 m，撞擊點較發射點低 1.5 m，牆身以斜線陰影表示。",
-  "img": "bank-img/PM-M15.jpg",
   "o": [
    "34°",
    "40°",
@@ -2879,7 +3449,8 @@ const BANK = [
    "Angle to the vertical ⇒ tanθ = v_x / v_y = 4.52 / 5.42 = 0.8340",
    "θ = 39.8° ≈ 40° (check: v_x < v_y ⇒ θ < 45°)",
    "Answer: B"
-  ]
+  ],
+  "img": "PM-M15.jpg"
  },
  {
   "id": "CM-M15",
@@ -2900,7 +3471,6 @@ const BANK = [
   "cross": [],
   "q": "兩個相同的小粒子 A 與 B 以不能伸長的細線連接到一個固定點 O（如圖）。細線 OA 與 AB 的長度相同。A 與 B 均以相同週期繞 O 作均速水平圓周運動。設 T₁ 與 T₂ 分別為細線 OA 與 AB 的張力。求 T₁ : T₂。",
   "fig": "一個平行四邊形（代表光滑水平面），其右上角標示 smooth horizontal surface；內有兩個同心虛線圓（代表 A 與 B 的圓周軌跡）；圓心有一個黑點標示 O；由 O 向右有一條實線穿過 A（黑點）再連到 B（黑點），A、B 在同一徑向線上。",
-  "img": "bank-img/CM-M15.jpg",
   "o": [
    "3 : 2",
    "2 : 1",
@@ -2967,7 +3537,8 @@ const BANK = [
    "T₁ = 2mLω² + mLω² = 3mLω²",
    "T₁ : T₂ = 3 : 2",
    "Answer: A"
-  ]
+  ],
+  "img": "CM-M15.jpg"
  },
  {
   "id": "PM-M16",
@@ -2990,7 +3561,6 @@ const BANK = [
   ],
   "q": "如圖所示，一小球由 A 點釋放。它在斜面上的 B 點作完全彈性碰撞，然後水平反彈。小球最後到達地面上的 C 點。AB 與 BC 的豎直距離均等於 h。若忽略空氣阻力，下列陳述何者正確？\n(1) 由 A 到 C 整個運動過程中，小球的加速度恆定。\n(2) 小球由 A 移動到 B 的時間等於由 B 移動到 C 的時間。\n(3) 小球在 C 點碰撞前一刻的動能是在 B 點時的兩倍。",
   "fig": "示意圖：A 位於高處，小球滑下至斜面上的 B 點作完全彈性碰撞後水平彈出，最後落到地面上的 C 點；AB 與 BC 的豎直距離均為 h，斜面的傾角與反彈方向配合，使反彈後的速度沿水平方向。",
-  "img": "bank-img/PM-M16.jpg",
   "o": [
    "只有 (1)",
    "只有 (2)",
@@ -3055,7 +3625,8 @@ const BANK = [
    "(2) correct: A→B has initial vertical velocity 0 and displacement h ⇒ t = √(2h/g); after the rebound at B the velocity is horizontal ⇒ initial vertical velocity 0 and displacement h ⇒ t = √(2h/g) ⇒ the two are equal",
    "(3) correct: perfectly elastic ⇒ no loss of kinetic energy; KE_B = mgh (falling h from A→B); KE_C = mgh + mgh = 2mgh = 2KE_B",
    "Answer: D"
-  ]
+  ],
+  "img": "PM-M16.jpg"
  },
  {
   "id": "CM-M16",
@@ -3079,7 +3650,6 @@ const BANK = [
   ],
   "q": "一個粒子在光滑水平面上繞一個固定點作均速水平圓周運動。下列哪些物理量保持不變？ (1) 粒子的線動量（linear momentum） (2) 粒子的向心加速度 (3) 粒子的動能",
   "fig": "無圖（純文字）",
-  "img": "bank-img/CM-M16.jpg",
   "o": [
    "只有 (1)",
    "只有 (3)",
@@ -3140,7 +3710,8 @@ const BANK = [
    "(2) The centripetal acceleration has a constant magnitude but a continuously changing direction ⇒ not unchanged",
    "(3) Kinetic energy = ½mv² is a scalar ⇒ constant ⇒ correct, so only (3) is unchanged",
    "Answer: B"
-  ]
+  ],
+  "img": "CM-M16.jpg"
  },
  {
   "id": "PM-M17",
@@ -3164,7 +3735,6 @@ const BANK = [
   ],
   "q": "如圖所示，一小球由地面上的 A 點以仰角拋出。它在斜面上的 B 點反彈，並沿同一路徑返回 A。下列關於該小球的陳述何者必定正確？\n(1) 小球在 B 點沿法線方向撞擊斜面。\n(2) 小球在 B 點作完全彈性碰撞。\n(3) 小球由 A 到 B 所需時間等於由 B 返回 A 所需時間。",
   "fig": "示意圖：小球由地面上的 A 點以仰角拋出，軌跡上升至斜面上的 B 點反彈，然後沿原路徑返回 A 點。",
-  "img": "bank-img/PM-M17.jpg",
   "o": [
    "只有 (1) 及 (2)",
    "只有 (1) 及 (3)",
@@ -3223,7 +3793,8 @@ const BANK = [
    "(2) correct: it can return to the starting point A ⇒ no loss of kinetic energy ⇒ perfectly elastic collision",
    "(3) correct: the same path + the same speeds at corresponding points ⇒ t_AB = t_BA",
    "Answer: D"
-  ]
+  ],
+  "img": "PM-M17.jpg"
  },
  {
   "id": "CM-M17",
@@ -3246,7 +3817,6 @@ const BANK = [
   ],
   "q": "一個重擺錘（heavy bob）由一條長 L 的不能伸長的線懸掛在固定點 O。一個小釘 P 固定在 O 正下方 ½L 處。擺錘被拉向一邊，然後由靜止釋放（如圖）。當線剛碰到釘時，下列哪些物理量會突然增加？ (1) 擺錘的線速率（linear speed） (2) 擺錘的向心加速度 (3) 線的張力",
   "fig": "頂部有一條水平線，其上方有斜線陰影（代表固定天花板）。由天花板上一點 O 向下畫一條鉛直線，線中段有一個黑點標示 P；由 O 另有一條斜向左下的直線（代表線，標示 L）連到左下方一個空心圓（代表擺錘）；由擺錘到鉛直線底端（另一個空心圓，代表最低位置）畫有一條虛線圓弧（擺動軌跡）。",
-  "img": "bank-img/CM-M17.jpg",
   "o": [
    "只有 (1)",
    "只有 (2)",
@@ -3307,7 +3877,8 @@ const BANK = [
    "(2) a = v²/r and r halves ⇒ a doubles ⇒ correct",
    "(3) T − mg = mv²/r and r halves ⇒ T increases ⇒ correct, so only (2) and (3) increase suddenly",
    "Answer: D"
-  ]
+  ],
+  "img": "CM-M17.jpg"
  },
  {
   "id": "PM-M18",
@@ -3330,7 +3901,6 @@ const BANK = [
   ],
   "q": "一小球質量 0.2 kg，由地面上的 O 點以某初速度拋出，如圖所示。它在 P 點達到 1.8 m 的最大高度。求小球由 O 到 P 的動量變化量（單位 N s）。忽略空氣阻力，取 g = 10 m s⁻²。",
   "fig": "示意圖：小球由地面上的 O 點拋出，軌跡上升至最高點 P，P 點距地面 1.8 m。",
-  "img": "bank-img/PM-M18.jpg",
   "o": [
    "1.2",
    "1.6",
@@ -3397,7 +3967,8 @@ const BANK = [
    "At the highest point v_y = 0: 0 = u_y² + 2(−10)(1.8) ⇒ u_y² = 36 ⇒ u_y = 6 m s⁻¹",
    "Δp = m u_y = (0.2)(6) = 1.2 N s",
    "Answer: A"
-  ]
+  ],
+  "img": "PM-M18.jpg"
  },
  {
   "id": "CM-M18",
@@ -3418,7 +3989,6 @@ const BANK = [
   "cross": [],
   "q": "某車輛在水平道路上行駛時，車輪與路面之間的最大摩擦力在路面濕滑時會減半。若路面濕滑時繞彎轉向的最大安全速率為 15 m s⁻¹，則路面乾爽時的最大安全速率是多少？",
   "fig": "無圖（純文字）",
-  "img": "bank-img/CM-M18.jpg",
   "o": [
    "21.2 m s⁻¹",
    "22.5 m s⁻¹",
@@ -3481,7 +4051,8 @@ const BANK = [
    "1/2 = (15 / v_dry)²",
    "v_dry = 15 √2 = 21.2 m s⁻¹",
    "Answer: A"
-  ]
+  ],
+  "img": "CM-M18.jpg"
  },
  {
   "id": "PM-M19",
@@ -3504,7 +4075,6 @@ const BANK = [
   ],
   "q": "一小球由大廈頂由靜止釋放。過了一會兒，另一小球由同一位置水平拋出。在到達地面之前，兩球的下列哪個量會保持不變？忽略空氣阻力。\n(1) 它們的加速度\n(2) 它們豎直速度分量之差\n(3) 它們離地高度之差",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/PM-M19.jpg",
   "o": [
    "只有 (1)",
    "只有 (3)",
@@ -3569,7 +4139,8 @@ const BANK = [
    "(2) v₁ − v₂ = g(t + Δt) − gt = gΔt = constant ⇒ correct",
    "(3) Height difference = ½g(t + Δt)² − ½gt² = gΔt·t + ½gΔt² ⇒ grows with t ⇒ wrong",
    "Answer: C"
-  ]
+  ],
+  "img": "PM-M19.jpg"
  },
  {
   "id": "CM-M19",
@@ -3593,7 +4164,6 @@ const BANK = [
   ],
   "q": "對於一個以恆定角速度（constant angular velocity）在水平圓周上運動的粒子，下列陳述何者正確？",
   "fig": "無圖（純文字）",
-  "img": "bank-img/CM-M19.jpg",
   "o": [
    "線動量（linear momentum）不變，但動能（kinetic energy）改變",
    "線動量改變，但動能不變",
@@ -3656,7 +4226,8 @@ const BANK = [
    "Kinetic energy KE = ½ m |v|² is a scalar ⇒ the speed is unchanged ⇒ the kinetic energy is constant",
    "Only B satisfies both points",
    "Answer: B"
-  ]
+  ],
+  "img": "CM-M19.jpg"
  },
  {
   "id": "PM-M20",
@@ -3679,7 +4250,6 @@ const BANK = [
   ],
   "q": "一質量 2 kg 的球以與水平成 30° 的仰角向上拋出。發現球在最高點時的動能為 108 J。球的初速度為多少？",
   "fig": "示意圖：拋物線軌跡，發射角 30° 標示於發射點與水平線之間。",
-  "img": "bank-img/PM-M20.jpg",
   "o": [
    "8 m s⁻¹",
    "12 m s⁻¹",
@@ -3742,7 +4312,8 @@ const BANK = [
    "108 = 0.75 u² ⇒ u² = 144",
    "u = 12 m s⁻¹",
    "Answer: B"
-  ]
+  ],
+  "img": "PM-M20.jpg"
  },
  {
   "id": "CM-M20",
@@ -3763,7 +4334,6 @@ const BANK = [
   "cross": [],
   "q": "一個 2 kg 的質點以恆定速率在半徑 5 m 的水平圓周上轉動，轉一圈所需時間為 3 s。試求作用在該質點上的向心力（centripetal force）。",
   "fig": "無圖（純文字）",
-  "img": "bank-img/CM-M20.jpg",
   "o": [
    "2.19 N",
    "4.39 N",
@@ -3826,7 +4396,8 @@ const BANK = [
    "(2π/3)² = 4.3865 ⇒ F = 10 × 4.3865",
    "F = 43.9 N",
    "Answer: C"
-  ]
+  ],
+  "img": "CM-M20.jpg"
  },
  {
   "id": "PM-M21",
@@ -3849,7 +4420,6 @@ const BANK = [
   ],
   "q": "一球由大廈頂水平拋出。它到達地面上距大廈 40 m 的一點，落地時與水平成 45° 角，如圖所示。大廈的高度為多少？取重力加速度 g = 10 m s⁻²。",
   "fig": "示意圖：小球由大廈頂水平拋出，落地點距大廈水平 40 m；落地速度向量與水平成 45°。",
-  "img": "bank-img/PM-M21.jpg",
   "o": [
    "20 m",
    "30 m",
@@ -3918,7 +4488,8 @@ const BANK = [
    "Horizontal: 40 = v_x t = u t = (10t)t ⇒ 10t² = 40 ⇒ t = 2 s",
    "Height: h = ½gt² = ½(10)(2)² = 20 m",
    "Answer: A"
-  ]
+  ],
+  "img": "PM-M21.jpg"
  },
  {
   "id": "CM-M21",
@@ -3941,7 +4512,6 @@ const BANK = [
   ],
   "q": "一個粒子作均勻圓周運動（uniform circular motion），曲率半徑恆定。下列關於該粒子運動的陳述，何者正確？ (1) 線速度（linear velocity）恆定。 (2) 角速度（angular velocity）恆定。 (3) 向心加速度（centripetal acceleration）恆定。",
   "fig": "無圖（純文字）",
-  "img": "bank-img/CM-M21.jpg",
   "o": [
    "只有 (2)",
    "只有 (1) 及 (3)",
@@ -4004,7 +4574,8 @@ const BANK = [
    "(3) The direction of the centripetal acceleration always changes with position (it points towards the centre) ⇒ wrong",
    "Only (2) is correct",
    "Answer: A"
-  ]
+  ],
+  "img": "CM-M21.jpg"
  },
  {
   "id": "PM-M22",
@@ -4025,7 +4596,6 @@ const BANK = [
   "cross": [],
   "q": "Angry bird 位於地面上 10 m 的高度，green pig 與 angry bird 的水平距離為 55 m，其離地高度為 12 m。為使 angry bird 能擊中 green pig，若飛行時間為 2.5 s，發射角（與水平線成角）應為多少？",
   "fig": "示意圖：angry bird 在左方（高 10 m），green pig 在右方（水平距離 55 m、高 12 m）；虛線為連接兩者的拋物線軌跡。",
-  "img": "bank-img/PM-M22.jpg",
   "o": [
    "28.5°",
    "30.7°",
@@ -4092,7 +4662,8 @@ const BANK = [
    "u_y = 32.656 / 2.5 = 13.06 m s⁻¹",
    "tanθ = u_y / u_x = 13.06 / 22 = 0.5936 ⇒ θ = 30.7°",
    "Answer: B"
-  ]
+  ],
+  "img": "PM-M22.jpg"
  },
  {
   "id": "CM-M22",
@@ -4113,7 +4684,6 @@ const BANK = [
   "cross": [],
   "q": "一架飛機以 650 m s⁻¹ 的恆定速率在水平面上飛行，其圓形軌跡的半徑為 80 km。作用在飛機上的向心力與飛機重量之比（ratio of the centripetal force to the weight）是多少？",
   "fig": "無圖（純文字）",
-  "img": "bank-img/CM-M22.jpg",
   "o": [
    "0.019",
    "0.54",
@@ -4178,7 +4748,8 @@ const BANK = [
    "F / W = (650)² / ((9.81)(80 000)) = 422 500 / 784 800",
    "F / W = 0.54",
    "Answer: B"
-  ]
+  ],
+  "img": "CM-M22.jpg"
  },
  {
   "id": "PM-M23",
@@ -4199,7 +4770,6 @@ const BANK = [
   "cross": [],
   "q": "一球在某高度以上以初速 u 水平拋出。球經時間 t 後到達地面，落點與拋出點的水平距離為 R。若球的初速改為 2u，下列哪一組數值正確？（前半 = 到達地面所需時間，後半 = 水平距離）",
   "fig": "無圖（純文字）。題目另以兩欄列出選項：左欄為「到達地面所需時間」，右欄為「水平距離」。",
-  "img": "bank-img/PM-M23.jpg",
   "o": [
    "2t ／ 2R",
    "2t ／ R",
@@ -4256,7 +4826,8 @@ const BANK = [
    "Horizontal: x = u t with constant horizontal speed ⇒ new range = (2u)(t) = 2R",
    "⇒ the pair is (time t, horizontal distance 2R)",
    "Answer: D"
-  ]
+  ],
+  "img": "PM-M23.jpg"
  },
  {
   "id": "CM-M23",
@@ -4277,7 +4848,6 @@ const BANK = [
   "cross": [],
   "q": "一個粒子被繫在一條不可伸長的繩（inextensible string）上，並在水平面上作圓周運動。下列哪個圖正確顯示作用在該粒子上的合力 F 的方向？",
   "fig": "四個選項圖各為：一條直線由右上方向左下方伸延，末端一個實心黑點（粒子）；黑點旁邊有一個虛線橢圓（水平圓周軌跡）向黑點右方延伸，即圓心在黑點右方。",
-  "img": "bank-img/CM-M23.jpg",
   "o": [
    "A：由粒子畫一支鉛直向下的箭頭（F 指向下）",
    "B：由粒子畫一支水平向左的箭頭（F 指向左、背向圓心）",
@@ -4340,7 +4910,8 @@ const BANK = [
    "A vertically downward, B away from the centre, D along the tangent ⇒ all wrong",
    "C remains",
    "Answer: C"
-  ]
+  ],
+  "img": "CM-M23.jpg"
  },
  {
   "id": "PM-M24",
@@ -4361,7 +4932,6 @@ const BANK = [
   "cross": [],
   "q": "一粒子由地面以某速率、與地面成 35° 拋出。4.5 s 後它到達地面。求粒子的水平位移。",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/PM-M24.jpg",
   "o": [
    "128 m",
    "142 m",
@@ -4422,7 +4992,8 @@ const BANK = [
    "Horizontal: u_x = 38.48 cos35° = 31.52 m s⁻¹ (constant)",
    "x = u_x t = 31.52 × 4.5 = 141.8 ≈ 142 m",
    "Answer: B"
-  ]
+  ],
+  "img": "PM-M24.jpg"
  },
  {
   "id": "CM-M24",
@@ -4443,7 +5014,6 @@ const BANK = [
   "cross": [],
   "q": "一個大鐘的分針（minute hand）長 1.2 m。它的平均角速率（average angular speed）是多少？",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/CM-M24.jpg",
   "o": [
    "0.87 × 10⁻³ rad s⁻¹",
    "1.45 × 10⁻³ rad s⁻¹",
@@ -4505,7 +5075,8 @@ const BANK = [
    "ω = 1.745 × 10⁻³ ≈ 1.75 × 10⁻³ rad s⁻¹",
    "(D, 2.09 × 10⁻³, is in fact the linear speed v = rω = 1.2 × ω)",
    "Answer: C"
-  ]
+  ],
+  "img": "CM-M24.jpg"
  },
  {
   "id": "PM-M25",
@@ -4526,7 +5097,6 @@ const BANK = [
   "cross": [],
   "q": "一重球由大廈頂以 10 m s⁻¹ 水平拋出。它以 15 m s⁻¹ 的速率撞擊地面。若空氣阻力可忽略，大廈的高度是多少？",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/PM-M25.jpg",
   "o": [
    "3.09 m",
    "6.37 m",
@@ -4585,7 +5155,8 @@ const BANK = [
    "Vertical: v_y² = u_y² + 2a_y y ⇒ (11.18)² = (0) + 2(9.81)y",
    "y = 125 / 19.62 = 6.37 m",
    "Answer: B"
-  ]
+  ],
+  "img": "PM-M25.jpg"
  },
  {
   "id": "CM-M25",
@@ -4606,7 +5177,6 @@ const BANK = [
   "cross": [],
   "q": "一個唱片在轉盤上以恒定週期（constant period）轉動。下列哪個圖正確顯示唱片表面上固定的粒子的加速度 a 與它們距轉軸中心的距離 r 之間的關係？",
   "fig": "四個 a–r 圖，縱軸標示 a（向上）、橫軸標示 r（向右），原點標示 0。",
-  "img": "bank-img/CM-M25.jpg",
   "o": [
    "A：一條由 (0, 正截距) 開始的水平直線（a 不隨 r 改變）",
    "B：一條由原點出發、向右上方的斜直線（a ∝ r）",
@@ -4670,7 +5240,8 @@ const BANK = [
    "When r = 0, a = 0 ⇒ the graph line must pass through the origin",
    "A is a horizontal line, C is a ∝ 1/r, D has a positive intercept ⇒ all wrong",
    "Answer: B"
-  ]
+  ],
+  "img": "CM-M25.jpg"
  },
  {
   "id": "PM-M26",
@@ -4693,7 +5264,6 @@ const BANK = [
   ],
   "q": "一粒子在離 P 點 20 m 高的垂直懸崖邊緣、以 25 m s⁻¹ 及俯角 30° 拋出，如圖所示。粒子沿拋物線路徑到達斜坡底部 Q 點，斜坡與水平成 30°。求斜坡 PQ 的距離。取 g = 10 m s⁻²。",
   "fig": "圖示一垂直懸崖：崖頂以俯角 30°、速率 25 m s⁻¹ 拋出粒子，崖頂較 P 點高 20 m；斜坡由 P 起以 30° 向下延伸至斜坡底部的 Q 點；粒子由崖頂至 Q 點的拋物線軌跡以曲線表示，虛線則標出崖頂至 P 點的豎直下降距離及 P 點至 Q 點下方的水平距離。",
-  "img": "bank-img/PM-M26.jpg",
   "o": [
    "40 m",
    "50 m",
@@ -4760,7 +5330,8 @@ const BANK = [
    "Substitute d = 25t: 20 + 12.5t = 12.5t + 5t² ⇒ 20 = 5t² ⇒ t = 2 s",
    "d = 25 × 2 = 50 m",
    "Answer: B"
-  ]
+  ],
+  "img": "PM-M26.jpg"
  },
  {
   "id": "CM-M26",
@@ -4781,7 +5352,6 @@ const BANK = [
   "cross": [],
   "q": "一架飛機以恒定速率在一個圓心為 O 的水平圓周上飛行。下圖為飛機的尾視圖（tail-view），虛線代表機翼線（line of the wings），圓圈代表飛機的重心（centre of gravity）。下列哪個圖正確顯示作用在飛機上的力？",
   "fig": "飛機尾視圖：一個空心小圓（重心）＋一條穿過圓心、左右斜向伸出的虛線（機翼線）；圖左有一個黑點標示 O；四個選項各配上不同的力箭頭組合。",
-  "img": "bank-img/CM-M26.jpg",
   "o": [
    "A：由重心畫兩支對稱、分別指向左上與右上的斜箭頭（兩者皆垂直於機翼虛線）＋一支鉛直向下的箭頭（共 3 支）",
    "B：由重心畫一支指向左上的斜箭頭（垂直於機翼虛線）＋一支鉛直向下的箭頭（共 2 支）",
@@ -4844,7 +5414,8 @@ const BANK = [
    "A draws one lift too many, C has the direction reversed, D has an extra force to the right ⇒ all wrong",
    "B remains",
    "Answer: B"
-  ]
+  ],
+  "img": "CM-M26.jpg"
  },
  {
   "id": "PM-M27",
@@ -4867,7 +5438,6 @@ const BANK = [
   ],
   "q": "一球由大廈頂以 12 m s⁻¹ 水平拋出。大廈離地面高 18 m。若空氣阻力可忽略，球著地時的速率是多少？",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/PM-M27.jpg",
   "o": [
    "15.6 m s⁻¹",
    "22.3 m s⁻¹",
@@ -4926,7 +5496,8 @@ const BANK = [
    "72 + 176.58 = 248.58 = ½v² ⇒ v² = 497.16",
    "v = 22.30 ≈ 22.3 m s⁻¹",
    "Answer: B"
-  ]
+  ],
+  "img": "PM-M27.jpg"
  },
  {
   "id": "CM-M27",
@@ -4947,7 +5518,6 @@ const BANK = [
   "cross": [],
   "q": "一個質量 0.2 kg 的小球軸承（ball bearing）在一個光滑的倒圓錐（smooth inverted cone）內壁作半徑 0.8 m 的水平圓周運動。該小球軸承的線速率（linear speed）是多少？",
   "fig": "倒立圓錐（V 形）的內壁截面，錐尖向下；中央有一條鉛直虛線（轉軸）；左內壁上部有一個小空心圓（小球）；由小球向右有一條水平尺寸箭頭指向虛線，標示 0.8 m；錐尖處標示 30°（鉛直軸與右內壁之間的夾角）。",
-  "img": "bank-img/CM-M27.jpg",
   "o": [
    "2.1 m s⁻¹",
    "3.0 m s⁻¹",
@@ -5010,7 +5580,8 @@ const BANK = [
    "Divide: tan 30° = g r / v² ⇒ v² = (9.81)(0.8) / tan30°",
    "v² = 7.848 / 0.5774 = 13.59 ⇒ v = 3.69 m s⁻¹",
    "Answer: C"
-  ]
+  ],
+  "img": "CM-M27.jpg"
  },
  {
   "id": "PM-M28",
@@ -5033,7 +5604,6 @@ const BANK = [
   ],
   "q": "一名足球員在地上踢球。球以速率 v 離開地面，並以 17 m s⁻¹ 的速率擊中橫楣 X 點。X 離地面 2 m。忽略空氣阻力，v 的值是多少？",
   "fig": "圖示一名足球員在地上踢球，球以速率 v 向右離開地面，沿拋物線上升，並在離地 2 m 的橫楣 X 點以 17 m s⁻¹ 擊中橫楣；虛線箭頭標示橫楣離地 2 m。",
-  "img": "bank-img/PM-M28.jpg",
   "o": [
    "15.8 m s⁻¹",
    "18.1 m s⁻¹",
@@ -5090,7 +5660,8 @@ const BANK = [
    "Cancel m: ½v² = ½(17)² + (9.81)(2) = 144.5 + 19.62 = 164.12",
    "v² = 328.24 ⇒ v = 18.12 ≈ 18.1 m s⁻¹",
    "Answer: B"
-  ]
+  ],
+  "img": "PM-M28.jpg"
  },
  {
   "id": "CM-M28",
@@ -5113,7 +5684,6 @@ const BANK = [
   ],
   "q": "一個單擺（simple pendulum）被水平拉開至繩繃緊，然後由靜止釋放。當擺錘到達鉛直位置（vertical position）時，下列關於繩張力（tension）的陳述，何者不正確？",
   "fig": "示意圖：左端一個小黑點（懸點），由該點有一條虛線鉛直向下、末端畫一個虛線小圓；由懸點向右有一條水平實線（繩），末端是一個實心大黑點（擺錘）；黑點下方有一個向左下彎的弧形箭頭（表示釋放後的擺動方向）。",
-  "img": "bank-img/CM-M28.jpg",
   "o": [
    "A：張力的大小等於擺錘的重量",
    "B：張力達到最大值",
@@ -5179,7 +5749,8 @@ const BANK = [
    "At the lowest point: T − m g = m v² / L ⇒ T = m g + 2 m g = 3 m g",
    "A says T = W = mg ⇒ wrong (in fact T = 3mg); B, C and D are all correct statements",
    "Answer: A"
-  ]
+  ],
+  "img": "CM-M28.jpg"
  },
  {
   "id": "PM-M29",
@@ -5200,7 +5771,6 @@ const BANK = [
   "cross": [],
   "q": "一架轟炸機在離地面 1 km 的高度以 200 m s⁻¹ 水平飛行。飛機準備投彈摧毀地面目標。它應在飛越目標前多久投彈？假設轟炸機與目標在同一鉛垂平面，並忽略空氣阻力。",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/PM-M29.jpg",
   "o": [
    "5.6 s",
    "10.1 s",
@@ -5257,7 +5827,8 @@ const BANK = [
    "t² = 203.87 ⇒ t = 14.28 ≈ 14.3 s",
    "Horizontal distance 200 × 14.3 = 2860 m (about 2.9 km) — only an incidental check; the question asks for the time",
    "Answer: C"
-  ]
+  ],
+  "img": "PM-M29.jpg"
  },
  {
   "id": "CM-M29",
@@ -5278,7 +5849,6 @@ const BANK = [
   "cross": [],
   "q": "一個男人在一個圓柱形「rotor」內以恒定速率轉動，並且保持緊貼筒壁。rotor 的地板是光滑的。下列哪個力為該男人提供向心力？",
   "fig": "圓柱形 rotor 的立體圖：柱內有一個人張開雙臂、背貼內壁站立；柱底（地板）以密集斜線陰影表示；柱中央有一條鉛直虛線（轉軸），軸頂伸出一個小環／把手；左方標示 'rotor' 指向圓柱、左下方標示 floor 指向陰影地板、右上方標示 wall 指向柱壁。",
-  "img": "bank-img/CM-M29.jpg",
   "o": [
    "A：男人的重量",
    "B：來自筒壁的摩擦力",
@@ -5340,7 +5910,8 @@ const BANK = [
    "Horizontally, only the normal reaction from the wall points towards the axis",
    "The weight (vertical), the friction from the wall (vertically upward) and the supporting force from the floor (the floor is smooth) — none of these provides the centripetal force",
    "Answer: C"
-  ]
+  ],
+  "img": "CM-M29.jpg"
  },
  {
   "id": "PM-M30",
@@ -5363,7 +5934,6 @@ const BANK = [
   ],
   "q": "一粒子在 t = 0 時被拋入空中，著地前做拋物線運動，如圖所示。下列哪個圖表示該粒子著地前動能（KE）隨時間的變化？忽略空氣阻力。",
   "fig": "圖分兩部分：上方為粒子的拋物線軌跡圖，顯示粒子在空中沿拋物線由左至右飛越地面；下方為四個以時間為橫軸、動能（KE）為縱軸的圖選項，分別為 A、B、C、D 四個圖（圖形描述見選項）。",
-  "img": "bank-img/PM-M30.jpg",
   "o": [
    "A：KE 由最大值線性下降到 0，再線性上升。",
    "B：KE 由 0 線性上升到最大值，再線性下降到 0。",
@@ -5424,7 +5994,8 @@ const BANK = [
    "Highest point: v_y = 0 but v_x = u cosθ ≠ 0 ⇒ the minimum KE ≠ 0",
    "At landing the height returns to its initial value ⇒ KE returns to its initial value ⇒ the two ends of the graph are at the same level with a dip in between",
    "Answer: D"
-  ]
+  ],
+  "img": "PM-M30.jpg"
  },
  {
   "id": "CM-M30",
@@ -5445,7 +6016,6 @@ const BANK = [
   "cross": [],
   "q": "下圖顯示一部質量 m 的汽車的後視圖，汽車沿一條與水平面成 θ 角傾斜（banked with an angle θ to the horizontal）的圓形道路行駛。汽車以某一速率行駛，令它沿斜面方向不受摩擦力。下列何者代表作用在汽車上的向心力？",
   "fig": "汽車後視圖：一條向右上傾斜的斜面（代表路基）＋底部一條水平線，兩線夾角標示 θ；斜面上有一部車輛；由車輛向左有一條點劃線延伸至左方的 ⊗ 標記；⊗ 上方有一個類似線圈／彈簧的符號；由 ⊗ 向下有一條垂直虛線，到達底部一條水平虛線（與地平線平行）。",
-  "img": "bank-img/CM-M30.jpg",
   "o": [
    "m g sin θ",
    "m g sin θ cos θ",
@@ -5508,7 +6078,8 @@ const BANK = [
    "F = (m g / cos θ) × sin θ",
    "F = m g sin θ / cos θ",
    "Answer: D"
-  ]
+  ],
+  "img": "CM-M30.jpg"
  },
  {
   "id": "CM-M31",
@@ -5529,7 +6100,6 @@ const BANK = [
   "cross": [],
   "q": "粒子 X 與 Y 分別固定在距離一個均勻轉動的水平圓形平台的中心 O 為 r 與 r/2 處（如圖所示）。求 X 的加速度與 Y 的加速度之比（ratio of the acceleration of X to that of Y）。",
   "fig": "俯視圖（TOP VIEW）：一個大圓代表圓形平台，圓心標示 O（另有小交叉記號）；由 O 向右上一支斜箭頭標示 r，箭頭末端黑點標示 X；該箭頭下方另有一支較短的平行斜箭頭標示 r/2，末端黑點標示 Y（在 O 與 X 之間的徑向線上）；圓的右側外有一個順時針方向的弧形箭頭；圓右方印有文字 TOP VIEW。",
-  "img": "bank-img/CM-M31.jpg",
   "o": [
    "1 : 2",
    "2 : 1",
@@ -5592,7 +6162,8 @@ const BANK = [
    "r_X : r_Y = r : (r/2) = 2 : 1",
    "a_X : a_Y = 2 : 1",
    "Answer: B"
-  ]
+  ],
+  "img": "CM-M31.jpg"
  },
  {
   "id": "PM-M32",
@@ -5613,7 +6184,6 @@ const BANK = [
   "cross": [],
   "q": "上圖的頻閃照片顯示一粒子在鉛垂平面內由位置 P 水平拋入空氣中。其後粒子到達位置 Q 及 R，且 P 與 Q 之間的時間間隔等於 Q 與 R 之間的時間間隔。方格紙每格為 1.25 cm × 1.25 cm。求粒子在 P 點拋出時的速率。忽略空氣阻力。",
   "fig": "圖示方格紙（每格 1.25 cm × 1.25 cm，圖中已標明），紙上有 P、Q、R 三點：P 位於方格交點上，由 P 至 Q 的豎直距離為 1 格、水平距離為 2 格；Q 至 R 的豎直距離為 3 格。",
-  "img": "bank-img/PM-M32.jpg",
   "o": [
    "0.3 m s⁻¹",
    "0.4 m s⁻¹",
@@ -5674,7 +6244,8 @@ const BANK = [
    "Horizontal: x = uT ⇒ 0.025 = u(0.0505)",
    "u = 0.025 / 0.0505 = 0.495 ≈ 0.5 m s⁻¹",
    "Answer: C"
-  ]
+  ],
+  "img": "PM-M32.jpg"
  },
  {
   "id": "CM-M32",
@@ -5697,7 +6268,6 @@ const BANK = [
   ],
   "q": "一部汽車以 80 km h⁻¹ 向東行駛，之後改變方向，以 60 km h⁻¹ 向北行駛。下列哪個圖代表該汽車的速度變化（change in velocity）？",
   "fig": "右方有一個羅盤方位圖（十字線）：指向上方的箭頭標示 N、下方標示 S、右方標示 E、左方標示 W。四個選項各為一支由原點出發的箭頭再加數值標示。",
-  "img": "bank-img/CM-M32.jpg",
   "o": [
    "A：一支鉛直向上的短箭頭（指向北），旁邊標示 20 km h⁻¹",
    "B：一支鉛直向上的較長箭頭（指向北），旁邊標示 100 km h⁻¹",
@@ -5761,7 +6331,8 @@ const BANK = [
    "|Δv| = √(80² + 60²) = 100 km h⁻¹",
    "Direction: tan φ = 80/60 ⇒ φ = 53° (53° with the vertical, i.e. with true north, pointing to the upper left)",
    "Answer: D"
-  ]
+  ],
+  "img": "CM-M32.jpg"
  },
  {
   "id": "PM-M33",
@@ -5785,7 +6356,6 @@ const BANK = [
   ],
   "q": "質量相同的玻璃球 P 和 Q 被水平射出。它們分別在 R 點和 S 點撞擊水平地面，如圖所示。忽略空氣阻力。下列哪一項陳述是 INCORRECT（不正確）？",
   "fig": "圖示玻璃球 P 由較高位置水平射出、玻璃球 Q 由較低位置水平射出，兩者沿拋物線下降，落點分別為 R 及 S；P 的水平射程較短，Q 的水平射程較長。",
-  "img": "bank-img/PM-M33.jpg",
   "o": [
    "玻璃球 P 的初速小於玻璃球 Q 的初速。",
    "玻璃球 P 的飛行時間短於玻璃球 Q 的飛行時間。",
@@ -5810,7 +6380,7 @@ const BANK = [
    "[1] C ✓ 由 PE = mgh：P 在較高位置 ⇒ 勢能損失較大",
    "[1] D ✓ 兩球在空中嘅加速度同為 g"
   ],
-  "tr": "① 最大陷阱：睇漏 INCORRECT。明明識做，但順手揀咗「第一個正確嘅陳述」（A）或者最直觀嘅一項，白白失分。做完一定要回頭再讀一次題目嘅 INCORRECT 三個字。② 錯答 C：以為「P 射程短 ⇒ 能量細」，把水平射程同勢能混為一談（PE 只看高度，和射程無關）。③ 錯答 A：只睇「射程短 ⇒ 初速細」而冇同時考慮飛行時間——其實 u = x/t 要兩個量一齊比較。④ 以為兩球加速度唔同（例如「P 高啲所以跌得快啲」）——忽略空氣阻力後兩者都係 a = g。⑤ 忘記兩球質量相同，以為 PE 損失要考慮 m 而唔敢比較。⑥ 走去解完整拋體方程求 u、t 嘅數值，浪費大量時間；本題只需定性比較。",
+  "tr": "① **最大陷阱：睇漏 INCORRECT**。明明識做，但順手揀咗「第一個正確嘅陳述」（A）或者最直觀嘅一項，白白失分。做完一定要回頭再讀一次題目嘅 INCORRECT 三個字。② 錯答 C：以為「P 射程短 ⇒ 能量細」，把水平射程同勢能混為一談（PE 只看高度，和射程無關）。③ 錯答 A：只睇「射程短 ⇒ 初速細」而冇同時考慮飛行時間——其實 u = x/t 要兩個量一齊比較。④ 以為兩球加速度唔同（例如「P 高啲所以跌得快啲」）——忽略空氣阻力後兩者都係 a = g。⑤ 忘記兩球質量相同，以為 PE 損失要考慮 m 而唔敢比較。⑥ 走去解完整拋體方程求 u、t 嘅數值，浪費大量時間；本題只需定性比較。",
   "st": [
    "讀圖：P 較高（y 較大）但射程 x 較短",
    "豎直：y = ½gt² ⇒ t_P > t_Q",
@@ -5852,7 +6422,8 @@ const BANK = [
    "B: t_P is longer, so 「the time of flight of P is shorter」 ⇒ ✗ (INCORRECT)",
    "C: PE loss = mgh, P is higher ⇒ ✓; D: both accelerations are g ⇒ ✓",
    "Answer: B"
-  ]
+  ],
+  "img": "PM-M33.jpg"
  },
  {
   "id": "CM-M34",
@@ -5873,7 +6444,6 @@ const BANK = [
   "cross": [],
   "q": "粒子 P 與 Q 固定在一個球體表面，球體繞一條穿過球心 O 的鉛直軸轉動（如圖所示）。水平陰影區域 X 將球體分為上下兩半。P 位於區域 X 的邊緣，而 Q 位於區域 X 上方仰角（angle of elevation）θ 處。求 P 的向心加速度與 Q 的向心加速度之比（ratio of the centripetal acceleration of P to that of Q）。",
   "fig": "球體截面圓，圓心標示 O；穿過 O 有一條鉛直虛線（旋轉軸），虛線頂端有一個弧形箭頭（表示球體繞此鉛直軸轉動）；O 處另有一條水平虛線橫貫圓的左右；環繞這條水平虛線有一個扁平陰影（斜線／點紋）帶狀區域，由圓的左邊延伸到右邊，右端用引線標示 region X；P 位於圓的最左端（region X 左邊緣的水平線上）用黑點標示；Q 位於圓的左上方用黑點標示；由 O 引出一條半徑實線連到 Q，OQ 與水平虛線（region X）之間的夾角標示為 θ。",
-  "img": "bank-img/CM-M34.jpg",
   "o": [
    "1 : cos θ",
    "1 : sin θ",
@@ -5937,7 +6507,8 @@ const BANK = [
    "Q is at an angle of elevation θ ⇒ r_Q = R cos θ",
    "a_P : a_Q = R : R cos θ = 1 : cos θ",
    "Answer: A"
-  ]
+  ],
+  "img": "CM-M34.jpg"
  },
  {
   "id": "CM-L1a",
@@ -5959,7 +6530,6 @@ const BANK = [
   "stem": "一個質量 80 kg 的男人站在一個圓柱形艙（稱為 rotor）的內牆邊。rotor 地板的高度可以調節，rotor 的直徑為 6.4 m。rotor 繞中央鉛直軸以某一角速度旋轉；在該角速度下，即使把 rotor 的地板向下拉走，男人仍然被壓貼在牆壁上。取 g = 9.81 m s⁻²。",
   "q": "(a) 寫出作用於該男人身上的 F_A 與 F_B 兩個力的名稱。(2 分)",
   "fig": "左圖：圓柱形 rotor 的立體圖，頂部有弧形箭頭表示繞鉛直軸旋轉，柱身以引線標示 wall、地板以密點陰影標示 floor，地板下方的雙向箭頭標示直徑 6.4 m；一個小人貼住左側內牆站立。右圖：人貼牆的側面力圖，牆為鉛直陰影粗條；沿牆向上的箭頭標示 F_A，水平指向右方（離開牆、指向轉軸）的箭頭標示 F_B，向下箭頭標示 weight。",
-  "img": "bank-img/FM7-p13-right.jpg",
   "first": "見到『貼牆旋轉、連地板拉走都唔跌』→ 第一件事：認清呢個係 rotor 模型——牆嘅 normal reaction F_B 提供向心力（水平指向轉軸），而牆嘅 friction F_A 就負責平衡重量。所以答嘅一定係兩種『牆對人嘅力』，唔可以答地板支撐力，亦唔可以答離心力。",
   "kw": "『standing against the wall』＋『remains pinned against the wall even if the floor of the rotor is pulled downwards』→ 地板已經冇支撐力，鉛直方向只剩 friction；圖中 F_A 沿牆向上、F_B 水平離開牆（即指向轉軸）→ F_A = friction、F_B = normal reaction。",
   "rs": [
@@ -6006,7 +6576,8 @@ const BANK = [
    "Horizontal direction: the centripetal force is directed from the wall towards the axis of rotation ⇒ F_B = normal reaction",
    "Check that the two forces are perpendicular to each other and must not be interchanged",
    "Answer: F_A = friction; F_B = normal reaction"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "CM-L2a1",
@@ -6030,7 +6601,6 @@ const BANK = [
   "stem": "一個質量 0.5 kg 的小方塊放在水平轉盤上、距轉盤中心 10 cm。方塊用一條輕而不可伸長的繩連住，繩繞過固定於轉盤中心的小光滑滑輪；繩再穿過轉盤中央的孔，另一端吊住一個重 10 N 的砝碼。方塊與轉盤之間的最大摩擦力為 3 N。（註：圖中沒有畫出轉盤的軸。）",
   "q": "(a)(i) 假設轉盤靜止，畫一個圖顯示作用於方塊上的所有力。(2 分)",
   "fig": "透視圖：橢圓形轉盤（雙線外緣），方塊放在盤面左方並標示 block；一條細繩由方塊向右連到轉盤中心的小滑輪，繩再穿過中心的孔向下吊住一個梯形砝碼並標示 10 N。答題位置印有一個空白方格（供畫力圖）。",
-  "img": "bank-img/FM7-p12-left.jpg",
   "first": "見到『draw a diagram to show all the force(s) acting on the block』＋『turntable is stationary』→ 第一件事：呢題唔係算數，係考受力圖嘅完整性。方塊在水平面上，一定有 weight（向下）同 normal reaction（向上）；繩有張力 T（水平指向中心，由砝碼提供）；轉盤面仲有 friction f（水平、背離中心，因為 T 想拉方塊向中心滑），合共四個力。",
   "kw": "『all the force(s)』→ 一定要齊四個力；『light inextensible string … a weight of 10 N is suspended at its other end』→ 張力 T = 10 N；『the maximum friction … is 3 N』→ friction 係另一個獨立嘅力，唔可以當成 T 嘅一部分。",
   "rs": [
@@ -6079,7 +6649,8 @@ const BANK = [
    "Horizontal: tension T towards the centre (10 N) and friction f away from the centre",
    "Four forces in all; the MS awards marks in two levels (1 mark for two forces, 1 mark for all four)",
    "Answer: draw the four forces W, R, T and f, each labelled with its symbol"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "CM-L2a2",
@@ -6103,7 +6674,6 @@ const BANK = [
   "stem": "一個質量 0.5 kg 的小方塊放在水平轉盤上、距轉盤中心 10 cm。方塊用一條輕而不可伸長的繩連住，繩繞過固定於轉盤中心的小光滑滑輪；繩再穿過轉盤中央的孔，另一端吊住一個重 10 N 的砝碼。方塊與轉盤之間的最大摩擦力為 3 N。假設轉盤靜止。（註：圖中沒有畫出轉盤的軸。）",
   "q": "(a)(ii) 求令方塊保持靜止所需的最小外加水平力。(2 分)",
   "fig": "透視圖：橢圓形轉盤（雙線外緣），方塊放在盤面左方並標示 block；一條細繩由方塊向右連到轉盤中心的小滑輪，繩再穿過中心的孔向下吊住一個梯形砝碼並標示 10 N。答題位置印有一個空白方格（供畫力圖）。",
-  "img": "bank-img/FM7-p12-left.jpg",
   "first": "見到『minimum external force … to keep the block stationary』→ 第一件事：繩張力 10 N 向中心拉，摩擦力最多只可以出 3 N 背離中心，兩者相差 7 N 就係要外力補上嘅部分。所以係 T − f_max，唔係 T + f_max。",
   "kw": "『minimum external force』→ 取最大可用摩擦力（3 N）以減少所需外力；『keep the block stationary』→ 水平合力為零；『maximum friction … is 3 N』→ f_max = 3 N、方向背離中心。",
   "rs": [
@@ -6150,7 +6720,8 @@ const BANK = [
    "Shortfall = 10 − 3 = 7 N",
    "The external force is directed away from the centre",
    "Answer: minimum external horizontal force = T − f_max = 10 − 3 = 7 N"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "CM-L1b",
@@ -6172,7 +6743,6 @@ const BANK = [
   "stem": "一個質量 80 kg 的男人站在一個圓柱形艙（稱為 rotor）的內牆邊。rotor 地板的高度可以調節，rotor 的直徑為 6.4 m。rotor 繞中央鉛直軸以某一角速度旋轉；在該角速度下，即使把 rotor 的地板向下拉走，男人仍然被壓貼在牆壁上。牆對男人的力可分為兩個：沿牆向上的 F_A（friction）與水平指向轉軸的 F_B（normal reaction），而 F_A 的最大值等於 0.4 F_B。取 g = 9.81 m s⁻²。",
   "q": "(b) 已知 F_A 的最大值等於 0.4 F_B。求可以使男人繼續被壓貼在牆壁上的 rotor 最低角速度（單位 rad s⁻¹）。(3 分)",
   "fig": "左圖：圓柱形 rotor 的立體圖，頂部有弧形箭頭表示繞鉛直軸旋轉，柱身以引線標示 wall、地板以密點陰影標示 floor，地板下方的雙向箭頭標示直徑 6.4 m；一個小人貼住左側內牆站立。右圖：人貼牆的側面力圖，牆為鉛直陰影粗條；沿牆向上的箭頭標示 F_A，水平指向右方（離開牆、指向轉軸）的箭頭標示 F_B，向下箭頭標示 weight。",
-  "img": "bank-img/FM7-p13-right.jpg",
   "first": "見到『maximum F_A = 0.4 F_B』＋『minimum angular speed』→ 第一件事：最低角速度對應『摩擦力用到最大』嘅臨界狀態。鉛直方向寫 F_A = m g（唔可以寫 0.4 m g），水平方向寫 F_B = m r ω²，再用 F_A(max) = 0.4 F_B 把兩式駁埋，m 會相消。",
   "kw": "『maximum value of F_A equals 0.4 F_B』→ 臨界條件 F_A = 0.4 F_B，其中 F_B 係 normal reaction、提供向心力；『minimum angular speed』→ 所需向心力最細 ⇒ 摩擦力只需剛剛好托得住重量；『diameter = 6.4 m』→ r = 3.2 m（唔可以代 6.4）。",
   "rs": [
@@ -6231,7 +6801,8 @@ const BANK = [
    "r = 6.4 ÷ 2 = 3.2 m ⇒ (9.81) = 0.4 × (3.2) ω² ⇒ ω² = 7.664",
    "ω = 2.77 rad s⁻¹",
    "Answer: ω = 2.77 rad s⁻¹"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "CM-L2b1",
@@ -6253,7 +6824,6 @@ const BANK = [
   "stem": "一個質量 0.5 kg 的小方塊放在水平轉盤上、距轉盤中心 10 cm。方塊用一條輕而不可伸長的繩連住，繩繞過固定於轉盤中心的小光滑滑輪；繩再穿過轉盤中央的孔，另一端吊住一個重 10 N 的砝碼。方塊與轉盤之間的最大摩擦力為 3 N。轉盤繞中心以某一角速度轉動，方塊仍停留原位而不滑動。（註：圖中沒有畫出轉盤的軸。）",
   "q": "(b)(i) 計算使方塊可以停留原位而不滑動的最低角速度 ω₁。(2 分)",
   "fig": "透視圖：橢圓形轉盤（雙線外緣），方塊放在盤面左方並標示 block；一條細繩由方塊向右連到轉盤中心的小滑輪，繩再穿過中心的孔向下吊住一個梯形砝碼並標示 10 N。答題位置印有一個空白方格（供畫力圖）。",
-  "img": "bank-img/FM7-p12-left.jpg",
   "first": "見到『minimum angular speed … without slipping』→ 第一件事：最低角速度＝所需向心力最細嘅臨界情況，即最大摩擦力要背離中心（away from the centre），令淨向心力 = T − f_max；相反最高角速度就係摩擦力指向中心。呢個方向判斷係全題關鍵。",
   "kw": "『minimum angular speed ω₁』→ 最大摩擦力背離中心 ⇒ 淨向心力 = T − f_max = 10 − 3 = 7 N；『without slipping』→ 摩擦剛好達到最大值；『10 cm from the centre』→ r = 0.1 m（唔可以代 10）。",
   "rs": [
@@ -6304,7 +6874,8 @@ const BANK = [
    "7 = (0.5)(0.1) ω₁² = 0.05 ω₁²",
    "ω₁² = 140 ⇒ ω₁ = 11.8 rad s⁻¹",
    "Answer: ω₁ = 11.8 rad s⁻¹"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "CM-L2b2",
@@ -6326,7 +6897,6 @@ const BANK = [
   "stem": "一個質量 0.5 kg 的小方塊放在水平轉盤上、距轉盤中心 10 cm。方塊用一條輕而不可伸長的繩連住，繩繞過固定於轉盤中心的小光滑滑輪；繩再穿過轉盤中央的孔，另一端吊住一個重 10 N 的砝碼。方塊與轉盤之間的最大摩擦力為 3 N。轉盤繞中心以某一角速度轉動，方塊仍停留原位而不滑動。（註：圖中沒有畫出轉盤的軸。）",
   "q": "(b)(ii) 計算使方塊可以停留原位而不滑動的最高角速度 ω₂。(2 分)",
   "fig": "透視圖：橢圓形轉盤（雙線外緣），方塊放在盤面左方並標示 block；一條細繩由方塊向右連到轉盤中心的小滑輪，繩再穿過中心的孔向下吊住一個梯形砝碼並標示 10 N。答題位置印有一個空白方格（供畫力圖）。",
-  "img": "bank-img/FM7-p12-left.jpg",
   "first": "見到『maximum angular speed … without slipping』→ 第一件事：最高角速度＝所需向心力最大嘅臨界情況，即最大摩擦力要指向中心（towards the centre）幫手拉向圓心，令淨向心力 = T + f_max。同 (b)(i) 嘅方向剛剛相反。",
   "kw": "『maximum angular speed ω₂』→ 最大摩擦力指向中心 ⇒ 淨向心力 = T + f_max = 10 + 3 = 13 N；『without slipping』→ 摩擦剛好達到最大值；r = 0.1 m。",
   "rs": [
@@ -6377,7 +6947,8 @@ const BANK = [
    "13 = (0.5)(0.1) ω₂² = 0.05 ω₂²",
    "ω₂² = 260 ⇒ ω₂ = 16.1 rad s⁻¹",
    "Answer: ω₂ = 16.1 rad s⁻¹"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "CM-L1c",
@@ -6399,7 +6970,6 @@ const BANK = [
   "stem": "一個質量 80 kg 的男人在 rotor 內貼牆旋轉；rotor 的直徑為 6.4 m，地板的高度可以調節，即使把地板向下拉走，男人仍然被壓貼在牆壁上。牆對男人的力可分為兩個：沿牆向上的 friction F_A 與水平指向轉軸的 normal reaction F_B，而 F_A 的最大值等於 0.4 F_B。由 (b) 求得最低角速度為 2.77 rad s⁻¹，其中 r = 3.2 m、g = 9.81 m s⁻²。",
   "q": "(c) 如果男人的質量大於 80 kg，(b) 的結果會增加、減少抑或維持不變？簡單解釋。(2 分)",
   "fig": "左圖：圓柱形 rotor 的立體圖，頂部有弧形箭頭表示繞鉛直軸旋轉，柱身以引線標示 wall、地板以密點陰影標示 floor，地板下方的雙向箭頭標示直徑 6.4 m；一個小人貼住左側內牆站立。右圖：人貼牆的側面力圖，牆為鉛直陰影粗條；沿牆向上的箭頭標示 F_A，水平指向右方（離開牆、指向轉軸）的箭頭標示 F_B，向下箭頭標示 weight。",
-  "img": "bank-img/FM7-p13-right.jpg",
   "first": "見到『mass is greater than 80 kg … would the result increase, decrease or remain unchanged』→ 第一件事：唔使重算，睇 (b) 嘅臨界方程 m g = 0.4 m r ω²——m 在兩邊同時出現、可以相消，所以 ω 同 m 完全無關。答案一定係 unchanged。",
   "kw": "『would the result in (b) increase, decrease or remain unchanged』→ 三選一，必須答 unchanged；『Explain briefly』→ 一定要寫理由（m 相消）；『the minimum angular speed is independent of the mass m』→ 官方 MS 嘅得分句。",
   "rs": [
@@ -6450,7 +7020,8 @@ const BANK = [
    "The expression for ω contains only g and r, and no m",
    "The weight and the required centripetal force both grow with m in the same proportion ⇒ the ratio is unchanged",
    "Answer: unchanged, because the minimum angular speed is independent of the mass m"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "CM-L2c",
@@ -6472,7 +7043,6 @@ const BANK = [
   "stem": "一個質量 0.5 kg 的小方塊放在水平轉盤上、距轉盤中心 10 cm。方塊用一條輕而不可伸長的繩連住，繩繞過固定於轉盤中心的小光滑滑輪；繩再穿過轉盤中央的孔，另一端吊住一個重 10 N 的砝碼。方塊與轉盤之間的最大摩擦力為 3 N。方塊可以停留原位而不滑動的角速度範圍為 ω₁ = 11.8 rad s⁻¹ 至 ω₂ = 16.1 rad s⁻¹。",
   "q": "(c) 當轉盤的角速度由 ω₁ 慢慢增加到 ω₂ 而方塊沒有滑動，繩的張力有沒有改變？(1 分)",
   "fig": "透視圖：橢圓形轉盤（雙線外緣），方塊放在盤面左方並標示 block；一條細繩由方塊向右連到轉盤中心的小滑輪，繩再穿過中心的孔向下吊住一個梯形砝碼並標示 10 N。答題位置印有一個空白方格（供畫力圖）。",
-  "img": "bank-img/FM7-p12-left.jpg",
   "first": "見到『the tension in the string』＋『block does not slip』→ 第一件事：繩嘅另一端吊住一個 10 N 砝碼，只要砝碼靜止，張力就一定等於砝碼重量 10 N，同轉盤轉幾快完全無關。轉速改變只係改變摩擦力，唔會改變張力。",
   "kw": "『increased gradually from ω₁ to ω₂』→ 只係轉速變，砝碼端冇加速 ⇒ T 不變；『the block does not slip』→ 砝碼亦唔會被扯動，所以 T 始終等於 10 N。",
   "rs": [
@@ -6517,7 +7087,8 @@ const BANK = [
    "Force balance on the suspended weight: T = its weight = 10 N, independent of ω",
    "Changing the angular speed changes only the friction, not the tension",
    "Answer: the tension is unchanged"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "CM-L8a",
@@ -6541,7 +7112,6 @@ const BANK = [
   "stem": "上圖顯示兩個水平平台，端點分別為 A 與 C。一名特技人嘗試利用一條長 8 m 的輕繩由 A 盪到 C，繩的一端固定於 O 點（O 與 A 在同一水平）。他握住繩的一端離開 A，並在到達 B 點時放開繩，此時繩與鉛直線的夾角為 30°。特技人可視為質點，繩全程保持拉緊且不伸長。忽略空氣阻力。取 g = 9.81 m s⁻²。",
   "q": "(a) 在上圖中標示特技人在 B 點的速度 v_B。若特技人離開 A 點時的速率為零，求 v_B 的大小。(3 分)",
   "fig": "左上方是一條帶斜線陰影的水平橫條（上層平台），右端點標示 A（黑點）；由 A 向右有一條水平實線到達 O 點，線上標示 8 m；由 O 向下畫一條鉛直虛線；由 O 斜向下引出一條實線（繩）到達 B（黑點），繩與鉛直虛線之間標示 30°；由 A 起有一條虛線圓弧（擺動軌跡）彎到 B；B 點有一個直角符號，並有箭頭標示 v_B（沿切線方向、指向右上）；由 B 起有一條虛線拋物線向右下到達 C；B 正下方有鉛直線作基準，與 C 的鉛直線之間標示水平距離 x；右下方是一條帶斜線陰影的水平橫條（下層平台），左端點標示 C；圖右方有一個方框寫著 Diagram NOT drawn to scale",
-  "img": "bank-img/FM7-p09-left.jpg",
   "first": "見到「由 A 盪到 B」＋「離開 A 時速率為零」＋「忽略空氣阻力」→ 第一件事：認出 A→B 係豎直圓周嘅一段弧，用能量守恆 mgh = ½mv² 求 B 點速率。關鍵係 h 唔係 8 m，而係由 O 量起嘅豎直下降 8 cos 30°。另外仲有 1 分係『在圖上畫 v_B 方向』——速度方向沿切線、垂直於繩 OB，唔可以指向圓心。",
   "kw": "「leaves A ... speed is zero」→ 初動能 = 0，位能全部變動能；「8 m long rope」→ 半徑 = 8 m，A（O 嘅同一水平）到 B（繩與鉛直成 30°）嘅豎直下降 = 8 cos 30°；「Mark ... the velocity v_B」→ 圖上箭頭要沿切線（⊥ 繩 OB）並標示 v_B；「g = 9.81 m s⁻²」→ 唔可以用 10",
   "rs": [
@@ -6596,7 +7166,8 @@ const BANK = [
    "v_B = √135.9 = 11.66",
    "On the figure: draw an arrow at B perpendicular to the rope OB and label it v_B",
    "Answer: v_B = 11.7 m s⁻¹ (along the tangent, perpendicular to the rope OB)"
-  ]
+  ],
+  "img": "FM7-p12-right.jpg"
  },
  {
   "id": "CM-L7a1",
@@ -6618,7 +7189,6 @@ const BANK = [
   "stem": "圖示為一條水平道路的俯視圖（Top View），路上有兩條圓弧形車道：lane 1（外圈，半徑 45 m）與 lane 2（內圈，由虛線分隔，半徑較小）。一輛質量 1200 kg 的汽車以恒定速率在 lane 1 行駛。",
   "q": "(a)(i) 指出提供汽車向心力的力。若該力的最大值為 8000 N，計算汽車能夠保持在 lane 1 行駛的最高速率。(3 分)",
   "fig": "俯視圖：上方一條實線圓弧與中間一條虛線圓弧夾出 lane 1（圖中畫有一輛小汽車，車頭向右，旁標 lane 1）；虛線圓弧與最下方一條實線圓弧夾出 lane 2（旁標 lane 2）；圖右方有一個方框寫 Top View",
-  "img": "bank-img/FM7-p10-right.jpg",
   "first": "見到「水平道路」＋「maximum value of this force」→ 第一件事：認出唯一嘅水平力係路面嘅摩擦力（friction），佢就係向心力嘅來源。最高速率對應摩擦已達極限，所以直接代 f_max = 8000 N 入 f = mv²/r 反求 v。",
   "kw": "「horizontal road」→ 冇斜坡，法向力純豎直，唔可以提供向心力，只有摩擦力可以；「maximum value of this force is 8000 N」→ f = f_max = 8000 N；「highest speed ... can keep in lane 1」→ 速率再大所需向心力就超過 8000 N ⇒ 會滑出車道",
   "rs": [
@@ -6671,7 +7241,8 @@ const BANK = [
    "(8000) = (1200) v² / (45) ⇒ v² = 300",
    "v = √300 = 17.32",
    "Answer: the force providing the centripetal force is friction; the highest speed is 17.3 m s⁻¹"
-  ]
+  ],
+  "img": "FM7-p12-right.jpg"
  },
  {
   "id": "CM-L7a2",
@@ -6693,7 +7264,6 @@ const BANK = [
   "stem": "一條水平道路的俯視圖有兩條圓弧車道：lane 1（外圈，半徑 45 m）與 lane 2（內圈，半徑較小，由虛線分隔）。一輛質量 1200 kg 的汽車在 lane 1 行駛，提供向心力的力（摩擦力）最大值為 8000 N，(a)(i) 求得 lane 1 的最高速率為 17.3 m s⁻¹。",
   "q": "(a)(ii) 假設汽車改用 lane 2 而非 lane 1，而提供向心力的力的最大值仍然是 8000 N。汽車在 lane 2 的最高速率會比 (a)(i) 求得的較小、較大，還是相同？試解釋。(2 分)",
   "fig": "與 (a)(i) 相同的俯視圖：lane 1 為外圈（半徑 45 m，畫有汽車），lane 2 為內圈（由虛線圓弧分隔），即 lane 2 的半徑比 lane 1 小",
-  "img": "bank-img/FM7-p10-right.jpg",
   "first": "見到「同一最大摩擦力、唔同車道」→ 第一件事：把 f = mv²/r 改寫成 v² = f r / m。f 同 m 都固定 ⇒ v² ∝ r，所以半徑細啲嘅 lane 2 最高速率一定細啲。判斷關鍵係『邊個量固定』。",
   "kw": "「the maximum value ... is still 8000 N」→ f 固定；「takes lane 2 instead of lane 1」→ r 由 45 m 變成更細（lane 2 係內圈、虛線分隔嘅一邊）；「smaller than, larger than or the same as」→ 一定要三揀一，再寫理由",
   "rs": [
@@ -6740,7 +7310,8 @@ const BANK = [
    "Lane 2 is the inner lane ⇒ r₂ < r₁",
    "⇒ v₂ < v₁",
    "Answer: smaller (because v² ∝ r and lane 2 has the smaller r)"
-  ]
+  ],
+  "img": "FM7-p12-right.jpg"
  },
  {
   "id": "CM-L7b",
@@ -6762,7 +7333,6 @@ const BANK = [
   "stem": "一條水平道路的俯視圖有兩條圓弧車道，一輛質量 1200 kg 的汽車以恒定速率在 lane 1（半徑 45 m）行駛，所需向心力全部由車胎與路面之間的摩擦力提供（最大值 8000 N，最高速率 17.3 m s⁻¹）。",
   "q": "(b) 解釋為何路面上有油跡（oil patches）會增加汽車滑胎（skidding）的機會。(2 分)",
   "fig": "與 (a)(i) 相同的俯視圖（兩條圓弧車道的 Top View）",
-  "img": "bank-img/FM7-p10-right.jpg",
   "first": "見到「explain why ... skidding」＋油跡 → 第一件事：呢題唔使計數，要砌一條因果鏈——油跡 ⇒ 最大摩擦力減少 ⇒ 可提供嘅向心力上限降低 ⇒ 同一速率下所需向心力可能超過上限 ⇒ 滑胎（或等價地：唔滑胎嘅最高速率下降）。",
   "kw": "「oil patches」→ 車胎同路面之間嘅摩擦係數下降、最大摩擦力減少；「chance of skidding would increase」→ 要講『所需向心力超過可提供嘅最大摩擦力』呢個臨界條件；「on the road surface」→ 講嘅係摩擦力而唔係車速或質量",
   "rs": [
@@ -6809,7 +7379,8 @@ const BANK = [
    "Oil patches ⇒ the maximum friction f_max decreases",
    "Skidding occurs once the required centripetal force exceeds f_max, i.e. v_max = √(f_max r / m) falls",
    "Answer: oil patches reduce the maximum friction, lowering the upper limit of the centripetal force that can be provided, so the chance of skidding increases"
-  ]
+  ],
+  "img": "FM7-p12-right.jpg"
  },
  {
   "id": "CM-L8b1",
@@ -6831,7 +7402,6 @@ const BANK = [
   "stem": "一名特技人用一條長 8 m 的輕繩由 A 點盪到 B 點（此時繩與鉛直線成 30°），其後放開繩，在空中飛行 1.25 s 才到達下層平台的 C 點。已知放開繩時的速率 v_B = 11.7 m s⁻¹，方向沿切線（與水平線成 30°）。忽略空氣阻力，取 g = 9.81 m s⁻²。",
   "q": "(b)(i) 特技人在 B 點放開繩之後需時 1.25 s 才到達 C。試考慮他的水平運動，求 B 與 C 之間的水平距離 x。(2 分)",
   "fig": "承 (a)：B 點（繩與鉛直線成 30°）之後有一條虛線拋物線向右下到達下層平台的 C 點；B 正下方的鉛直線與 C 的鉛直線之間有雙向箭頭標示水平距離 x；v_B 箭頭與水平線之間標示 30°",
-  "img": "bank-img/FM7-p09-left.jpg",
   "first": "見到「considering his horizontal motion」＋已知飛行時間 → 第一件事：放開繩之後特技人只受重力（豎直向下），水平方向冇任何力 ⇒ 水平分量全程不變（等速），所以 x = u_x t。關鍵係要先把 v_B 分解：u_x = v_B cos 30°（圖中 v_B 同水平線成 30°）。",
   "kw": "「considering his horizontal motion」→ 水平方向冇力 ⇒ 等速，用 x = u_x t；「1.25 s」→ 飛行時間；「v_B」同水平線成 30° ⇒ u_x = v_B cos 30°（唔係 sin）；答案要落在 MS 接受範圍 12.6–12.8 m",
   "rs": [
@@ -6881,7 +7451,8 @@ const BANK = [
    "x = u_x t = (11.7 cos 30°)(1.25)",
    "x = 12.66 m",
    "Answer: x = 12.7 m (accept 12.6–12.8 m)"
-  ]
+  ],
+  "img": "FM7-p12-right.jpg"
  },
  {
   "id": "CM-L8b2",
@@ -6903,7 +7474,6 @@ const BANK = [
   "stem": "一名特技人用長 8 m 的輕繩由 A 點盪到 B 點後放開繩，B 點的速率 v_B = 11.7 m s⁻¹，方向與水平線成 30°（向上）。放開繩後他飛行 1.25 s 到達下層平台的 C 點，(b)(i) 求得水平距離 x = 12.7 m。忽略空氣阻力，取 g = 9.81 m s⁻²。",
   "q": "(b)(ii) 計算 C 點在 B 點下方的鉛直距離。(3 分)",
   "fig": "承 (a)：由 B 點起有一條虛線拋物線向右下到達下層平台的 C 點；B 正下方的鉛直線與 C 的鉛直線之間標示水平距離 x；右下方帶斜線陰影的水平橫條（下層平台）左端標示 C",
-  "img": "bank-img/FM7-p09-left.jpg",
   "first": "見到「vertical distance of C below B」→ 第一件事：豎直方向係勻加速運動（a_y = −g，取向上為正），用 y = u_y t + ½ a_y t²。記住 u_y 唔係零（有 11.7 sin 30° 向上），亦要同 (b)(i) 嘅 cos 分量分清楚。",
   "kw": "「vertical distance of C below B」→ y 取負值代表 C 在 B 之下，答案要講明『below B』；「1.25 s」→ 同一飛行時間；u_y = 11.7 sin 30°（豎直分量）；a_y = −9.81 m s⁻²（取向上為正）；答案接受範圍 0.352–0.414 m",
   "rs": [
@@ -6957,7 +7527,8 @@ const BANK = [
    "y = (11.7 sin 30°)(1.25) + ½(−9.81)(1.25)² = 7.313 − 7.664",
    "y = −0.352 m (the negative sign ⇒ C is below B)",
    "Answer: C is 0.352 m below B (accept 0.352–0.414 m)"
-  ]
+  ],
+  "img": "FM7-p12-right.jpg"
  },
  {
   "id": "CM-L8c",
@@ -6981,7 +7552,6 @@ const BANK = [
   "stem": "一名特技人用長 8 m 的輕繩由 A 點盪到 B 點後放開繩，再以拋體運動飛到下層平台的 C 點。全程忽略空氣阻力，繩保持拉緊且不伸長，特技人可視為質點。A 點與繩的固定點 O 在同一水平，B 點時繩與鉛直線成 30°。",
   "q": "(c) 到達下層平台之前，特技人在 A、B、C 三點之間的機械能（mechanical energy）有沒有變化？(1 分)",
   "fig": "承 (a)：A（上層平台端點）→ 虛線圓弧 → B（放開繩點）→ 虛線拋物線 → C（下層平台端點）",
-  "img": "bank-img/FM7-p09-left.jpg",
   "first": "見到「any change to the mechanical energy」＋『忽略空氣阻力』→ 第一件事：機械能 = 動能 + 位能。全程（盪繩段同拋體段）都只有重力做功——繩嘅張力垂直於速度（唔做功），又冇空氣阻力 ⇒ 機械能守恆，答案係『冇變化』。",
   "kw": "「before reaching the lower platform」→ 包括 A→B（盪繩）同 B→C（拋體）兩段；「mechanical energy」→ 動能 + 位能嘅總和（唔係淨講動能）；「Neglect air resistance」→ 冇耗散 ⇒ 總和不變",
   "rs": [
@@ -7027,7 +7597,8 @@ const BANK = [
    "A→B: the tension ⊥ velocity does no work and only gravity does work ⇒ conserved",
    "B→C: only gravity does work ⇒ conserved",
    "Answer: no change (No; the mechanical energy is conserved / unchanged)"
-  ]
+  ],
+  "img": "FM7-p12-right.jpg"
  },
  {
   "id": "CM-L4a",
@@ -7049,7 +7620,6 @@ const BANK = [
   "stem": "一個擺錘以一條輕繩繫於天花板上的一點，並在水平面內作勻速圓周運動（即圓錐擺）。繩長為 L，繩與鉛垂線之間的夾角為 θ，圓周運動的半徑 r = L sinθ。取 g = 9.81 m s⁻²，忽略空氣阻力。",
   "q": "(a) 畫出並標明在圖示一刻作用在擺錘上的力。(2 分)",
   "fig": "頂部為一條粗黑斜線陰影橫條（天花板／固定支架）；由橫條上的一點斜向下偏左引出一條實線（幼繩），連到一個小圓圈（擺錘）；由同一固定點向下畫一條鉛垂虛線，穿過下方一個虛線橢圓（擺錘的水平圓形軌跡）的中心；擺錘旁有一個小弧形箭頭表示迴轉方向。圖中沒有標示任何尺寸、長度或角度。答題空位上只印有一個小圓圈（代表擺錘位置）。",
-  "img": "bank-img/FM7-p11-left.jpg",
   "first": "見到『draw and label the forces acting on the bob』＋水平圓周運動→ 第一件事：擺錘只受兩個力——繩嘅張力 T（沿繩指向天花板固定點）同重量 W = mg（鉛垂向下）。向心力係呢兩個力嘅合力扮演嘅角色，唔可以當成第三個力畫出嚟；官方 MS 明言畫多咗力會扣分。",
   "kw": "『draw and label』→ 兩個力都要畫箭頭同標符號；『forces acting on the bob at the instant shown』→ 只有 tension 同 weight；MS 括號註明『Deduct 1 mark if extra force or centripetal force is drawn』。",
   "rs": [
@@ -7099,7 +7669,8 @@ const BANK = [
    "Tension T: along the string, towards the fixed point on the ceiling",
    "Only two forces are allowed; drawing an extra centripetal or centrifugal force loses marks",
    "Answer: the weight (W or mg, downwards) and the tension (T, along the string towards the fixed point), both labelled"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "CM-L10a2",
@@ -7121,7 +7692,6 @@ const BANK = [
   "stem": "一個擺錘（pendulum bob，質量 30 g）用一條長 1 m 的不可伸長繩吊住，繩的上端固定於 O 點。擺錘以角速率 ω = 5.0 rad s⁻¹ 在水平面作勻速圓周運動，繩與水平方向成 23.1°（見 Figure 4.1）。取 g = 9.81 m s⁻²。注意：Q10 的掃描頁是殘頁，(a) 的題幹、Figure 4.1 與 (a)(i) 都不在掃描上；上述數據是由官方 MS 頁（p19）的算式與圖形還原。",
   "q": "(a)(ii) 在 Figure 4.1 上標示擺錘運動所需的向心力 F_C，並求 F_C。(3 分)",
   "fig": "原 Figure 4.1 不在掃描頁上；由 MS（p19）的圖還原：O 點在左上方，由 O 向右有一條水平虛線、向下有一條鉛直虛線；由 O 斜向下（偏右）引出一條實線（繩，標示 1 m long inextensible string）到右下方一個實心黑點（標示 pendulum bob of mass 30 g）；繩與水平虛線之間標示 23.1°；擺錘周圍有一個扁長的虛線橢圓（擺錘的水平圓形軌跡）；由黑點向左畫一支粗黑箭頭標示 F_C，箭嘴指向鉛直虛線（轉軸），下註 centripetal force (tension component)",
-  "img": "bank-img/FM7-p08-left.jpg",
   "first": "見到「求向心力 F_C」＋『繩與水平成 23.1°』→ 第一件事：圓周半徑 r 唔係繩長 1 m，而係繩嘅水平投影 r = L cos 23.1°（角度係同水平線量，所以用 cos）。呢個幾何判斷就係圓錐擺題嘅核心陷阱（若角度係同鉛直線量，就要改用 sin）。",
   "kw": "「1 m long inextensible string」→ L = 1 m；「23.1°」係繩同水平方向嘅夾角（見圖）⇒ r = L cos 23.1°，唔係 L；「ω = 5.0 rad s⁻¹」→ 已經係 rad s⁻¹，唔使再乘 2π；「indicate … F_C」→ 圖上要畫一支指向圓心嘅箭頭，唔可以畫成沿繩方向（沿繩方向嘅係張力 T）",
   "rs": [
@@ -7181,7 +7751,8 @@ const BANK = [
    "F_C = 0.68987 N",
    "On the figure: draw an arrow from the bob pointing towards the centre (towards the axis) and label it F_C",
    "Answer: F_C ≈ 0.690 N (for g = 9.81 m s⁻²; ≈ 0.703 N if g = 10 m s⁻²)"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "CM-L10a3",
@@ -7203,7 +7774,6 @@ const BANK = [
   "stem": "一個質量 30 g 的擺錘用長 1 m 的不可伸長繩吊住（上端固定於 O），以 ω = 5.0 rad s⁻¹ 在水平面作勻速圓周運動，繩與水平方向成 23.1°。(a)(ii) 已求得向心力 F_C ≈ 0.690 N。取 g = 9.81 m s⁻²。注意：Q10 題目頁是殘頁，(a) 的題幹與 Figure 4.1 不在掃描上。",
   "q": "(a)(iii) 解釋繩中張力的大小是大於、等於還是小於 (a)(ii) 求得的向心力 F_C。(2 分)",
   "fig": "與 (a)(ii) 還原的 Figure 4.1 相同：O 在左上，繩斜向右下、與水平虛線成 23.1°，擺錘在繩末端，虛線橢圓為水平圓形軌跡",
-  "img": "bank-img/FM7-p08-left.jpg",
   "first": "見到「張力大於／等於／小於向心力」→ 第一件事：唔好以為繩嘅張力就係向心力。張力係沿繩嘅，佢有兩個分量：水平分量提供向心力、豎直分量支撐重量。所以張力一定要大過向心力（亦大過重量）。",
   "kw": "「magnitude of the tension」→ 張力嘅大小（沿繩）；「greater than, equal to or smaller than」→ 要三揀一；關鍵式 T cos θ = F_C（水平分量）同 T sin θ = m g（豎直分量）；因為 cos θ < 1，所以 T = F_C / cos θ > F_C",
   "rs": [
@@ -7255,7 +7825,8 @@ const BANK = [
    "cos 23.1° = 0.9198 < 1 ⇒ T > F_C",
    "Check: T = 0.690 ÷ 0.9198 = 0.750 N, and T = m g / sin θ also gives 0.750 N",
    "Answer: the tension is greater than F_C (T ≈ 0.750 N > F_C ≈ 0.690 N)"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "CM-L4b",
@@ -7277,7 +7848,6 @@ const BANK = [
   "stem": "一個擺錘以一條輕繩繫於天花板上的一點，並在水平面內作勻速圓周運動。繩長為 L，繩與鉛垂線的夾角為 θ，圓周半徑 r = L sinθ。忽略空氣阻力。",
   "q": "(b) 若繩長為 L、繩與鉛垂線的夾角為 θ，推導該圓周運動週期的表達式。（忽略空氣阻力。）(4 分)",
   "fig": "頂部為粗黑陰影橫條（天花板），一點以實線（繩，長 L）斜向下連到擺錘，繩與鉛垂虛線成角 θ；擺錘沿一個虛線橢圓（水平圓形軌跡）運動。",
-  "img": "bank-img/FM7-p11-left.jpg",
   "first": "見到『derive an expression for the period』→ 第一件事：週期由角速度決定（P = 2π/ω），而 ω 要靠兩條分量方程消去 T 求得。關鍵幾何關係係 r = L sinθ，千祈唔好直接代 L。",
   "kw": "『derive an expression』→ 要一路推導到 P = 2π√(L cosθ/g)，唔可以只寫公式；『length of the string is L』＋『angle … with the vertical is θ』→ r = L sinθ；『period』→ P = 2π/ω。",
   "rs": [
@@ -7334,7 +7904,8 @@ const BANK = [
    "Eliminate T: ω² = g / (L cos θ)",
    "Period P = 2π/ω = 2π √( L cos θ / g )",
    "Answer: period = 2π √( L cos θ / g )"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "CM-L10b1",
@@ -7356,7 +7927,6 @@ const BANK = [
   "stem": "月球（moon）在地球引力（gravitational attraction）作用下，以勻速圓周路徑繞地球運行（uniform circular motion）。注意：本題出自 Q10 的 (b) 部分，Q10 題目頁（p08）是殘頁，但 (b) 段文字完整可讀。",
   "q": "(b)(i) 解釋為何月球雖然受到引力作用，速率仍然保持不變。(2 分)",
   "fig": "無圖",
-  "img": "bank-img/FM7-p08-left.jpg",
   "first": "見到「speed remains unchanged although acted upon by a force」→ 第一件事：分辨『速率』（純量、大小）同『速度』（向量、有方向）。引力永遠指向圓心，而速度沿切線，兩者互相垂直 ⇒ 引力只改變速度方向，唔改變大小。",
   "kw": "「speed」→ 唔係 velocity，答嘅係大小不變；「gravitational force」→ 方向永遠指向地球（圓心）；關鍵詞一定要有『垂直於速度方向』同『不做功／只改變方向』；「uniformly in a circular path」→ 勻速圓周運動嘅前提",
   "rs": [
@@ -7406,7 +7976,8 @@ const BANK = [
    "Work done by gravity = F s cos 90° = 0 ⇒ the kinetic energy is unchanged",
    "⇒ only the direction of the velocity changes (the moon keeps turning)",
    "Answer: gravity is perpendicular to the velocity and does no work, so the speed is unchanged; only the direction of the velocity changes"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "CM-L10b2",
@@ -7430,7 +8001,6 @@ const BANK = [
   "stem": "月球以勻速圓周路徑繞地球運行，受地球引力作用；月球的質量遠小於地球。(b)(i) 已解釋過：引力垂直於月球的速度、不做功，所以月球的速率不變。注意：本題出自 Q10 的 (b) 部分（題目殘頁 p08 上 (b) 段文字完整可讀）。",
   "q": "(b)(ii) 有學生聲稱：由於月球的質量遠小於地球，所以月球對地球的作用力可以忽略。試評論該學生的說法。(2 分)",
   "fig": "無圖",
-  "img": "bank-img/FM7-p08-left.jpg",
   "first": "見到「mass much less ⇒ force negligible」→ 第一件事：呢個係典型『力』同『效果』混淆。引力係一對作用力—反作用力，由牛頓第三定律兩者大小相等；月球質量細唔會令佢施於地球嘅力變細，只會令地球（質量極大）嘅加速度極小。",
   "kw": "「Comment on the student's claim」→ 一定要明確表態（唔正確）；「moon is much less massive」→ 陷阱：質量細 ≠ 施力細；關鍵詞：牛頓第三定律（Newton's third law）、作用力—反作用力對（action-reaction pair）、大小相等方向相反、a = F/M 所以地球加速度極小",
   "rs": [
@@ -7480,7 +8050,8 @@ const BANK = [
    "⇒ 「the force of the moon on the Earth can be neglected」 is wrong",
    "The Earth's acceleration a = F / M, and M is enormous ⇒ a is extremely small; what can be neglected is the Earth's change of motion",
    "Answer: the claim is incorrect — the two forces are equal in magnitude (Newton's third law); it is only because the Earth's mass is large that its acceleration is extremely small"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "CM-L4c",
@@ -7502,7 +8073,6 @@ const BANK = [
   "stem": "一個擺錘以長 L 的輕繩繫於天花板上的一點，並在水平面內作勻速圓周運動；繩與鉛垂線的夾角為 θ。已知週期 P = 2π √( L cos θ / g )，取 g = 9.81 m s⁻²。",
   "q": "(c) 若繩長為 0.8 m，而圓周運動期間繩與鉛垂線成 25°，計算該圓周運動的週期。(2 分)",
   "fig": "與 (b) 相同：天花板下的一點以繩（長 L = 0.8 m）斜向下連到擺錘，繩與鉛垂線成 25°，擺錘沿虛線橢圓作水平圓周運動。",
-  "img": "bank-img/FM7-p11-left.jpg",
   "first": "見到『calculate the period … 0.8 m … 25°』→ 第一件事：直接用 (b) 嘅結果 P = 2π√(L cosθ/g)，唔需要重新推導。陷阱係角度要取 cosθ（唔係 sinθ），同埋 g 要用 9.81（題目數據表指定）。",
   "kw": "『length of the string is 0.8 m』→ L = 0.8 m；『makes an angle of 25°』→ θ = 25°，代入 cosθ；『Take g = 9.81 m s⁻²』→ 唔可以用 10。",
   "rs": [
@@ -7553,7 +8123,8 @@ const BANK = [
    "L cosθ = 0.8 × 0.9063 = 0.7250 m ⇒ 0.7250/9.81 = 0.07390 s²",
    "√0.07390 = 0.2719 s ⇒ P = 2π × 0.2719 = 1.708 s",
    "Answer: period ≈ 1.71 s"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "CM-L4d1",
@@ -7575,7 +8146,6 @@ const BANK = [
   "stem": "一個擺錘以長 L 的輕繩繫於天花板上的一點，並在水平面內作勻速圓周運動；繩與鉛垂線的夾角為 θ。已知週期 P = 2π √( L cos θ / g )。圓周運動期間繩與鉛垂線的夾角增加。",
   "q": "(d)(i) 若圓周運動期間繩與鉛垂線的夾角增加，解釋並描述其對 revolution 週期的影響。(2 分)",
   "fig": "無圖（承 (b)(c)：天花板下的一點以繩連住擺錘，繩與鉛垂線成角 θ，擺錘作水平圓周運動）。",
-  "img": "bank-img/FM7-p11-left.jpg",
   "first": "見到『the angle … is increased … effects on the period』→ 第一件事：唔使計數，睇公式 P = 2π√(L cosθ/g)——θ 只出現在 cosθ 裡面，而 θ 在 0° 至 90° 之間增加時 cosθ 會減少，所以 P 減少。答題必須有『cosθ 減少』呢一步理由。",
   "kw": "『the angle made with the vertical is increased』→ θ 增加；『period of revolution』→ P = 2π√(L cosθ/g)，只有 cosθ 隨 θ 變；『explain and describe』→ 先講 cosθ↓ 再講 P↓，兩句各 1 分。",
   "rs": [
@@ -7620,7 +8190,8 @@ const BANK = [
    "An increase in θ ⇒ a decrease in cos θ",
    "L cosθ / g becomes smaller ⇒ P becomes smaller",
    "Answer: the period decreases, since a larger θ gives a smaller cos θ"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "CM-L4d2",
@@ -7642,7 +8213,6 @@ const BANK = [
   "stem": "一個擺錘以長 L 的輕繩繫於天花板上的一點，並在水平面內作勻速圓周運動；繩與鉛垂線的夾角為 θ。已知鉛垂方向方程 T cos θ = m g。圓周運動期間繩與鉛垂線的夾角增加。",
   "q": "(d)(ii) 若圓周運動期間繩與鉛垂線的夾角增加，解釋並描述其對繩的張力的影響。(2 分)",
   "fig": "無圖（承 (b)(c)：天花板下的一點以繩連住擺錘，繩與鉛垂線成角 θ，擺錘作水平圓周運動）。",
-  "img": "bank-img/FM7-p11-left.jpg",
   "first": "見到『effects on the tension of the string』→ 第一件事：用鉛直方程 T cos θ = m g 改寫成 T = m g / cos θ。θ 增加 ⇒ cosθ 減少 ⇒ 分母變細 ⇒ T 增加。呢題同 (d)(i) 啱啱相反：週期跌、張力升。",
   "kw": "『the angle made with the vertical is increased』→ θ 增加；『tension of the string』→ 由 T cos θ = m g 得 T = mg / cosθ；『explain and describe』→ 先講 T = mg/cosθ 呢步，再講 T 增加。",
   "rs": [
@@ -7687,7 +8257,8 @@ const BANK = [
    "An increase in θ ⇒ a decrease in cos θ",
    "A smaller denominator ⇒ T increases",
    "Answer: the tension increases, since a larger θ gives a smaller cos θ while T = mg/cos θ"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "CM-L3a",
@@ -7711,7 +8282,6 @@ const BANK = [
   "stem": "Figure 1 中，一部玩具車放在光滑水平面上，車上裝有一把由電池驅動的風扇。風扇開動後，玩具車開始向右運動，最後達到一個恆定速度。",
   "q": "(a) 借助一幅 velocity-time 圖，解釋風扇開動後玩具車的運動。(4 分)",
   "fig": "Figure 1：玩具車側視圖（左端有螺旋槳／風扇、車身為長方形、底部兩個黑輪），放在一條有斜線陰影的粗黑水平帶（光滑水平面）上；答題區右方印有一個空白 v–t 圖坐標軸（縱軸 velocity、橫軸 time、原點 0）。Figure 2：頂部一條有斜線陰影的粗黑橫條（天花板），由固定點斜向下偏左引出一條實線（幼繩，旁標示 L），與鉛直虛線成角 θ；繩下端連住同一部玩具車，車沿一個實線橢圓（水平圓形軌跡）運動，橢圓上有箭頭表示運動方向。",
-  "img": "bank-img/FM7-p12-right.jpg",
   "first": "見到『explain the motion … with the aid of a velocity-time graph』→ 第一件事：要交兩部分——一幅圖同一段因果解釋。圖要由原點上升、斜率遞減、最後趨向水平（terminal velocity）；文字要用『阻力隨速度增加 → 淨力減細 → 加速度減細 → 阻力 = 推進力 → 等速』呢條因果鏈。",
   "kw": "『smooth horizontal surface』→ 冇地面摩擦，唯一阻力係空氣阻力；『finally reaches a constant velocity』→ 終端速度，即阻力等於風扇推進力；『with the aid of a velocity-time graph』→ 一定要畫圖，唔畫圖失 1 分。",
   "rs": [
@@ -7738,7 +8308,7 @@ const BANK = [
    "v–t 圖：由原點出發、凹向下、漸近一條水平虛線",
    "答案：v–t 曲線由原點上升並趨向水平；文字解釋『阻力增至等於推進力時淨力為零，玩具車達到終端速度』"
   ],
-  "note": "Q5(a) 內容屬『空氣阻力／終端速度』（牛頓定律），FM7 分類樹冇對應 sub；按長題定性解釋嘅歸類慣例放入 F1 不變量判斷，並在 cross 標明 Force and Motion。",
+  "note": "Q3(a) 內容屬『空氣阻力／終端速度』（牛頓定律），FM7 分類樹冇對應 sub；按長題定性解釋嘅歸類慣例放入 F1 不變量判斷，並在 cross 標明 Force and Motion。",
   "qEn": "(a) With the aid of a velocity-time graph, explain the motion of the toy after the fan is switched on.",
   "figEn": "Figure 1: a side view of the toy (a propeller/fan at the left end, a rectangular body and two black wheels underneath) standing on a thick black hatched horizontal band (the smooth horizontal surface); a blank v–t set of axes is printed to the right of the answer space (velocity on the vertical axis, time on the horizontal axis, origin 0). Figure 2: a thick black hatched horizontal bar at the top (the ceiling); a solid line (the light string, labelled L alongside) runs obliquely down and to the left from the fixed point, making an angle θ with the dashed vertical line; the lower end of the string is attached to the same toy, which moves along a solid ellipse (its horizontal circular path), with an arrow on the ellipse showing the direction of motion.",
   "stemEn": "In Figure 1, a toy is placed on a smooth horizontal surface. It is equipped with a fan powered by a battery. When the fan is switched on, the toy starts moving to the right and it finally reaches a constant velocity.",
@@ -7767,7 +8337,8 @@ const BANK = [
    "Resistance = propelling force ⇒ net force = 0 ⇒ Newton's first law ⇒ constant speed (terminal velocity)",
    "v–t graph: starting at the origin, concave downwards and asymptotic to a horizontal dashed line",
    "Answer: the v–t curve rises from the origin and tends to the horizontal; the explanation is that when the resistance has grown to equal the propelling force the net force is zero and the toy reaches its terminal velocity"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L5a",
@@ -7789,7 +8360,6 @@ const BANK = [
   "stem": "圖為一部汽車的後視圖。汽車質量 1800 kg，以勻速 15 m s⁻¹ 沿水平圓形道路轉彎。G 為汽車的重心，O 為圓周運動的圓心，圓形道路的半徑為 75 m。忽略空氣阻力。",
   "q": "(a) 設 R 為汽車所受的 normal reaction、f 為車輪所受的 friction，在圖中畫出所有作用在汽車上的力。(3 分)",
   "fig": "汽車後視圖：方盒形車身連兩個車輪，停在水平路面的實線上；車身中央的黑點標示 G，由 G 向左一條水平虛線連到最左端的 O（標示 O ✳）。路面下方沒有斜線（水平路面）。",
-  "img": "bank-img/FM7-p11-right.jpg",
   "first": "見到『rear view』＋『turns round a horizontal circular road』＋『draw all the forces』→ 第一件事：水平路面轉彎，向心力只可以由 friction 提供，所以 friction 一定要水平指向圓心（圖中 O 在左方，f 就指向左）。另外兩個力係 normal reaction R（向上）同 weight W（向下），總共三個。",
   "kw": "『rear view』→ 後視圖，力圖只畫截面內嘅方向；『O is the centre of its circular motion』→ O 在車嘅左方 ⇒ friction 指向左（指向圓心）；『let R be the normal reaction … let f be the friction on the wheels』→ 題目已指定符號 R 同 f；MS 明示『若把指向 O 嘅力標為 centripetal force 唔給分』、『畫離心力扣 1 分』。",
   "rs": [
@@ -7843,7 +8413,8 @@ const BANK = [
    "Normal reaction R vertically upwards",
    "Friction f horizontally to the left (i.e. towards the centre O), the only force providing the centripetal force",
    "Answer: the three forces W (downwards), R (upwards) and f (towards O), all labelled"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L9a",
@@ -7865,7 +8436,6 @@ const BANK = [
   "stem": "照片顯示餐廳常用的圓形轉盤（turntable）。一個質量 1 kg 的茶壺放在水平轉盤上、距轉盤中心 30 cm 處（下圖為側視圖）。轉盤轉動時，茶壺停留在轉盤上同一位置。",
   "q": "(a) 在上圖中畫出並標示轉盤轉動時作用於茶壺的所有力。(2 分)",
   "fig": "側視圖：一條帶斜線陰影的水平長條（轉盤），中央下方有一個小長方形（轉軸）；由轉盤中央向上有一條鉛直虛線，右方標示 centre；轉盤左段放置一個茶壺（壺嘴向右、壺蓋向上、壺柄在左）；轉盤下方有一條雙向箭頭尺寸線，由茶壺正下方量到中央鉛直虛線，標示 30 cm",
-  "img": "bank-img/FM7-p09-right.jpg",
   "first": "見到「draw and label all the forces」＋『轉盤轉動、茶壺唔郁（相對轉盤）』→ 第一件事：茶壺隨轉盤作水平圓周運動 ⇒ 豎直方向平衡（W 同 R 抵消），水平方向必須有指向圓心嘅淨力，而呢個力只可以由摩擦力提供。所以答案一定係三個力：W、R、f。",
   "kw": "「remains at the same position on the turntable」→ 茶壺同轉盤一齊作圓周運動，需要向心力；「draw and label all the forces」→ 要畫齊並寫名（W / mg / weight、R / N / normal reaction、f / friction），唔可以只寫一個『centripetal force』；「horizontal turntable」→ 向心力只可以由摩擦提供，方向沿半徑指向中心",
   "rs": [
@@ -7914,7 +8484,8 @@ const BANK = [
    "Horizontal: friction f pointing towards the centre of the turntable, providing the centripetal force",
    "All three arrows must be labelled (W/mg, R/N, f/friction)",
    "Answer: on the figure draw W (mg) ↓, R (N) ↑ and f horizontally towards the centre"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L5b",
@@ -7936,7 +8507,6 @@ const BANK = [
   "stem": "一部汽車質量 1800 kg，以勻速 15 m s⁻¹ 沿半徑 75 m 的水平圓形道路轉彎；G 為重心、O 為圓周運動的圓心，忽略空氣阻力。",
   "q": "(b) 計算作用在汽車上的 friction 的大小。(2 分)",
   "fig": "汽車後視圖：車身中央的 G 以水平虛線連到左方的 O；車輪處有一支指向左（指向 O）的 friction 箭頭 f。",
-  "img": "bank-img/FM7-p11-right.jpg",
   "first": "見到『calculate the magnitude of friction』→ 第一件事：水平路面上 friction 係唯一提供向心力嘅力，所以 f 就等於 mv²/r。呢題係純代入題，唯一陷阱係半徑用 75 m（唔係 15 或 1800）。",
   "kw": "『turns round a horizontal circular road with a uniform speed』→ friction 提供全部向心力；『mass 1800 kg』→ m；『uniform speed of 15 m s⁻¹』→ v；『radius … 75 m』→ r。",
   "rs": [
@@ -7985,7 +8555,8 @@ const BANK = [
    "f = (1800)(15)² / (75) = (1800)(225)/75 = 1800 × 3",
    "f = 5400 N",
    "Answer: f = 5400 N"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L9b",
@@ -8007,7 +8578,6 @@ const BANK = [
   "stem": "一個質量 1 kg 的茶壺放在水平轉盤上、距轉盤中心 30 cm 處。轉盤轉動時茶壺停留在轉盤上同一位置（即隨轉盤作水平圓周運動）。已知轉盤以每秒 0.5 轉（0.5 revolutions per second）轉動。",
   "q": "(b) 把茶壺視為質點，估算轉盤以每秒 0.5 轉轉動時作用於茶壺的淨力。(3 分)",
   "fig": "與 (a) 相同的側視圖：轉盤（帶斜線陰影的水平長條）、中央鉛直虛線標示 centre、茶壺在左、下方尺寸線標示 30 cm",
-  "img": "bank-img/FM7-p09-right.jpg",
   "first": "見到「net force」＋『勻速圓周運動』→ 第一件事：豎直方向雖然平衡，但淨力唔係零——淨力就係水平方向嘅向心力，大小 m r ω²。第二件事：轉速 0.5 rev/s 一定要轉成 rad s⁻¹（ω = 0.5 × 2π），呢個係本題最大陷阱。",
   "kw": "「net force」→ 指向圓心嘅向心力（唔係零、亦唔係重量）；「0.5 revolutions per second」→ ω = 0.5 × 2π = π rad s⁻¹（唔可以直接代 0.5）；「30 cm」→ r = 0.3 m；「estimate」→ 用 π ≈ 3.14 或 3.1416 都可以",
   "rs": [
@@ -8060,7 +8630,8 @@ const BANK = [
    "r = 30 cm = 0.3 m",
    "F = (1)(0.3)(π)² = 2.9609",
    "Answer: net force ≈ 2.96 N (towards the centre of the turntable)"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L3b1",
@@ -8082,7 +8653,6 @@ const BANK = [
   "stem": "質量 m 的玩具車（即 Figure 1 的風扇車）現在用一條長 L 的輕繩連到天花板的固定點，並作均勻水平圓周運動（見 Figure 2）。當玩具車的速率為 v 時，繩與鉛垂線成角 θ。取 g = 10 m s⁻²。",
   "q": "(b)(i) 畫出並寫出 Figure 2 中作用於玩具車上的所有力的名稱。(3 分)",
   "fig": "Figure 1：玩具車側視圖（左端有螺旋槳／風扇、車身為長方形、底部兩個黑輪），放在一條有斜線陰影的粗黑水平帶（光滑水平面）上；答題區右方印有一個空白 v–t 圖坐標軸（縱軸 velocity、橫軸 time、原點 0）。Figure 2：頂部一條有斜線陰影的粗黑橫條（天花板），由固定點斜向下偏左引出一條實線（幼繩，旁標示 L），與鉛直虛線成角 θ；繩下端連住同一部玩具車，車沿一個實線橢圓（水平圓形軌跡）運動，橢圓上有箭頭表示運動方向。",
-  "img": "bank-img/FM7-p12-right.jpg",
   "first": "見到『draw and name all the force(s)』→ 第一件事：除咗繩張力 T 同重量 mg，仲要記得 Figure 1 已經有嘅兩個水平切向力——風扇推進力 F 同空氣阻力 R。而且題目明寫 draw AND name，所以每個力都要符號＋名稱，唔可以只畫箭頭。",
   "kw": "『draw and name』→ 每個力都要標符號同寫名稱；『the toy of mass m … attached to a fixed point on the ceiling by a light string of length L』→ 張力 T 沿繩指向天花板固定點、重量 mg 鉛垂向下；『fan powered by a battery』→ 仲有 propelling force F 同 air resistance R（切向）。",
   "rs": [
@@ -8135,7 +8705,8 @@ const BANK = [
    "Tangential: F (the propelling force) forwards and R (the air resistance) backwards",
    "Four forces in all, each needing a symbol and a name (draw and name)",
    "Answer: draw and name T (tension), mg (weight), F (propelling force) and R (air resistance)"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L3b2",
@@ -8157,7 +8728,6 @@ const BANK = [
   "stem": "質量 m 的玩具車用一條長 L 的輕繩連到天花板的固定點，作均勻水平圓周運動；當速率為 v 時，繩與鉛垂線成角 θ，圓周半徑 r = L sinθ。取 g = 10 m s⁻²。",
   "q": "(b)(ii) 寫出玩具車所受的力在鉛直方向與水平方向的兩條方程。(2 分)",
   "fig": "Figure 1：玩具車側視圖（左端有螺旋槳／風扇、車身為長方形、底部兩個黑輪），放在一條有斜線陰影的粗黑水平帶（光滑水平面）上；答題區右方印有一個空白 v–t 圖坐標軸（縱軸 velocity、橫軸 time、原點 0）。Figure 2：頂部一條有斜線陰影的粗黑橫條（天花板），由固定點斜向下偏左引出一條實線（幼繩，旁標示 L），與鉛直虛線成角 θ；繩下端連住同一部玩具車，車沿一個實線橢圓（水平圓形軌跡）運動，橢圓上有箭頭表示運動方向。",
-  "img": "bank-img/FM7-p12-right.jpg",
   "first": "見到『TWO equations for the vertical and horizontal components』→ 第一件事：把張力 T 分成鉛直分量 T cosθ 同水平分量 T sinθ，再記住水平方程嘅半徑係 r = L sinθ 而唔係 L。兩條方程就係鉛直 T cosθ = mg、水平 T sinθ = mv²/r。",
   "kw": "『the string makes an angle θ to the vertical』→ 鉛直分量用 cosθ、水平分量用 sinθ；『length of string L』→ 半徑 r = L sinθ（唔可以代 L）；『TWO equations』→ 一定要分開寫鉛直同水平兩條，唔可以只寫一條。",
   "rs": [
@@ -8206,7 +8776,8 @@ const BANK = [
    "Vertical: T cosθ = m g …… (2)",
    "Horizontal: T sinθ = m v²/r = m v²/(L sinθ) ⇒ T sin²θ = m v²/L …… (1)",
    "Answer: the two equations T sin²θ = m v²/L and T cos θ = m g"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L3b3",
@@ -8228,7 +8799,6 @@ const BANK = [
   "stem": "質量 m = 0.1 kg 的玩具車用一條長 L = 0.8 m 的輕繩連到天花板的固定點，作均勻水平圓周運動，速率 v = 2 m s⁻¹；繩與鉛垂線成角 θ。取 g = 10 m s⁻²，並已知兩條方程：(1) T sin²θ = m v²/L；(2) T cos θ = m g。",
   "q": "(b)(iii) 證明角 θ 滿足方程 2 cos²θ + cos θ − 2 = 0，並由此求 θ 與張力 T 的值。(3 分)",
   "fig": "Figure 1：玩具車側視圖（左端有螺旋槳／風扇、車身為長方形、底部兩個黑輪），放在一條有斜線陰影的粗黑水平帶（光滑水平面）上；答題區右方印有一個空白 v–t 圖坐標軸（縱軸 velocity、橫軸 time、原點 0）。Figure 2：頂部一條有斜線陰影的粗黑橫條（天花板），由固定點斜向下偏左引出一條實線（幼繩，旁標示 L），與鉛直虛線成角 θ；繩下端連住同一部玩具車，車沿一個實線橢圓（水平圓形軌跡）運動，橢圓上有箭頭表示運動方向。",
-  "img": "bank-img/FM7-p12-right.jpg",
   "first": "見到『show that … 2cos²θ + cosθ − 2 = 0』→ 第一件事：證明題一定有特定路線——把 (1) ÷ (2) 消去 T，再用 sin²θ = 1 − cos²θ 化成只含 cosθ 嘅二次方程。跟住解方程取 0 < cosθ < 1 嘅根，最後用 (2) 求 T。",
   "kw": "『show that』→ 要逐步列出化簡過程（只有代入數值那行同最後答案有 [1]）；『m = 0.1 kg、L = 0.8 m、v = 2 m s⁻¹、g = 10』→ 代入 (1)/(2)：v²/(gL) = 4/8 = 0.5；『Hence calculate the values of θ and tension T』→ 先解 cosθ，再用 T = mg/cosθ。",
   "rs": [
@@ -8285,7 +8855,8 @@ const BANK = [
    "cosθ = (−1 + √17)/4 = 0.7808 ⇒ θ = 38.7°",
    "By (2): T = mg/cosθ = (0.1)(10)/0.7808 = 1.28 N",
    "Answer: θ = 38.7°, T = 1.28 N"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L3b4",
@@ -8307,7 +8878,6 @@ const BANK = [
   "stem": "質量 m 的玩具車用一條長 L 的輕繩連到天花板的固定點，作均勻水平圓周運動，速率為 v，繩與鉛垂線成角 θ。已知 v² = gL·tanθ·sinθ 及 T cos θ = m g。若玩具車內電池的輸出電壓輕微下降。",
   "q": "(b)(iv) 如果玩具車內電池的輸出電壓輕微下降，試以 v、θ 及 T 描述並解釋玩具車隨後的運動。(3 分)",
   "fig": "Figure 1：玩具車側視圖（左端有螺旋槳／風扇、車身為長方形、底部兩個黑輪），放在一條有斜線陰影的粗黑水平帶（光滑水平面）上；答題區右方印有一個空白 v–t 圖坐標軸（縱軸 velocity、橫軸 time、原點 0）。Figure 2：頂部一條有斜線陰影的粗黑橫條（天花板），由固定點斜向下偏左引出一條實線（幼繩，旁標示 L），與鉛直虛線成角 θ；繩下端連住同一部玩具車，車沿一個實線橢圓（水平圓形軌跡）運動，橢圓上有箭頭表示運動方向。",
-  "img": "bank-img/FM7-p12-right.jpg",
   "first": "見到『output voltage drops slightly』→ 第一件事：電壓跌 ⇒ 風扇推進力細咗 ⇒ 車速 v 先跌。跟住一定要用已推導嘅關係式把 v 嘅變化傳去 θ 同 T：v² = gL·tanθ·sinθ 同 T = mg/cosθ。呢題係一環扣一環嘅定性推理，唔係重新計算。",
   "kw": "『output voltage … drops slightly』→ 推進力減少 ⇒ v 減少；『describe and explain its subsequent motion in terms of v, θ and T』→ 三個量都要答，並且每個都要有理由；『v² = gL·tanθ·sinθ』→ θ↓ ⇒ v↓；『T = mg/cosθ』→ θ↓ ⇒ cosθ↑ ⇒ T↓。",
   "rs": [
@@ -8358,7 +8928,8 @@ const BANK = [
    "From (2), T = mg/cosθ: θ↓ ⇒ cosθ↑ ⇒ T↓",
    "At the same time the radius of the circle, r = L sinθ, also becomes smaller",
    "Answer: v decreases, θ decreases and T decreases (all three fall together)"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L9c",
@@ -8382,7 +8953,6 @@ const BANK = [
   "stem": "一個質量 1 kg 的茶壺放在水平轉盤上、距轉盤中心 30 cm 處。轉盤以每秒 0.5 轉轉動時，茶壺隨盤一起運動（(b) 得淨力 ≈ 2.96 N）。轉盤突然停止，茶壺因而在盤面上滑動；滑動時作用於茶壺的摩擦力為 10 N。",
   "q": "(c) 轉盤突然停止，茶壺因而滑動。轉盤靜止前一刻以每秒 0.5 轉轉動，而茶壺滑動時受到的摩擦力為 10 N。求轉盤停止後茶壺滑行的距離。(3 分)",
   "fig": "與 (a) 相同的側視圖：轉盤（帶斜線陰影的水平長條）、中央鉛直虛線標示 centre、茶壺在左、下方尺寸線標示 30 cm",
-  "img": "bank-img/FM7-p09-right.jpg",
   "first": "見到「轉盤突然停止、茶壺滑行」→ 第一件事：分兩段處理。第一段：茶壺滑行前嘅初速由圓周運動嘅 v = r ω 得嚟（ω 要用 rad s⁻¹）。第二段：滑行階段只有摩擦力（10 N）作用，可由功—能定理（½mv² = f s）或者勻減速運動（v² = u² + 2as）求距離。",
   "kw": "「rotating at a rate of 0.5 revolutions per second just before it stops」→ 初速 v = r ω = (0.3)(0.5 × 2π)；「frictional force acting on the teapot is 10 N when it is slipping」→ 滑行階段唯一水平力係 10 N 動摩擦（同運動方向相反）；「distance travelled by the teapot after the turntable stops」→ 由滑行開始到靜止嘅距離；答案接受 0.044 m",
   "rs": [
@@ -8433,7 +9003,8 @@ const BANK = [
    "½ (1)(0.942)² = (10) s ⇒ s = 0.4437 / 10",
    "Or a = f/m = 10 m s⁻² with 0 = u² − 2as ⇒ s = 0.0444 m",
    "Answer: s = 0.0444 m (accept 0.044 m)"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L5c1",
@@ -8455,7 +9026,6 @@ const BANK = [
   "stem": "同一部質量 1800 kg 的汽車，現在改行一段以角 θ 傾斜（banked）的圓形道路；ideal banking angle 設計成完全沒有摩擦力作用在汽車上。G 為重心，O 為圓周運動的圓心，r 為半徑。",
   "q": "(c)(i) 在圖中畫出作用在汽車上的力。(2 分)",
   "fig": "汽車後視圖，但改畫在向右上升的斜坡實線上；由左端的 O（標示 O ✳）一條水平虛線穿過車身的 G 點，虛線中段標示 r；斜坡面與下方水平地面線之間標示夾角 θ（在斜坡左下端）。官方 MS 圖另標示：R 垂直於斜面向上、W 鉛垂向下。",
-  "img": "bank-img/FM7-p11-right.jpg",
   "first": "見到『ideal banking angle … no friction acting on the car』＋『draw the forces』→ 第一件事：因為冇摩擦，受力圖只可以有兩個力——weight W（鉛垂向下，唔跟斜面轉）同 normal reaction R（垂直於斜面，唔係鉛垂）。呢個『R 傾斜 θ 角』就係同 (a) 水平路面嘅最大分別。",
   "kw": "『no friction acting on the car』→ 唔可以畫摩擦（畫咗扣 1 分）；『normal reaction R』→ 垂直於斜面；『weight W acts at G』→ 鉛垂向下；MS 亦明示畫咗 centripetal force 扣 1 分。",
   "rs": [
@@ -8506,7 +9076,8 @@ const BANK = [
    "Normal reaction R: perpendicular to the inclined plane, pointing upwards and making an angle θ with the vertical",
    "The resultant of R and W points horizontally towards the centre O",
    "Answer: the two forces W (vertically downwards) and R (perpendicular to the inclined plane), both labelled"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L5c2",
@@ -8528,7 +9099,6 @@ const BANK = [
   "stem": "一部質量 1800 kg 的汽車在 ideal banking、斜角 θ 的圓形道路上轉彎；ideal banking 設計成沒有摩擦力作用在汽車上。作用在汽車上的力只有鉛垂向下的 weight W 與垂直於斜面的 normal reaction R。",
   "q": "(c)(ii) 指出哪一個力提供汽車作圓周運動所需的向心力。(1 分)",
   "fig": "汽車後視圖畫在向右上升的斜面上；R 垂直斜面向右上，W 鉛垂向下；R 與鉛垂線成 θ 角，由 O 到 G 的水平虛線標示 r。",
-  "img": "bank-img/FM7-p11-right.jpg",
   "first": "見到『which force provides the centripetal force』→ 第一件事：唯一有水平分量嘅力就係 R（因為 W 鉛垂向下），所以答案係 normal reaction 嘅水平分量 R sinθ。答『friction』或者答『normal reaction』而唔講『水平分量』都唔完整。",
   "kw": "『no friction』→ 唔可以答 friction；『which force provides the centripetal force』→ 答 normal reaction 嘅水平分量（horizontal component）；『weight』鉛垂向下，冇水平分量。",
   "rs": [
@@ -8571,7 +9141,8 @@ const BANK = [
    "Resolve R into R sinθ (horizontally towards the centre) and R cosθ (upwards)",
    "W has no horizontal component",
    "Answer: it is provided by the horizontal component R sinθ of the normal reaction R"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L5c3",
@@ -8593,7 +9164,6 @@ const BANK = [
   "stem": "一部汽車在 ideal banking、斜角 θ 的圓形道路上以速率 v 轉彎，圓周半徑為 r；ideal banking 設計成沒有摩擦作用在汽車上，只有 normal reaction R（垂直斜面）與 weight mg（鉛垂向下）。",
   "q": "(c)(iii) 推導 ideal banking angle 的表達式（以 v 與 r 表示）。(3 分)",
   "fig": "汽車後視圖畫在向右上升的斜面上；R 垂直於斜面向右上、W 鉛垂向下；R 與鉛垂線之間的角為 θ，由 O 到 G 的水平虛線標示半徑 r。",
-  "img": "bank-img/FM7-p11-right.jpg",
   "first": "見到『derive an expression for the ideal banking angle in terms of v and r』→ 第一件事：寫出兩條分量方程——鉛直 R cosθ = mg（冇豎直加速度）、水平 R sinθ = mv²/r（向心力），再相除消去 R 同 m。呢個『相除消 R』係標準三步。",
   "kw": "『ideal banking angle』→ 冇摩擦，向心力全部由 R 嘅水平分量提供；『in terms of v and r』→ 最後答案應為 tanθ = v²/(gr)，m 要消去；『θ to the horizontal』→ θ 係斜面同水平面嘅夾角，亦即係 R 同鉛垂線嘅夾角。",
   "rs": [
@@ -8644,7 +9214,8 @@ const BANK = [
    "Horizontal: R sin θ = m v² / r",
    "Divide the two equations to eliminate R and m ⇒ tan θ = v² / (g r)",
    "Answer: tan θ = v² / (g r), i.e. θ = tan⁻¹(v²/gr)"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L5c4",
@@ -8666,7 +9237,6 @@ const BANK = [
   "stem": "公路彎位以角 θ 傾斜（banked）。由 (c)(iii) 已知 ideal banking 的關係 tan θ = v²/(g r)，即向心力由 normal reaction 的水平分量提供，車輛不需要摩擦力也可以安全過彎。",
   "q": "(c)(iv) 舉出在公路彎位設 banking 的兩個優點。(2 分)",
   "fig": "無圖（承 (c)：汽車在斜角 θ 的彎位上轉彎，R 垂直斜面、W 鉛垂向下）。",
-  "img": "bank-img/FM7-p11-right.jpg",
   "first": "見到『TWO advantages of banking at a bend in highways』→ 第一件事：兩個優點都必須扣住同一條物理——normal reaction 嘅水平分量分擔咗向心力，令需要嘅摩擦減少。所以答案係：① 可以更高速度過彎而唔打滑；② 可以用更細半徑設計彎位。",
   "kw": "『TWO advantages』→ 一定要寫兩點；『banking』→ 靠 R 嘅水平分量提供向心力；『without skidding』→ 兩點都要扣住防打滑（MS 兩句都帶呢個條件）。",
   "rs": [
@@ -8715,7 +9285,8 @@ const BANK = [
    "If r is unchanged ⇒ v can be larger: ① greater speed without skidding",
    "If v is unchanged ⇒ r can be smaller: ② a smaller radius of bending road without skidding",
    "Answer: ① a higher speed without skidding; ② a smaller radius of bending road without skidding"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "CM-L6a",
@@ -8737,7 +9308,6 @@ const BANK = [
   "stem": "一架飛機以機翼傾斜 36° 的姿態在水平面上作半徑 r 的圓周運動（如圖）。飛機質量 4.5 × 10⁵ kg，以恒定速率 240 m s⁻¹ 飛行。圖中標示有一個作用於飛機的升力（lift force）P，P 垂直於機翼，並與鉛直點劃線成 36°。取 g = 9.81 m s⁻²，忽略空氣阻力。",
   "q": "(a) 計算圖中標示的升力 P。(2 分)",
   "fig": "飛機以一個小圓圈加一條斜直線（機翼）表示，位於圖左；由飛機向上畫一條鉛直點劃線；由飛機畫一支垂直於機翼、指向右上的箭頭標示 P；鉛直線與 P 之間標示 36°；由飛機向右有一條水平點劃線（標示 r）連到一個黑點，旁標 centre O；一個扁長的水平虛線橢圓代表飛機的圓周軌跡",
-  "img": "bank-img/FM7-p10-left.jpg",
   "first": "見到「升力 P」＋「機翼傾斜 36°」＋「水平圓周」→ 第一件事：分辨 P 嘅兩個分量。P 垂直於機翼，而機翼傾斜 36°，所以 P 同鉛直線成 36°（圖中已直接標示）。飛機喺豎直方向冇加速 ⇒ P cos 36° 必須等於重量 mg。呢一步係全題起手式，唔係向心力公式。",
   "kw": "「wings tilted 36°」→ 機翼與水平成 36°，故垂直於機翼嘅 P 與鉛直線成 36°（最易搞錯嘅一步）；「constant speed in a horizontal circle」→ 豎直方向加速度為零 ⇒ P cos 36° = mg；「lift force P」→ P 唔係向心力，向心力只係 P 嘅水平分量 P sin 36°",
   "rs": [
@@ -8789,7 +9359,8 @@ const BANK = [
    "P cos 36° = (4.5 × 10⁵)(9.81) = 4.41 × 10⁶",
    "P = 4.41 × 10⁶ ÷ cos 36° = 5.456 × 10⁶",
    "Answer: P = 5.46 × 10⁶ N"
-  ]
+  ],
+  "img": "FM7-p10-left.jpg"
  },
  {
   "id": "CM-L6b",
@@ -8811,7 +9382,6 @@ const BANK = [
   "stem": "一架飛機以機翼傾斜 36° 的姿態在水平面上作半徑 r 的圓周運動（如圖）。飛機質量 4.5 × 10⁵ kg，以恒定速率 240 m s⁻¹ 飛行。圖中標示作用於飛機的升力 P（垂直於機翼，與鉛直線成 36°）。(a) 已求得 P = 5.46 × 10⁶ N。取 g = 9.81 m s⁻²，忽略空氣阻力。",
   "q": "(b) 求作用於飛機的向心力（centripetal force）。(2 分)",
   "fig": "與 (a) 相同：飛機在左；鉛直點劃線與 P 成 36°；水平點劃線標示 r 連到 centre O；虛線橢圓為圓周軌跡",
-  "img": "bank-img/FM7-p10-left.jpg",
   "first": "見到「向心力」＋已知升力 P → 第一件事：向心力係指向圓心嘅合力。飛機只受兩個力（升力 P 同重量 mg），而重量係豎直向下、冇水平分量，所以向心力一定係 P 嘅水平分量 P sin 36°，唔使再寫 mv²/r。",
   "kw": "「centripetal force」→ 指向圓心嘅淨水平力；「P」→ 記住 P 與鉛直線成 36°，水平分量用 sin；呢題唔使知 r 同 v 都可以求到向心力（因為 (a) 已經求得 P）",
   "rs": [
@@ -8861,7 +9431,8 @@ const BANK = [
    "F_C = (5.46 × 10⁶) sin 36°",
    "F_C = 3.209 × 10⁶",
    "Answer: centripetal force = 3.21 × 10⁶ N"
-  ]
+  ],
+  "img": "FM7-p10-left.jpg"
  },
  {
   "id": "CM-L6c",
@@ -8883,7 +9454,6 @@ const BANK = [
   "stem": "一架飛機以機翼傾斜 36° 的姿態在水平面上作半徑 r 的圓周運動。飛機質量 4.5 × 10⁵ kg，以恒定速率 240 m s⁻¹ 飛行，升力 P 與鉛直線成 36°。已求得 P = 5.46 × 10⁶ N、(b) 向心力 = 3.21 × 10⁶ N。取 g = 9.81 m s⁻²。",
   "q": "(c) 求飛機的加速度。加速度的方向是甚麼？(3 分)",
   "fig": "與 (a) 相同的示意圖：飛機、升力 P（與鉛直線成 36°）、標示 r 的水平點劃線連到 centre O、虛線橢圓軌跡",
-  "img": "bank-img/FM7-p10-left.jpg",
   "first": "見到「求加速度」＋「方向」→ 第一件事：機已經知淨力（(b) 嘅向心力），用 F = m a 就得大小；而方向唔使計——勻速圓周運動嘅加速度必然係向心加速度，永遠指向圓心 O。題目特登分開問方向，就係要考呢個概念。",
   "kw": "「Find the acceleration」→ a = F_net / m，用 (b) 嘅 3.21 × 10⁶ N 而唔係用 P；「What is the direction」→ 指向圓心（towards the centre O），唔可以答『沿飛行方向』；「constant speed」→ 切線方向冇加速度，全部加速度都係指向圓心",
   "rs": [
@@ -8935,7 +9505,8 @@ const BANK = [
    "a = 3.21 × 10⁶ ÷ 4.5 × 10⁵ = 7.133",
    "Uniform circular motion ⇒ the acceleration points towards the centre O",
    "Answer: a = 7.13 m s⁻², directed towards the centre O"
-  ]
+  ],
+  "img": "FM7-p10-left.jpg"
  },
  {
   "id": "CM-L6d",
@@ -8957,7 +9528,6 @@ const BANK = [
   "stem": "一架飛機以機翼傾斜 36° 的姿態在水平面上作半徑 r 的圓周運動。飛機質量 4.5 × 10⁵ kg，以恒定速率 240 m s⁻¹ 飛行。已求得向心力 = 3.21 × 10⁶ N、(c) 加速度 a = 7.13 m s⁻²（方向指向圓心 O）。取 g = 9.81 m s⁻²。",
   "q": "(d) 計算飛機圓周飛行路徑的半徑 r。(2 分)",
   "fig": "與 (a) 相同的示意圖：飛機、升力 P（與鉛直線成 36°）、標示 r 的水平點劃線連到 centre O、虛線橢圓軌跡",
-  "img": "bank-img/FM7-p10-left.jpg",
   "first": "見到「求 r」＋已知 v 同 a → 第一件事：揀最直接嘅式 a = v²/r（唔使再用 P 或者 m）。要小心唔好誤用直徑，亦唔好再繞路用 F = mv²/r（會多一次乘法）。",
   "kw": "「Calculate the radius r」→ 由 a = v²/r 整理成 r = v²/a；v = 240 m s⁻¹ 係速率（唔使開方／唔使分解）；a 要用 (c) 求得嘅 7.13 m s⁻²，唔可以用 g",
   "rs": [
@@ -9006,7 +9576,8 @@ const BANK = [
    "r = 57600 ÷ 7.13 = 8078.5",
    "Check: r = 240² / (9.81 tan 36°) = 8081 m ✓",
    "Answer: r = 8080 m (about 8.1 km)"
-  ]
+  ],
+  "img": "FM7-p10-left.jpg"
  },
  {
   "id": "CM-L6e1",
@@ -9028,7 +9599,6 @@ const BANK = [
   "stem": "一架飛機以恒定速率 240 m s⁻¹ 在水平面作圓周運動，升力 P 垂直於機翼，並與鉛直線成傾斜角 θ。飛機質量 4.5 × 10⁵ kg。原來 θ = 36°，已求得 P = 5.46 × 10⁶ N、向心力 = 3.21 × 10⁶ N、a = 7.13 m s⁻²、r = 8080 m。",
   "q": "(e) 假設飛機以同一速率飛行，但傾斜角加大。以下各項有何變化？(i) 升力 P；(1 分)",
   "fig": "無圖（承 (a) 的飛機傾斜示意圖）",
-  "img": "bank-img/FM7-p10-left.jpg",
   "first": "見到「同一速率、傾斜角加大」＋問升力 → 第一件事：升力唔係由速率定，係由豎直方程 P cos θ = mg 定（因為豎直方向永遠平衡）。mg 不變、θ 加大 ⇒ cos θ 減小 ⇒ P 一定要加大。",
   "kw": "「same speed」→ v 不變，但呢個唔影響 P 嘅豎直分量要求；「tilts with a greater angle」→ θ ↑ ⇒ cos θ ↓；「the lift force P」→ 由 P = mg / cos θ 判斷，唔可以由 v 判斷",
   "rs": [
@@ -9073,7 +9643,8 @@ const BANK = [
    "θ ↑ ⇒ cos θ ↓",
    "P = m g / cos θ ⇒ P ↑",
    "Answer: the lift force P increases"
-  ]
+  ],
+  "img": "FM7-p10-left.jpg"
  },
  {
   "id": "CM-L6e2",
@@ -9095,7 +9666,6 @@ const BANK = [
   "stem": "一架飛機以恒定速率 240 m s⁻¹ 在水平面作圓周運動，升力 P 垂直於機翼並與鉛直線成傾斜角 θ。飛機質量 4.5 × 10⁵ kg，原來 θ = 36°（P = 5.46 × 10⁶ N、向心力 = 3.21 × 10⁶ N、a = 7.13 m s⁻²）。",
   "q": "(e) 假設飛機以同一速率飛行，但傾斜角加大。以下各項有何變化？(ii) 向心加速度；(1 分)",
   "fig": "無圖（承 (a) 的飛機傾斜示意圖）",
-  "img": "bank-img/FM7-p10-left.jpg",
   "first": "見到「向心加速度點變」＋同一速率 → 第一件事：向心加速度唔可以由 v 單獨決定（v 不變但 r 都會變），要用 a = F_C / m = g tan θ 呢條式——θ 加大 ⇒ a 加大。",
   "kw": "「centripetal acceleration」→ a = F_C / m = (P sin θ)/m = g tan θ，同 v 無關；「same speed」→ 唔可以講『同一速率所以同一加速度』（a = v²/r，r 同時變緊）",
   "rs": [
@@ -9140,7 +9710,8 @@ const BANK = [
    "P = m g / cos θ ⇒ a = g tan θ",
    "θ ↑ ⇒ tan θ ↑ ⇒ a ↑",
    "Answer: the centripetal acceleration increases"
-  ]
+  ],
+  "img": "FM7-p10-left.jpg"
  },
  {
   "id": "CM-L6e3",
@@ -9162,7 +9733,6 @@ const BANK = [
   "stem": "一架飛機以恒定速率 240 m s⁻¹ 在水平面作圓周運動，升力垂直於機翼並與鉛直線成傾斜角 θ。原來 θ = 36°，a = 7.13 m s⁻²、r = 8080 m。(e)(ii) 已判斷：傾斜角加大時向心加速度增加。",
   "q": "(e) 假設飛機以同一速率飛行，但傾斜角加大。以下各項有何變化？(iii) 圓周路徑的半徑 r；(1 分)",
   "fig": "無圖（承 (a) 的飛機傾斜示意圖）",
-  "img": "bank-img/FM7-p10-left.jpg",
   "first": "見到「求 r 點變」＋『same speed』 → 第一件事：v 固定時 r 唔係自動不變，因為 a 都變緊。用 a = v²/r（即 r = v²/a）：v 不變、a 增加 ⇒ r 減小。",
   "kw": "「same speed」→ v 固定 ⇒ r 同 a 成反比（r = v²/a）；「the radius of the circular path r」→ 唔可以答 unchanged，因為 a 已經變咗；夾埋 (e)(ii) 嘅結果一齊用",
   "rs": [
@@ -9209,7 +9779,8 @@ const BANK = [
    "⇒ r decreases",
    "Check: r = v² / (g tan θ), θ ↑ ⇒ tan θ ↑ ⇒ r ↓ ✓",
    "Answer: the radius r decreases"
-  ]
+  ],
+  "img": "FM7-p10-left.jpg"
  },
  {
   "id": "PM-M31",
@@ -9230,7 +9801,6 @@ const BANK = [
   "cross": [],
   "q": "一粒粒子以水平方向射向 1.0 m 外的垂直牆，結果撞在牆上距發射點垂直下方 0.8 m 的位置。求發射速率。（忽略空氣阻力）",
   "fig": "圖示水平拋射射向垂直牆的示意圖：粒子由左方以水平方向射出，右方為以斜線陰影表示的垂直牆；圖中標示水平距離 1.0 m，以及牆上撞擊點在發射點垂直下方 0.8 m。",
-  "img": "bank-img/PM-M31.jpg",
   "o": [
    "2.0 m s⁻¹",
    "2.5 m s⁻¹",
@@ -9291,7 +9861,8 @@ const BANK = [
    "Horizontal: constant speed ⇒ x = u_x t",
    "1.0 = u(0.4038) ⇒ u = 2.476 ≈ 2.5 m s⁻¹",
    "Answer: B"
-  ]
+  ],
+  "img": "PM-M31.jpg"
  },
  {
   "id": "PM-L1a",
@@ -9313,7 +9884,6 @@ const BANK = [
   "stem": "乒乓球在 A 點被擊出，A 點位於桌邊 X 的正上方 0.40 m。球以水平速度 u 離開 A，剛好越過球網落到桌面 B 點。桌子 XY 長 2.70 m，球網高 0.15 m 並放在桌子正中（即距 X 1.35 m、距 Y 1.35 m）。球在 B 反彈後升至最高點 C，C 在桌面上方 0.25 m。取 g = 10 m s⁻²，忽略空氣阻力。",
   "q": "(a) 計算乒乓球的初速度 u。(2 分)",
   "fig": "示意圖：桌子 XY 長 2.70 m，X 為左端、Y 為右端；A 點位於 X 正上方 0.40 m，球以水平速度 u 向右射出；球網高 0.15 m，豎立於桌子正中（距 X 1.35 m、距 Y 1.35 m）；球剛好掠過網頂後落在桌面 B 點，再反彈至桌面上方 0.25 m 的最高點 C。圖下方另附方格圖，縱軸為 v_y / m s⁻¹（由 −3 到 +3，每格 1），橫軸為 time，圖上已標出 t_A、t_B、t_C 三個時刻。",
-  "img": "bank-img/FM6-p09-left.jpg",
   "first": "見到「水平擊出」＋「剛好過網」→ 第一件事：認出呢個係平拋，u_y = 0，豎直方向淨係由重力話事。所以解題次序一定係「先豎直定 t、再水平求 u」，唔可以一開始就寫 u = x/t，因為 t 仲未知。",
   "kw": "「horizontally」→ u_y = 0、u_x = u；「just passes the net」→ 球在網頂高度（0.40 − 0.15 = 0.25 m）時，水平位置剛好到網（1.35 m）；「placed exactly at the middle of the table」→ 網距 X 1.35 m（唔係 2.70 m）。",
   "rs": [
@@ -9364,7 +9934,8 @@ const BANK = [
    "Vertical: 0.25 = ½(10)t² ⇒ t² = 0.05 ⇒ t = 0.224 s",
    "Horizontal: 1.35 = u(0.224) ⇒ u = 6.03 m s⁻¹",
    "Answer: u = 6.03 m s⁻¹"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L2a",
@@ -9386,7 +9957,6 @@ const BANK = [
   "stem": "一輛車在水平路面上向左行駛，衝上斜坡（ramp）後以初速度 u 飛出作拋體運動，最後撞到位於斜坡前方 30 m、離路面 5 m 高的路牌頂部。取重力加速度為 10 m s⁻²。",
   "q": "(a) 在圖中草繪該車以某一起跳速率飛出後，在空中的可能軌跡。(2 分)",
   "fig": "示意圖：車在水平路面上向左行駛，前方為斜坡（ramp）；斜坡左方水平距離 30 m 處豎立一支路牌，路牌頂離路面 5 m。",
-  "img": "bank-img/FM6-p09-right.jpg",
   "first": "見到「sketch the possible trajectories」→ 第一件事：呢題唔係算數，係考「同一速率可以配唔同發射角」。題目只固定速率 u 而唔固定角度，所以通過同一點（路牌頂）嘅軌跡有兩條：一條在上升階段撞中、一條在下降階段撞中。",
   "kw": "「for a certain take-off speed」→ 速率固定、角度可變 ⇒ 通常有兩解；「hit the top of the road sign」→ 兩條軌跡都必須通過路牌頂同一點；「possible trajectories」→ 一定要畫多過一條。",
   "rs": [
@@ -9429,7 +9999,8 @@ const BANK = [
    "Trajectory one: larger u_y, hitting the road sign after passing the highest point",
    "Trajectory two: smaller u_y, hitting the road sign on the way up (after a shorter time)",
    "Answer: draw two parabolas with the same starting point and the same end point (the top of the road sign)"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L6a",
@@ -9451,7 +10022,6 @@ const BANK = [
   "stem": "如圖所示，球員在 P 點以球拍沿水平方向擊打一個質量 60 g 的網球，P 點離地 1.25 m。球在 Q 點撞地後反彈，剛好越過障礙物 R —— R 是反彈軌跡的最高點，離地 h。P 與 Q 的水平距離為 3.5 m。忽略空氣阻力，取 g = 10 m s⁻²。",
   "q": "(a) 計算網球由 P 飛到 Q 的飛行時間。（2 分）",
   "fig": "題圖（上）：P 在左方，標示離地 1.25 m；球由 P 以水平方向擊出，沿拋物線下降至 Q 撞地，再反彈成另一段拋物線，剛好越過豎立障礙物 R 的頂（R 離地 h）；P 到 Q 標示水平距離 3.5 m，地面畫陰影線。（e）題另有下圖：由 Q 點畫出兩條虛線軌跡，B 較陡、A 較平緩，右方為高度 h 的障礙物 R。",
-  "img": "bank-img/FM6-p11-right.jpg",
   "first": "見到「水平擊出」+「求飛行時間」→ 第一件事：認出 u_y = 0，即豎直方向係純自由落體，1.25 m 嘅下跌完全由重力造成。所以唔可以用「水平距離 ÷ 速度」呢類思路，因為水平速度係未知數；一定要由豎直方向入手。",
   "kw": "「strikes ... horizontally」→ u_y = 0；「at a height of 1.25 m above the ground」→ 豎直位移 y = 1.25 m；「time of flight from P to Q」→ 由 y = ½gt² 直接解 t；題目已指定 g = 10 m s⁻²。",
   "rs": [
@@ -9500,7 +10070,8 @@ const BANK = [
    "(1.25) = ½(10)t² ⇒ 1.25 = 5t²",
    "t² = 0.25 ⇒ t = 0.5 s",
    "Answer: t = 0.5 s"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L4a1",
@@ -9524,7 +10095,6 @@ const BANK = [
   "stem": "如圖所示，Billy 想把球傳給站在 38 m 外的 Roy。Billy 由離地 2 m 的一點以初速率 20 m s⁻¹、仰角 35° 拋出球。球的質量為 0.42 kg。取重力加速度為 10 m s⁻²，忽略空氣阻力及球的大小。假設 Billy 的拋球動作由靜止開始，且拋球期間球的重力勢能增益可以忽略。",
   "q": "(a)(i) 求 Billy 在拋球動作中對球所做的功。（2 分）",
   "fig": "示意圖：Billy 在左方，拋出點離地 2 m，初速 u = 20 m s⁻¹、仰角 35°，虛線拋物線向右；Roy 在右方水平距離 38 m 處。圖中標示 u = 20 m s⁻¹、35°、2 m、h、Billy's position、Roy's position 及 38 m，其中 h 為 Roy 的接球高度。",
-  "img": "bank-img/FM6-p10-right.jpg",
   "first": "見到「由靜止開始」＋「重力勢能增益可忽略」＋「求做功」→ 第一件事：呢兩個假設係用嚟把問題簡化成「做功 = 動能增益」，即 W = ΔKE = ½mu² − 0，一條式搞定。",
   "kw": "「starts from rest」→ 初動能 = 0；「gain in gravitational potential energy can be neglected」→ 唔需要加 mgh；「work done on the ball by Billy」→ W = ½mu²，用合速率 20 m s⁻¹。",
   "rs": [
@@ -9571,7 +10141,8 @@ const BANK = [
    "W = ½(0.42)(20)² = ½(0.42)(400)",
    "W = 84 J",
    "Answer: W = 84 J"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L4a2",
@@ -9595,7 +10166,6 @@ const BANK = [
   "stem": "如圖所示，Billy 想把球傳給站在 38 m 外的 Roy。Billy 由離地 2 m 的一點以初速率 20 m s⁻¹、仰角 35° 拋出球。球的質量為 0.42 kg。取重力加速度為 10 m s⁻²，忽略空氣阻力及球的大小。假設 Billy 的拋球動作由靜止開始，且拋球期間球的重力勢能增益可以忽略。已知 (a)(i) 求得拋球動作中 Billy 對球所做的功為 84 J。",
   "q": "(a)(ii) 若拋球動作歷時 0.15 s，計算 Billy 傳遞給球的平均功率。（2 分）",
   "fig": "示意圖：Billy 在左方，拋出點離地 2 m，初速 u = 20 m s⁻¹、仰角 35°，虛線拋物線向右；Roy 在右方水平距離 38 m 處。圖中標示 u = 20 m s⁻¹、35°、2 m、h、Billy's position、Roy's position 及 38 m，其中 h 為 Roy 的接球高度。",
-  "img": "bank-img/FM6-p10-right.jpg",
   "first": "見到「average power」→ 第一件事：P = W/t，而呢個 W 就係 (a)(i) 算出嘅 84 J；關鍵係 t 要取「拋球動作嘅 0.15 s」，唔係球嘅飛行時間 2.32 s。",
   "kw": "「average power」→ P = W/t（平均，唔係瞬時 Fv）；「the throwing action lasts for 0.15 s」→ t = 0.15 s 係做功時間；「delivers to the ball」→ 用 (a)(i) 嘅 84 J。",
   "rs": [
@@ -9640,7 +10210,8 @@ const BANK = [
    "P = 84 / 0.15",
    "P = 560 W",
    "Answer: P = 560 W"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L1b",
@@ -9664,7 +10235,6 @@ const BANK = [
   "stem": "乒乓球由桌邊 X 上方 0.40 m 的 A 點以水平速度 u = 6.03 m s⁻¹ 擊出，落到桌面的 B 點。球網高 0.15 m，位於桌子正中，桌子 XY 長 2.70 m。取 g = 10 m s⁻²，忽略空氣阻力。",
   "q": "(b) 計算球剛撞到桌面 B 之前的速率。(2 分)",
   "fig": "示意圖：桌子 XY 長 2.70 m，X 為左端、Y 為右端；A 點位於 X 正上方 0.40 m，球以水平速度 u 向右射出；球網高 0.15 m，豎立於桌子正中（距 X 1.35 m、距 Y 1.35 m）；球剛好掠過網頂後落在桌面 B 點，再反彈至桌面上方 0.25 m 的最高點 C。圖下方另附方格圖，縱軸為 v_y / m s⁻¹（由 −3 到 +3，每格 1），橫軸為 time，圖上已標出 t_A、t_B、t_C 三個時刻。",
-  "img": "bank-img/FM6-p09-left.jpg",
   "first": "見到「求撞桌之前嘅速率」＋「平拋」→ 第一件事：speed 係合速率，唔係水平速度。最直接嘅路係能量守恆——由 A 到 B 重力做正功 mgh，動能增加，而質量 m 會相消，一條式搞定。",
   "kw": "「speed just before it hits the table」→ 合速率 v，唔係 v_x；「from A to B」→ 豎直下降 0.40 m（A 在桌面上方 0.40 m、B 在桌面上）；「u = 6.03 m s⁻¹」→ (a) 嘅答案，可以 carry forward。",
   "rs": [
@@ -9715,7 +10285,8 @@ const BANK = [
    "½(6.03)² + (10)(0.40) = ½v² ⇒ 18.18 + 4.00 = ½v²",
    "v² = 44.36 ⇒ v = 6.66 m s⁻¹",
    "Answer: v = 6.66 m s⁻¹"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L4b",
@@ -9737,7 +10308,6 @@ const BANK = [
   "stem": "如圖所示，Billy 想把球傳給站在 38 m 外的 Roy。Billy 由離地 2 m 的一點以初速率 20 m s⁻¹、仰角 35° 拋出球。球的質量為 0.42 kg。取重力加速度為 10 m s⁻²，忽略空氣阻力及球的大小。",
   "q": "(b) 求 Roy 應把雙手置於高度 h 的何處，才可接到球。（3 分）",
   "fig": "示意圖：Billy 在左方，拋出點離地 2 m，初速 u = 20 m s⁻¹、仰角 35°，虛線拋物線向右；Roy 在右方水平距離 38 m 處。圖中標示 u = 20 m s⁻¹、35°、2 m、h、Billy's position、Roy's position 及 38 m，其中 h 為 Roy 的接球高度。",
-  "img": "bank-img/FM6-p10-right.jpg",
   "first": "見到「求接球高度 h」→ 第一件事：分兩步走。水平方向等速，可以先由 38 m 算出飛行時間 t；再用豎直方程算出該時刻球相對拋出點嘅位移 y；最後 h = 2 + y（y 會係負數，因為球接到時跌低過拋出點）。",
   "kw": "「38 m away」→ 水平位移 38 m，用 x = u cosθ × t；「h that Roy should place his hands」→ 由地面量起嘅高度；「point 2 m above the ground」→ 拋出點高 2 m ⇒ h = 2 + y；「10 m s⁻²」→ a_y = −10 m s⁻²（取向上為正）。",
   "rs": [
@@ -9788,7 +10358,8 @@ const BANK = [
    "Vertical: y = (20 sin 35°)(2.32) + ½(−10)(2.32)² = 26.61 − 26.91 = −0.298 m",
    "h = 2 + y = 2 − 0.298 = 1.702 m",
    "Answer: h = 1.70 m (measured from the ground)"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L6b",
@@ -9810,7 +10381,6 @@ const BANK = [
   "stem": "如圖所示，球員在 P 點以球拍沿水平方向擊打一個質量 60 g 的網球，P 點離地 1.25 m。球在 Q 點撞地後反彈，剛好越過障礙物 R —— R 是反彈軌跡的最高點，離地 h。P 與 Q 的水平距離為 3.5 m。忽略空氣阻力，取 g = 10 m s⁻²。已知球由 P 飛到 Q 的飛行時間為 0.5 s。",
   "q": "(b) 求網球在 Q 點剛撞地前一剎那速度的水平分量與豎直分量。（2 分）",
   "fig": "題圖（上）：P 在左方，標示離地 1.25 m；球由 P 以水平方向擊出，沿拋物線下降至 Q 撞地，再反彈成另一段拋物線，剛好越過豎立障礙物 R 的頂（R 離地 h）；P 到 Q 標示水平距離 3.5 m，地面畫陰影線。（e）題另有下圖：由 Q 點畫出兩條虛線軌跡，B 較陡、A 較平緩，右方為高度 h 的障礙物 R。",
-  "img": "bank-img/FM6-p11-right.jpg",
   "first": "見到「求 horizontal and vertical components」→ 第一件事：知道答案一定要有「兩個數」，而且係「剛撞地前」嘅分量（即豎直分量向下）。水平分量由 x = v_x t 求，豎直分量由 v_y = gt 求，兩者共用 (a) 算出嘅 t = 0.5 s。",
   "kw": "「just before it hits the ground」→ 用撞地前一刻嘅速度，豎直分量方向向下；「horizontal component」→ 用 x = v_x t（水平等速）；「vertical component」→ u_y = 0 ⇒ v_y = gt；t = 0.5 s 由 (a) 得來。",
   "rs": [
@@ -9859,7 +10429,8 @@ const BANK = [
    "Vertical: u_y = 0 ⇒ v_y = gt = (10)(0.5) = 5 m s⁻¹",
    "Check: v_y = √(2gh) = √(2 × 10 × 1.25) = 5 m s⁻¹ ✓",
    "Answer: horizontal component 7 m s⁻¹ (forward); vertical component 5 m s⁻¹ (downwards)"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L2b1",
@@ -9881,7 +10452,6 @@ const BANK = [
   "stem": "(b) 假設車在軌跡最高點撞中路牌。忽略空氣阻力及車的大小。車由斜坡起跳，路牌頂離路面 5 m，位於斜坡前方水平距離 30 m。取 g = 10 m s⁻²。",
   "q": "(b)(i) 計算車撞中路牌之前的飛行時間 t。(2 分)",
   "fig": "示意圖：車在水平路面上向左行駛，前方為斜坡（ramp）；斜坡左方水平距離 30 m 處豎立一支路牌，路牌頂離路面 5 m。",
-  "img": "bank-img/FM6-p09-right.jpg",
   "first": "見到「hit the road sign at the highest point」→ 第一件事：最高點 ⇒ v_y = 0。呢個條件一落，豎直方程 v_y² = u_y² + 2ay 就只剩 u_y 一個未知數，可以先求 u_y，再求 t，完全唔需要理水平方向。",
   "kw": "「at the highest point」→ v_y = 0（唔係合速度為零）；「5 m high」→ 豎直位移 y = +5 m；「10 m s⁻²」→ a_y = −10 m s⁻²（取向上為正）。",
   "rs": [
@@ -9928,7 +10498,8 @@ const BANK = [
    "v_y = u_y + at: (0) = (10) + (−10)t",
    "t = 1 s",
    "Answer: t = 1 s"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L2b2",
@@ -9952,7 +10523,6 @@ const BANK = [
   "stem": "承 (b)(i)：車在軌跡最高點撞中路牌，路牌頂離路面 5 m、位於斜坡前方水平距離 30 m。已知飛行時間 t = 1 s、豎直初速 u_y = 10 m s⁻¹（向上）。取 g = 10 m s⁻²。",
   "q": "(b)(ii) 計算車的起跳速率 u 及投射角 θ。(3 分)",
   "fig": "示意圖：車在水平路面上向左行駛，前方為斜坡（ramp）；斜坡左方水平距離 30 m 處豎立一支路牌，路牌頂離路面 5 m。",
-  "img": "bank-img/FM6-p09-right.jpg",
   "first": "見到「求 u 同 θ」→ 第一件事：u 同 θ 只係一對分量（u_x, u_y）嘅另一種寫法。u_y 已經由 (b)(i) 得到，仲差 u_x；而 u_x 只可以用水平方向嘅等速方程求（30 = u_x × 1）。所以次序係：先水平求 u_x，再合成 u，最後用 tan θ 定角。",
   "kw": "「take-off speed u」→ 合成 u = √(u_x² + u_y²)，唔係 u_x；「projection angle θ」→ tan θ = u_y/u_x（MS 慣例係與水平嘅夾角）；「30 m away」→ 水平位移，用 x = u_x t。",
   "rs": [
@@ -10003,7 +10573,8 @@ const BANK = [
    "Combine: u = √(10² + 30²) = √1000 = 31.6 m s⁻¹",
    "Direction: tan θ = 10 / 30 = 0.3333 ⇒ θ = 18.4°",
    "Answer: u = 31.6 m s⁻¹, θ = 18.4° (to the horizontal)"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L1c",
@@ -10025,7 +10596,6 @@ const BANK = [
   "stem": "乒乓球由桌邊 X 上方 0.40 m 的 A 點以水平速度 u = 6.03 m s⁻¹ 擊出，剛好掠過球網後落到桌面 B 點，反彈後升至桌面上方 0.25 m 的最高點 C。t_A、t_B、t_C 分別是球在 A、B、C 三點的時刻。取 g = 10 m s⁻²，忽略空氣阻力。",
   "q": "(c) 若 C 點在桌面上方 0.25 m，試繪畫球由 A 到 C 期間豎直速度 v_y 對時間的圖像。取向下為正。（t_A、t_B、t_C 分別為球在 A、B、C 三點的時刻。）(3 分)",
   "fig": "示意圖：桌子 XY 長 2.70 m，X 為左端、Y 為右端；A 點位於 X 正上方 0.40 m，球以水平速度 u 向右射出；球網高 0.15 m，豎立於桌子正中（距 X 1.35 m、距 Y 1.35 m）；球剛好掠過網頂後落在桌面 B 點，再反彈至桌面上方 0.25 m 的最高點 C。圖下方另附方格圖，縱軸為 v_y / m s⁻¹（由 −3 到 +3，每格 1），橫軸為 time，圖上已標出 t_A、t_B、t_C 三個時刻。",
-  "img": "bank-img/FM6-p09-left.jpg",
   "first": "見到「畫 v_y–t 圖」＋「有反彈」→ 第一件事：知道呢幅圖係「兩段斜率相同嘅直線 ＋ 中間一個垂直跳躍」。斜率永遠等於 g（因為 a_y 全程 = g 向下，連反彈都冇改變），跳躍就係碰撞。所以先要算碰撞前後嘅 v_y 數值，再落筆。",
   "kw": "「downward direction as positive」→ 向下為正，所以落緊桌嗰陣 v_y 係正、反彈後向上飛 v_y 變負；「from A to C」→ 圖由 t_A 畫到 t_C；「t_A、t_B、t_C on the time axis」→ 三個時間刻度由題目俾，唔使自己定。",
   "rs": [
@@ -10076,7 +10646,8 @@ const BANK = [
    "After B: the ball flies upwards ⇒ v_y = −√(2 × 10 × 0.25) = −2.2 m s⁻¹",
    "Construction: A→B a straight line rising to +2.8; at t_B a vertical jump down to −2.2; B→C a straight line rising back to 0",
    "Answer: two parallel straight sections plus a vertical jump at t_B, with v_y(A) = v_y(C) = 0"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L2c",
@@ -10101,7 +10672,6 @@ const BANK = [
   "stem": "承 (b)：車以 31.6 m s⁻¹ 由斜坡起跳。在斜坡前的路面發現長 39 m 的剎車痕，警方對剎車痕的法證量度顯示，作用於質量 1000 kg 的車的剎車力約為 8000 N。假設車撞上斜坡時的速率等於由斜坡起跳的投射速率。取 g = 10 m s⁻²。",
   "q": "(c) 估算車在開始剎車之前的速率。(2 分)",
   "fig": "示意圖：車在水平路面上向左行駛，前方為斜坡（ramp）；斜坡左方水平距離 30 m 處豎立一支路牌，路牌頂離路面 5 m。",
-  "img": "bank-img/FM6-p09-right.jpg",
   "first": "見到「剎車痕 ＋ 剎車力 ＋ 求剎車前速率」→ 第一件事：呢段其實唔關拋體事，係「牛頓第二定律求加速度 → 運動方程反推初速」或者「一條能量式」嘅串接，拋體部分只負責提供末速率 31.6 m s⁻¹。",
   "kw": "「braking marks of 39 m long」→ 剎車距離 s = 39 m；「braking force about 8000 N」→ 阻力做功 Fs（或 a = F/m = 8 m s⁻²，方向同運動相反）；「speed on hitting the ramp equals the projection speed」→ 末速率 v = 31.6 m s⁻¹。",
   "rs": [
@@ -10150,7 +10720,8 @@ const BANK = [
    "v² = u² + 2as: (31.6)² = u² + 2(−8)(39)",
    "1000 = u² − 624 ⇒ u² = 1624 ⇒ u = 40.3 m s⁻¹",
    "Answer: u = 40.3 m s⁻¹ (about 145 km h⁻¹)"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L6c1",
@@ -10174,7 +10745,6 @@ const BANK = [
   "stem": "如圖所示，球員在 P 點以球拍沿水平方向擊打一個質量 60 g 的網球，P 點離地 1.25 m。球在 Q 點撞地後反彈，剛好越過障礙物 R —— R 是反彈軌跡的最高點，離地 h。P 與 Q 的水平距離為 3.5 m。忽略空氣阻力，取 g = 10 m s⁻²。已知球由 P 飛到 Q 歷時 0.5 s，撞地前一剎那的速度水平分量 v_x = 7 m s⁻¹、豎直分量 v_y = 5 m s⁻¹（向下）。在 Q 點撞地期間，球速度的豎直分量減少 20%。",
   "q": "(c)(i) 假設地面光滑，計算球在 Q 點撞擊後一剎那的速率。（2 分）",
   "fig": "題圖（上）：P 在左方，標示離地 1.25 m；球由 P 以水平方向擊出，沿拋物線下降至 Q 撞地，再反彈成另一段拋物線，剛好越過豎立障礙物 R 的頂（R 離地 h）；P 到 Q 標示水平距離 3.5 m，地面畫陰影線。（e）題另有下圖：由 Q 點畫出兩條虛線軌跡，B 較陡、A 較平緩，右方為高度 h 的障礙物 R。",
-  "img": "bank-img/FM6-p11-right.jpg",
   "first": "見到「地面光滑（smooth）」+「求撞地後速率」→ 第一件事：光滑地面 ⇒ 冇水平摩擦力 ⇒ 水平速度分量反彈後「原封不動」仍然係 7 m s⁻¹；只有豎直分量按題目講嘅 20% 縮減。所以呢題係「一個分量變、一個分量唔變」再合成。",
   "kw": "「smooth」→ 水平方向無摩擦衝量 ⇒ v_x 不變 = 7 m s⁻¹；「vertical component ... reduced by 20%」→ v_y' = 5 × 80% = 4 m s⁻¹（方向由向下變向上）；「speed just after impact」→ 速率 = 合成量 √(v_x² + v_y'²)。",
   "rs": [
@@ -10223,7 +10793,8 @@ const BANK = [
    "v = √(v_x'² + v_y'²) = √(4² + 7²)",
    "v = √65 = 8.0623",
    "Answer: 8.06 m s⁻¹"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L6c2",
@@ -10248,7 +10819,6 @@ const BANK = [
   "stem": "如圖所示，球員在 P 點以球拍沿水平方向擊打一個質量 60 g 的網球，P 點離地 1.25 m。球在 Q 點撞地後反彈，剛好越過障礙物 R —— R 是反彈軌跡的最高點，離地 h。P 與 Q 的水平距離為 3.5 m。忽略空氣阻力，取 g = 10 m s⁻²。在 Q 點撞地期間，球速度的豎直分量減少 20%。已知球的質量為 60 g；撞地前一剎那的豎直速度分量 v_y = 5 m s⁻¹（向下）、水平分量 v_x = 7 m s⁻¹；反彈後的豎直速度分量 v_y' = 4 m s⁻¹（向上）。",
   "q": "(c)(ii) 若球與地面的接觸時間為 0.04 s，求地面在撞擊期間作用於球的平均力的大小。（3 分）",
   "fig": "題圖（上）：P 在左方，標示離地 1.25 m；球由 P 以水平方向擊出，沿拋物線下降至 Q 撞地，再反彈成另一段拋物線，剛好越過豎立障礙物 R 的頂（R 離地 h）；P 到 Q 標示水平距離 3.5 m，地面畫陰影線。（e）題另有下圖：由 Q 點畫出兩條虛線軌跡，B 較陡、A 較平緩，右方為高度 h 的障礙物 R。",
-  "img": "bank-img/FM6-p11-right.jpg",
   "first": "見到「average force」+「contact time」→ 第一件事：呢題係衝量—動量定理（impulse–momentum theorem），要用「動量變化 ÷ 時間」。而最易死嘅位係：撞地前豎直動量向下、反彈後向上，方向相反 ⇒ 相減時要減一個負數，即實際係相加。",
   "kw": "「average force exerted by the ground」→ 地面作用於球嘅力係 normal reaction R（向上），同時球仍受 weight mg 向下；「contact time 0.04 s」→ 除嘅時間；v_y = 5 m s⁻¹（向下，取負）、v_y' = 4 m s⁻¹（向上，取正）；m = 60 g = 0.06 kg。",
   "rs": [
@@ -10303,7 +10873,8 @@ const BANK = [
    "R − (0.06)(10) = [(0.06)(4) − (0.06)(−5)] / (0.04) = 0.54 / 0.04 = 13.5",
    "R = 13.5 + 0.6 = 14.1 N",
    "Answer: 14.1 N (upwards)"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L6d",
@@ -10325,7 +10896,6 @@ const BANK = [
   "stem": "如圖所示，球員在 P 點以球拍沿水平方向擊打一個質量 60 g 的網球，P 點離地 1.25 m。球在 Q 點撞地後反彈，剛好越過障礙物 R —— R 是反彈軌跡的最高點，離地 h。P 與 Q 的水平距離為 3.5 m。忽略空氣阻力，取 g = 10 m s⁻²。已知球在 Q 點反彈後，豎直速度分量為 4 m s⁻¹（向上），水平速度分量為 7 m s⁻¹。",
   "q": "(d) 估算障礙物的高度 h。（2 分）",
   "fig": "題圖（上）：P 在左方，標示離地 1.25 m；球由 P 以水平方向擊出，沿拋物線下降至 Q 撞地，再反彈成另一段拋物線，剛好越過豎立障礙物 R 的頂（R 離地 h）；P 到 Q 標示水平距離 3.5 m，地面畫陰影線。（e）題另有下圖：由 Q 點畫出兩條虛線軌跡，B 較陡、A 較平緩，右方為高度 h 的障礙物 R。",
-  "img": "bank-img/FM6-p11-right.jpg",
   "first": "見到「R 係軌跡最高點」+「求高度」→ 第一件事：最高點 ⇒ 豎直速度分量 v_y = 0（但水平分量仍然係 7 m s⁻¹，唔係 0！）。所以要用 v_y² = u_y² + 2a_y y 呢條「唔含 t」嘅方程，由反彈初速 4 m s⁻¹ 直接算出上升高度。",
   "kw": "「at its highest point of its path」→ v_y = 0；「just goes over an obstacle at R」→ 障礙物高度就係最高點高度 h；反彈後豎直速度 u_y = 4 m s⁻¹（向上）；取向上為正、a_y = −10 m s⁻²。",
   "rs": [
@@ -10376,7 +10946,8 @@ const BANK = [
    "0 = 16 − 20h ⇒ h = 0.8 m",
    "Check: t_top = 4/10 = 0.4 s, h = ½(10)(0.4)² = 0.8 m ✓",
    "Answer: h = 0.8 m"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L6e",
@@ -10400,7 +10971,6 @@ const BANK = [
   "stem": "如圖所示，球員在 P 點以球拍沿水平方向擊打一個質量 60 g 的網球，P 點離地 1.25 m。球在 Q 點撞地後反彈，剛好越過障礙物 R —— R 是反彈軌跡的最高點，離地 h。P 與 Q 的水平距離為 3.5 m。忽略空氣阻力，取 g = 10 m s⁻²。已知若地面光滑，球反彈後的豎直速度分量為 4 m s⁻¹，水平速度分量為 7 m s⁻¹。",
   "q": "(e) 若球與地面之間存在摩擦，判斷球會沿路徑 A 還是路徑 B 運動（見下圖），並解釋你的答案。（2 分）",
   "fig": "題圖（上）：P 在左方，標示離地 1.25 m；球由 P 以水平方向擊出，沿拋物線下降至 Q 撞地，再反彈成另一段拋物線，剛好越過豎立障礙物 R 的頂（R 離地 h）；P 到 Q 標示水平距離 3.5 m，地面畫陰影線。（e）題另有下圖：由 Q 點畫出兩條虛線軌跡，B 較陡、A 較平緩，右方為高度 h 的障礙物 R。",
-  "img": "bank-img/FM6-p11-right.jpg",
   "first": "見到「有 friction」+「揀路徑」→ 第一件事：摩擦只沿水平方向作用 ⇒ 只會減少水平速度 v_x，唔會改變豎直反彈速度 v_y。所以上升高度同上升時間完全不變，但水平行得近咗 ⇒ 軌跡變陡 ⇒ 揀 B。",
   "kw": "「friction exists between the ball and the ground」→ 水平方向有衝量 ⇒ v_x 減少；「path A or B」→ B 係較陡嘅一條、A 係較平緩嘅一條；「larger angle with the horizontal」→ tanθ = v_y / v_x，v_x 細咗 ⇒ θ 大咗。",
   "rs": [
@@ -10449,7 +11019,8 @@ const BANK = [
    "tanθ = v_y / v_x, and with v_x smaller the rebound angle θ is larger (a steeper path)",
    "Comparing with the figure: B is the steeper path and A is the flatter path",
    "Answer: Path B —— the horizontal speed is reduced by friction, so the ball rebounds at a larger angle with the horizontal"
-  ]
+  ],
+  "img": "FM6-p09-left.jpg"
  },
  {
   "id": "PM-L5a",
@@ -10473,7 +11044,6 @@ const BANK = [
   "stem": "如圖所示，一名質量 84 kg 的滑雪者由靜止從坡頂滑下，坡頂位於坡道末端上方 30 m。滑雪者離開坡道時速率為 21 m s⁻¹，並以與水平成 10° 向下的角度起跳，最終落在距坡道下端水平距離 60 m 的斜坡上。忽略空氣阻力，取重力加速度為 10 m s⁻²。",
   "q": "(a) 求滑雪者滑下坡道期間克服摩擦力所做的功。（3 分）",
   "fig": "示意圖：坡頂距坡道末端垂直高 30 m，坡道覆蓋積雪；滑雪者離開坡道末端時速率為 21 m s⁻¹，速度與水平成 10° 向下，沿虛線軌跡飛行，落點與坡道下端的水平距離為 60 m，該處斜坡的傾角標示為 φ。圖中另有方框註明圖示不按比例（Diagram NOT drawn to scale）。",
-  "img": "bank-img/FM6-p11-left.jpg",
   "first": "見到「由靜止滑下」+「求克服摩擦力所做嘅功」→ 第一件事：唔好用 F = ma（摩擦力同斜坡角度都未知，會兩個未知數），直接用「能量守恆＋能量損失」：重力勢能 = 動能 + 摩擦耗散。",
   "kw": "「work done against friction」→ 即能量損失項 W；「slides down from rest」→ 初動能 = 0、初 PE = mgh；「30 m above the end of the ramp」→ h 用垂直高度差 30 m，唔係斜坡長度。",
   "rs": [
@@ -10520,7 +11090,8 @@ const BANK = [
    "(84)(10)(30) = ½(84)(21)² + W",
    "25200 = 18522 + W",
    "W = 6678 J (≈ 6.7 kJ)"
-  ]
+  ],
+  "img": "FM7-p12-left.jpg"
  },
  {
   "id": "PM-L5b",
@@ -10542,7 +11113,6 @@ const BANK = [
   "stem": "如圖所示，一名質量 84 kg 的滑雪者由靜止從坡頂滑下，坡頂位於坡道末端上方 30 m。滑雪者離開坡道時速率為 21 m s⁻¹，並以與水平成 10° 向下的角度起跳，最終落在距坡道下端水平距離 60 m 的斜坡上。忽略空氣阻力，取重力加速度為 10 m s⁻²。",
   "q": "(b) 計算滑雪者離開坡道後在空中的飛行時間。（2 分）",
   "fig": "示意圖：坡頂距坡道末端垂直高 30 m，坡道覆蓋積雪；滑雪者離開坡道末端時速率為 21 m s⁻¹，速度與水平成 10° 向下，沿虛線軌跡飛行，落點與坡道下端的水平距離為 60 m，該處斜坡的傾角標示為 φ。圖中另有方框註明圖示不按比例（Diagram NOT drawn to scale）。",
-  "img": "bank-img/FM6-p11-left.jpg",
   "first": "見到「求飛行時間」+ 已知水平距離 → 第一件事：諗水平方向。水平方向等速，有位移（60 m）、有速度（21 cos10°），可以「一條式」算出 t，完全唔需要理豎直方向。",
   "kw": "「10° below the horizontal」→ 水平分量 = 21 cos10°（唔係 sin）；「horizontal distance of 60 m」→ 拋體嘅水平位移；水平方向等速 ⇒ x = u_x t。",
   "rs": [
@@ -10585,7 +11155,8 @@ const BANK = [
    "Constant horizontal speed: x = u_x t",
    "60 = 20.68 t",
    "t = 2.901 ≈ 2.90 s"
-  ]
+  ],
+  "img": "FM7-p12-left.jpg"
  },
  {
   "id": "PM-L5c",
@@ -10609,7 +11180,6 @@ const BANK = [
   "stem": "如圖所示，一名質量 84 kg 的滑雪者由靜止從坡頂滑下，坡頂位於坡道末端上方 30 m。滑雪者離開坡道時速率為 21 m s⁻¹，並以與水平成 10° 向下的角度起跳，最終落在距坡道下端水平距離 60 m 的斜坡上。忽略空氣阻力，取重力加速度為 10 m s⁻²。已知滑雪者在空中的飛行時間為 2.90 s。",
   "q": "(c) 求滑雪者落地時速度的大小與方向。（3 分）",
   "fig": "示意圖：坡頂距坡道末端垂直高 30 m，坡道覆蓋積雪；滑雪者離開坡道末端時速率為 21 m s⁻¹，速度與水平成 10° 向下，沿虛線軌跡飛行，落點與坡道下端的水平距離為 60 m，該處斜坡的傾角標示為 φ。圖中另有方框註明圖示不按比例（Diagram NOT drawn to scale）。",
-  "img": "bank-img/FM6-p11-left.jpg",
   "first": "見到「magnitude and direction of velocity」→ 第一件事：知道答案一定要「兩個數」——一個速率、一個角度。而且角度要講清楚係「與水平」定「與鉛垂」，MS 慣例俾「與水平」嘅夾角。",
   "kw": "「magnitude」→ v = √(v_x² + v_y²)；「direction」→ tan θ = v_y / v_x；「at landing」→ 用 t = 2.90 s（(b) 嘅答案）算 v_y。",
   "rs": [
@@ -10658,7 +11228,8 @@ const BANK = [
    "v = √(20.68² + 32.6²) = √1490.8 = 38.6 m s⁻¹",
    "tan θ = 32.6 / 20.68 = 1.576",
    "θ = 57.6°, i.e. 57.6° below the horizontal"
-  ]
+  ],
+  "img": "FM7-p12-left.jpg"
  },
  {
   "id": "PM-L5d",
@@ -10680,7 +11251,6 @@ const BANK = [
   "stem": "如圖所示，一名質量 84 kg 的滑雪者由靜止從坡頂滑下，坡頂位於坡道末端上方 30 m。滑雪者離開坡道時速率為 21 m s⁻¹，並以與水平成 10° 向下的角度起跳，最終落在距坡道下端水平距離 60 m 的斜坡上。忽略空氣阻力，取重力加速度為 10 m s⁻²。已知滑雪者落地時的速度方向與水平成 57.6° 向下。",
   "q": "(d) 為安全起見，滑雪者落地前一剎那的速度方向與該處斜坡的傾斜方向相差不得超過 5°。求該處斜坡傾角 φ 的最小值。（1 分）",
   "fig": "示意圖：坡頂距坡道末端垂直高 30 m，坡道覆蓋積雪；滑雪者離開坡道末端時速率為 21 m s⁻¹，速度與水平成 10° 向下，沿虛線軌跡飛行，落點與坡道下端的水平距離為 60 m，該處斜坡的傾角標示為 φ。圖中另有方框註明圖示不按比例（Diagram NOT drawn to scale）。",
-  "img": "bank-img/FM6-p11-left.jpg",
   "first": "見到「differ by no more than 5°」+「minimum value of φ」→ 第一件事：呢題係 (c) 嘅送分延伸，唔使重新計，直接用 (c) 嘅 57.6° 加減 5°。要判斷加定減。",
   "kw": "「no more than 5°」→ |θ − φ| ≤ 5°；「minimum φ」→ 取 φ = θ − 5°（φ 越細，同 θ 差越遠）。",
   "rs": [
@@ -10719,7 +11289,8 @@ const BANK = [
    "Safety requirement: |θ − φ| ≤ 5°",
    "Minimum φ = θ − 5° = 57.6° − 5°",
    "φ_min = 52.6°"
-  ]
+  ],
+  "img": "FM7-p12-left.jpg"
  },
  {
   "id": "PM-L7a",
@@ -10743,7 +11314,6 @@ const BANK = [
   "stem": "一個光滑的彎曲路軌 PQR 固定在一張水平長凳上，如圖所示。P 點位於凳面之上高度 h 處。一個質量 0.03 kg 的小金屬球 X 由 P 點靜止釋放。當球 X 到達 R 點時，它以水平方向運動，並與另一個質量 0.04 kg、原本靜止於路軌上的金屬球 Y 正面碰撞。碰撞後一剎那，球 X 停下來，而球 Y 以 3 m s⁻¹ 的速率沿水平方向離開長凳。忽略空氣阻力。",
   "q": "球 X 在撞到球 Y 之前一剎那的速率是多少？(1 分)",
   "fig": "題圖：左方為光滑的彎曲路軌，最高點 P（距凳面高度 h）標有球 X；路軌下降經 Q 後水平延伸至 R，R 處有球 Y；長凳以斜線陰影表示，高度標為 H；球 Y 離開長凳後作拋體運動，落到地面 S 點，S 距長凳邊的水平距離為 1.2 m。",
-  "img": "bank-img/FM6-p12-left.jpg",
   "first": "見到「碰撞後 X 停、Y 郁」+「求碰撞前 X 速率」→ 第一件事：題目冇俾力亦冇俾時間，但有碰撞前後嘅速度對應 ⇒ 一定用動量守恆（一條式搞掂，所以只值 1 分）。關鍵係認出碰撞前 X 有動量、Y 靜止；碰撞後 X 停（動量 0）、Y 郁。",
   "kw": "「comes to rest」→ 碰撞後 v_X' = 0；「initially at rest」→ 碰撞前 u_Y = 0；「moves off ... with a speed of 3 m s⁻¹」→ 碰撞後 v_Y' = 3 m s⁻¹；m_X = 0.03 kg、m_Y = 0.04 kg。",
   "rs": [
@@ -10792,7 +11362,8 @@ const BANK = [
    "(0.03) v = (0.04)(3) = 0.12",
    "v = 0.12 / 0.03 = 4 m s⁻¹",
    "Answer: 4 m s⁻¹"
-  ]
+  ],
+  "img": "FM7-p12-right.jpg"
  },
  {
   "id": "PM-L7b",
@@ -10816,7 +11387,6 @@ const BANK = [
   "stem": "一個光滑的彎曲路軌 PQR 固定在一張水平長凳上，如圖所示。P 點位於凳面之上高度 h 處。一個質量 0.03 kg 的小金屬球 X 由 P 點靜止釋放。當球 X 到達 R 點時，它以水平方向運動，並與另一個質量 0.04 kg、原本靜止於路軌上的金屬球 Y 正面碰撞。碰撞後一剎那，球 X 停下來，而球 Y 以 3 m s⁻¹ 的速率沿水平方向離開長凳。已知球 X 在碰撞前的速率為 4 m s⁻¹。忽略空氣阻力。",
   "q": "求 h 的值。(2 分)",
   "fig": "題圖：左方為光滑的彎曲路軌，最高點 P（距凳面高度 h）標有球 X；路軌下降經 Q 後水平延伸至 R，R 處有球 Y；長凳以斜線陰影表示，高度標為 H；球 Y 離開長凳後作拋體運動，落到地面 S 點，S 距長凳邊的水平距離為 1.2 m。",
-  "img": "bank-img/FM6-p12-left.jpg",
   "first": "見到「由靜止釋放」+「光滑路軌」+「求高度」→ 第一件事：光滑 ⇒ 無摩擦耗散 ⇒ 重力勢能全部變成動能，用 mgh = ½mv²（m 兩邊相消，所以答案與質量無關）。",
   "kw": "「smooth curved rail」→ 無摩擦 ⇒ 力學能守恆；「released from rest」→ 初動能 = 0；「P is at a height h above the bench surface」→ h 係 P 相對凳面嘅高度，亦即球落到 R（凳面水平）時嘅下降高度；g 用 9.81。",
   "rs": [
@@ -10865,7 +11435,8 @@ const BANK = [
    "Divide both sides by 0.03: (9.81) h = 8",
    "h = 8 / 9.81 = 0.8155",
    "Answer: h = 0.815 m"
-  ]
+  ],
+  "img": "FM7-p12-right.jpg"
  },
  {
   "id": "PM-L7c",
@@ -10887,7 +11458,6 @@ const BANK = [
   "stem": "一個光滑的彎曲路軌 PQR 固定在一張水平長凳上，如圖所示。P 點位於凳面之上高度 h 處。一個質量 0.03 kg 的小金屬球 X 由 P 點靜止釋放。當球 X 到達 R 點時，它以水平方向運動，並與另一個質量 0.04 kg、原本靜止於路軌上的金屬球 Y 正面碰撞。碰撞後一剎那，球 X 停下來，而球 Y 以 3 m s⁻¹ 的速率沿水平方向離開長凳。忽略空氣阻力。",
   "q": "球 Y 落在地面的 S 點，S 距長凳的水平距離為 1.2 m。求長凳的高度 H。(3 分)",
   "fig": "題圖：左方為光滑的彎曲路軌，最高點 P（距凳面高度 h）標有球 X；路軌下降經 Q 後水平延伸至 R，R 處有球 Y；長凳以斜線陰影表示，高度標為 H；球 Y 離開長凳後作拋體運動，落到地面 S 點，S 距長凳邊的水平距離為 1.2 m。",
-  "img": "bank-img/FM6-p12-left.jpg",
   "first": "見到「球 Y 水平離開長凳」+「求長凳高度」→ 第一件事：呢個係典型平拋 —— 水平方向求飛行時間 t、豎直方向求高度 H。三個 [1] 嘅分佈係：由水平方向求 t（1 分）、豎直方程 y = ½gt²（1 分）、答案 0.785 m（1 分）。",
   "kw": "「moves off the bench horizontally」→ u_y = 0、u_x = 3 m s⁻¹；「horizontal distance of 1.2 m」→ 水平位移 x = 1.2 m；「height H of the bench」→ 豎直位移 = H；本題題目無指定 g，MS 用 9.81。",
   "rs": [
@@ -10938,7 +11508,8 @@ const BANK = [
    "Vertical: y = ½gt²",
    "H = ½(9.81)(0.4)² = ½ × 9.81 × 0.16 = 0.7848",
    "Answer: H = 0.785 m"
-  ]
+  ],
+  "img": "FM7-p12-right.jpg"
  },
  {
   "id": "PM-L7d",
@@ -10960,7 +11531,6 @@ const BANK = [
   "stem": "一個光滑的彎曲路軌 PQR 固定在一張水平長凳上，如圖所示。P 點位於凳面之上高度 h 處。一個質量 0.03 kg 的小金屬球 X 由 P 點靜止釋放。當球 X 到達 R 點時，它以水平方向運動，並與另一個質量 0.04 kg、原本靜止於路軌上的金屬球 Y 正面碰撞。碰撞後一剎那，球 X 停下來，而球 Y 以 3 m s⁻¹ 的速率沿水平方向離開長凳。忽略空氣阻力。",
   "q": "現在球 X 改由路軌上的 Q 點靜止釋放，使球 Y 在碰撞後以較小的速率沿水平方向離開長凳。球 Y 的飛行時間會否改變？試簡略解釋。(2 分)",
   "fig": "題圖：左方為光滑的彎曲路軌，最高點 P（距凳面高度 h）標有球 X；路軌下降經 Q 後水平延伸至 R，R 處有球 Y；長凳以斜線陰影表示，高度標為 H；球 Y 離開長凳後作拋體運動，落到地面 S 點，S 距長凳邊的水平距離為 1.2 m。",
-  "img": "bank-img/FM6-p12-left.jpg",
   "first": "見到「飛行時間會唔會變」+「水平速度變細」→ 第一件事：諗豎直方向。飛行時間只由豎直位移 H 同 g 決定，同水平速度完全無關，所以答案係「唔會變」。呢題係文字論證題，唔使計數，但要講出關鍵詞。",
   "kw": "「released at Q」→ 碰撞前 X 速率細咗 ⇒ 碰撞後 Y 水平速度細咗；「time of flight」→ 只由豎直位移 H 同 g 決定；「explain briefly」→ 要點名「independent of the horizontal speed」或者「豎直速度同豎直位移不變」。",
   "rs": [
@@ -11011,7 +11581,8 @@ const BANK = [
    "Releasing from Q only makes u_x (and the speed at which ball Y leaves) smaller; H and g are unchanged",
    "So t does not change (it is still 0.4 s); only the horizontal landing point x = u_x t moves nearer",
    "Answer: it does not change, because the time of flight is independent of the horizontal speed (or: the vertical speed and the vertical displacement remain unchanged)"
-  ]
+  ],
+  "img": "FM7-p12-right.jpg"
  },
  {
   "id": "PM-L9a1",
@@ -11033,7 +11604,6 @@ const BANK = [
   "stem": "一粒鋼軸承於 t = 0 由靜止釋放。頻閃攝影每隔 0.05 s 拍攝一次，結果如圖 1 所示。忽略空氣阻力。",
   "q": "試利用圖 1 的數據估算重力加速度 g。(2 分)",
   "fig": "圖 1：垂直排列的四個軸承影像，旁邊標示由釋放點量度的累積距離，依次為 0、1.3 cm、4.9 cm 及 11.0 cm（間距向下遞增）。",
-  "img": "bank-img/FM6-p13-left.jpg",
   "first": "見到「頻閃照片」+「由靜止釋放」→ 第一步唔係逐格計，係認出：由靜止開始位移 ∝ t²，即 s = ½gt²。所以要揀「距釋放點最遠」嗰格（11.0 cm），因為 t 最大 ⇒ 相對誤差最細，而且 MS 就係用呢格。",
   "kw": "「stroboscopic photo at 0.05 s intervals」→ 每格 0.05 s；「released from rest」→ u = 0；「0 / 1.3 / 4.9 / 11.0 cm」→ 由釋放點量度嘅累積位移，唔係逐格位移！",
   "rs": [
@@ -11076,7 +11646,8 @@ const BANK = [
    "Time t = 3 × 0.05 s = 0.15 s, and u = 0",
    "s = ½gt² ⇒ 0.11 = ½ g (0.15)²",
    "g = 2(0.11) / (0.15)² = 9.777… ≈ 9.78 m s⁻²"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "PM-L9a2",
@@ -11098,7 +11669,6 @@ const BANK = [
   "stem": "軸承改為水平拋出，於 t = 0 射出，頻閃攝影每隔 0.05 s 拍攝一次。圖 2 用圓圈（O）標出第一格及最後一格的影像，並用交叉（×）標出「由靜止釋放」的參考影像。",
   "q": "在圖 2 中用圓圈（O）標出其餘各格投射軸承的位置。(2 分)",
   "fig": "圖 2：一張方格紙；左方同一豎直線上標有 4 個交叉（×）（由靜止釋放的參考頻閃影像，向下間距遞增）；另有 2 個圓圈（O），第一個與最上方的 × 重疊（t = 0），最後一個位於右下方、與最下方的 × 同高。",
-  "img": "bank-img/FM6-p13-left.jpg",
   "first": "見到「已知首尾格，補中間格」→ 第一件事：呢題唔係計數，係「繪圖論證題」。要記住兩個獨立性質：水平方向等速 ⇒ 間距相等；豎直方向同自由落體完全一樣 ⇒ 圓圈嘅高度要對齊 ×。",
   "kw": "「projected horizontally」→ 豎直運動同自由落體無分別 ⇒ 圓圈高度必定同 × 一致；「stroboscopic」→ 時間間隔相等 ⇒ 圓圈水平間距相等。",
   "rs": [
@@ -11137,7 +11707,8 @@ const BANK = [
    "Vertical: the y coordinate of each circle = the y coordinate of the cross in the same column",
    "Horizontal: total horizontal distance between the first and last circles ÷ number of intervals = horizontal displacement per interval",
    "Fill in the circles on that basis, and check the first and last circles against those given in the question"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "PM-L9a3",
@@ -11161,7 +11732,6 @@ const BANK = [
   "stem": "軸承改為水平拋出，於 t = 0 射出，頻閃攝影每隔 0.05 s 拍攝一次。圖 2 中的最後一格影像對應 t = 0.15 s，此時軸承豎直下降了 0.11 m。忽略空氣阻力。",
   "q": "已知軸承以 1 m s⁻¹ 的水平初速率拋出，試利用 (a)(i) 的結果，計算最後一格影像拍攝時軸承的速率。(3 分)",
   "fig": "圖 2：一張方格紙；左方同一豎直線上標有 4 個交叉（×）作為由靜止釋放的參考頻閃影像；另有 2 個圓圈（O），分別為投射軸承的第一格影像（左上方）與最後一格影像（右下方）。",
-  "img": "bank-img/FM6-p13-right.jpg",
   "first": "見到「求速率」+「水平拋出」→ 第一件事：speed 係向量大小，唔係水平速度。要分別求 v_x 同 v_y 再合成。本題 v_x 已直接俾（1 m/s），所以真正工作係求 v_y = gt（因為 u_y = 0）。",
   "kw": "「speed」→ |v| = √(v_x² + v_y²)，唔係 v_x；「use the results of (a)(i)」→ 必須用 g = 9.78 m/s²，唔可以偷偷用 9.81；「last image」→ t = 0.05 × 3 = 0.15 s。",
   "rs": [
@@ -11208,7 +11778,8 @@ const BANK = [
    "v_y = u_y + gt = 0 + (9.78)(0.15) = 1.467 ≈ 1.47 m s⁻¹",
    "v = √(1² + 1.47²) = √3.1609",
    "v = 1.778 ≈ 1.78 m s⁻¹"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "PM-L9b",
@@ -11232,7 +11803,6 @@ const BANK = [
   "stem": "一粒小球由懸崖頂部靜止釋放。經過一段時間後，小球的速率變成恒定。",
   "q": "試考慮作用於小球的力，並運用牛頓運動定律，解釋為何速率會變成恒定。(3 分)",
   "fig": "無圖（純文字）。",
-  "img": "bank-img/FM6-p13-right.jpg",
   "first": "見到「explain why speed becomes constant」+「Newton's laws」→ 第一件事：唔係計數，係「文字論證題」。要砌一條三環因果鏈：速度↑ → 空氣阻力↑ → 淨力變 0 → 牛頓第一定律 → 等速。三個環節就係三分。",
   "kw": "「speed becomes constant」→ 淨力 = 0；「considering the forces」→ 一定要同時提 weight 同 air resistance 兩個力；「Newton's laws」→ 結尾必須點名 Newton's first law（或 second law 推論）。",
   "rs": [
@@ -11279,7 +11849,8 @@ const BANK = [
    "R increases as the speed rises",
    "When R has increased until R = W, the net force F_net = W − R = 0",
    "By Newton’s first law, zero net force ⇒ no acceleration ⇒ the speed stays constant (i.e. the terminal velocity)"
-  ]
+  ],
+  "img": "FM7-p11-left.jpg"
  },
  {
   "id": "PM-L8a1",
@@ -11303,7 +11874,6 @@ const BANK = [
   "stem": "弓箭是一種拋體武器。獵人以 60 N 的力把弓弦拉緊，一個質量 0.2 kg 的箭保持靜止，如下圖所示。",
   "q": "求弓弦的張力。忽略箭的重量。(2 分)",
   "fig": "題圖：弓（粗弧線，標籤 bow）豎立於右方；弦（標籤 string，上下各一）由弓的上下兩端拉向中間的箭尾，形成 V 形；箭（標籤 arrow）水平指向右方；箭尾處標示兩個 75° 角，分別位於箭軸的上方與下方，即兩段弦與箭軸的夾角；左方有一個標示 60 N 的箭頭水平指向左，代表獵人拉弦的力。",
-  "img": "bank-img/FM6-p12-right.jpg",
   "first": "見到「箭保持靜止」+「兩個 75°」→ 第一件事：靜止 ⇒ 合力為零 ⇒ 力平衡題。而最關鍵嘅幾何係：兩段弦各以 75° 與箭軸（水平）成角，豎直分量互相抵消，所以只需處理水平分量 2T cos75°。",
   "kw": "「held stationary」→ 合力 = 0；「force of 60 N」→ 沿箭軸水平向左嘅外力；兩個 75° 係弦與箭軸（水平）嘅夾角 ⇒ 水平分量用 cos75°；「neglect the weight of the arrow」→ 唔使考慮箭嘅 mg。",
   "rs": [
@@ -11356,7 +11926,8 @@ const BANK = [
    "Horizontal direction: 2T cos 75° = 60",
    "T = 60 / (2 cos 75°) = 60 / 0.5176 = 115.9",
    "Answer: T = 116 N"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "PM-L8a2",
@@ -11380,7 +11951,6 @@ const BANK = [
   "stem": "弓箭是一種拋體武器。獵人以 60 N 的力把弓弦拉緊，一個質量 0.2 kg 的箭保持靜止，如下圖所示。弓弦的張力為 116 N。",
   "q": "若箭釋放後的初速率為 45 m s⁻¹，估算拉緊的弦所儲存的能量。假設弓是剛體，並忽略弦的質量。(2 分)",
   "fig": "題圖：弓（粗弧線，標籤 bow）豎立於右方；弦（標籤 string，上下各一）由弓的上下兩端拉向中間的箭尾，形成 V 形；箭（標籤 arrow）水平指向右方；箭尾處標示兩個 75° 角，分別位於箭軸的上方與下方，即兩段弦與箭軸的夾角；左方有一個標示 60 N 的箭頭水平指向左，代表獵人拉弦的力。",
-  "img": "bank-img/FM6-p12-right.jpg",
   "first": "見到「估算弦所儲存嘅能量」+「初速率 45 m s⁻¹」→ 第一件事：題目話弓係剛體、弦無質量 ⇒ 弦所儲存嘅彈性勢能釋放時「全部」變成箭嘅動能 ⇒ 直接用 ½mv²。「Estimate」係提示你唔需要考慮效率損失。",
   "kw": "「energy stored in the taut string」→ 即彈性勢能；「the bow is rigid and neglect the mass of the string」→ 能量無其他去路（弓唔會分到動能、弦唔使加速）⇒ E_stored = ½mv²；m = 0.2 kg、v = 45 m s⁻¹。",
   "rs": [
@@ -11429,7 +11999,8 @@ const BANK = [
    "E_stored = ½(0.2)(45)²",
    "45² = 2025 ⇒ E_stored = 0.1 × 2025 = 202.5 J",
    "Answer: 202.5 J (the MS accepts 203 J)"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "PM-L8b1",
@@ -11451,7 +12022,6 @@ const BANK = [
   "stem": "獵人站在距一棵樹約 60 m 的位置，如下圖所示。他用弓射箭，想射中由猴子（圖中未顯示）拿着、離地 25 m 的椰子。獵人直接瞄準椰子，而箭以 45 m s⁻¹ 的速率、與水平成 20° 的角度離開弓。在獵人放箭的一刻，猴子鬆手令椰子由靜止豎直落下。忽略空氣阻力及箭的大小。",
   "q": "求箭射中椰子所需的時間。(2 分)",
   "fig": "題圖：獵人位於左方（標示 hunter’s position），箭以 45 m s⁻¹、與水平成 20° 的角度射出；右方為一棵樹，樹上的椰子離地 25 m，並標示為 coconut；由獵人位置到椰子有一條虛線（代表獵人直接瞄準椰子）；獵人位置與樹之間的水平距離標示為 60 m。",
-  "img": "bank-img/FM6-p12-right.jpg",
   "first": "見到「求時間」+ 已知水平距離 → 第一件事：諗水平方向。水平方向等速、有位移（60 m）、有速度分量（45 cos20°），一條式就可以算出 t，完全唔需要理豎直方向，亦唔需要理椰子跌落幾多。",
   "kw": "「60 m away」→ 箭嘅水平位移 = 60 m；「45 m s⁻¹ making an angle of 20° to the horizontal」→ u_x = 45 cos20°（唔係 sin）；「time taken for the arrow to hit the coconut」→ 用水平方程 x = u_x t。",
   "rs": [
@@ -11500,7 +12070,8 @@ const BANK = [
    "(60) = (45 cos 20°) t",
    "t = 60 / 42.29 = 1.419",
    "Answer: t = 1.42 s"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "PM-L8b2",
@@ -11522,7 +12093,6 @@ const BANK = [
   "stem": "獵人站在距一棵樹約 60 m 的位置，如下圖所示。他用弓射箭，想射中由猴子（圖中未顯示）拿着、離地 25 m 的椰子。獵人直接瞄準椰子，而箭以 45 m s⁻¹ 的速率、與水平成 20° 的角度離開弓。在獵人放箭的一刻，猴子鬆手令椰子由靜止豎直落下。忽略空氣阻力及箭的大小。已知箭需要 1.42 s 才射中椰子。",
   "q": "求箭射中椰子一刻，椰子離地的高度。(2 分)",
   "fig": "題圖：獵人位於左方（標示 hunter’s position），箭以 45 m s⁻¹、與水平成 20° 的角度射出；右方為一棵樹，樹上的椰子離地 25 m，並標示為 coconut；由獵人位置到椰子有一條虛線（代表獵人直接瞄準椰子）；獵人位置與樹之間的水平距離標示為 60 m。",
-  "img": "bank-img/FM6-p12-right.jpg",
   "first": "見到「射中一刻椰子離地高度」→ 第一件事：椰子係「由靜止豎直落下」嘅自由落體，佢嘅運動同箭完全獨立。所以只需要用 t = 1.42 s 算椰子跌咗幾多，再由 25 m 減去。呢題考核 Monkey–Hunter 嘅核心：兩者嘅豎直運動都由同一條式 s = ut + ½gt² 支配，只係椰子初速係 0。",
   "kw": "「monkey drops the coconut ... falls vertically from rest」→ 椰子 u = 0、a = g；「at the moment the arrow hits it」→ 用 (b)(i) 嘅 t = 1.42 s；「height of the coconut from the ground」→ 25 − 下跌距離。",
   "rs": [
@@ -11573,7 +12143,8 @@ const BANK = [
    "s = ½ × 9.81 × 2.0164 = 9.89 m",
    "Height above the ground = 25 − 9.89 = 15.11 m",
    "Answer: 15.1 m"
-  ]
+  ],
+  "img": "FM7-p11-right.jpg"
  },
  {
   "id": "PM-L3a",
@@ -11595,7 +12166,6 @@ const BANK = [
   "stem": "一個球以 10 m s⁻¹ 的初速度、與水平成 40° 的角度被踢出，途中經過一個高 1.6 m 的磚塊（B 為磚塊底部，C 為球剛掠過磚頂的位置），到達最高點 D，最後落地於 E。取 g = 9.81 m s⁻²，忽略空氣阻力及球的大小。",
   "q": "(a) 在圖中 C 點畫一個箭頭，指示球在 C 點的加速度方向。(1 分)",
   "fig": "示意圖：球由地面 A 點以 40° 踢出，沿拋物線向右飛行，經過一個高 1.6 m 的磚塊（B 為磚塊底部，C 為球剛掠過磚頂的位置），到達最高點 D，最後在地面 E 點落地；E 點右方繪有一個球門（標示 F 及 goal）。(a) 的作答處另有一個圓圈標示 C 點的位置。",
-  "img": "bank-img/FM6-p10-left.jpg",
   "first": "見到「direction of acceleration」→ 第一件事：唔好同速度方向混淆。拋體在空中全程只受重力，所以加速度永遠係 g、方向永遠鉛垂向下，同球喺上升、最高點定下降完全無關。",
   "kw": "「acceleration」→ 只受重力 ⇒ g 向下；「at C」→ C 在上升途中（未到最高點），好多人會誤以為加速度沿運動方向或斜向；「draw an arrow」→ 要畫在 C 點上、垂直向下。",
   "rs": [
@@ -11636,7 +12206,8 @@ const BANK = [
    "By Newton second law: net force = mg downwards ⇒ acceleration = g downwards",
    "This conclusion is independent of whether the ball is rising, at the highest point, or falling",
    "Answer: draw an arrow pointing vertically downwards at C"
-  ]
+  ],
+  "img": "FM7-p10-right.jpg"
  },
  {
   "id": "PM-L3b",
@@ -11660,7 +12231,6 @@ const BANK = [
   "stem": "一個球以 10 m s⁻¹ 的初速度、與水平成 40° 踢出，經過一個高 1.6 m 的磚塊（C 為球剛掠過磚頂的位置），到達最高點 D，最後落於 E。取 g = 9.81 m s⁻²，忽略空氣阻力及球的大小。",
   "q": "(b) 計算球在 C 點的速率。(2 分)",
   "fig": "示意圖：球由地面 A 點以 40° 踢出，沿拋物線向右飛行，經過一個高 1.6 m 的磚塊（B 為磚塊底部，C 為球剛掠過磚頂的位置），到達最高點 D，最後在地面 E 點落地；E 點右方繪有一個球門（標示 F 及 goal）。(a) 的作答處另有一個圓圈標示 C 點的位置。",
-  "img": "bank-img/FM6-p10-left.jpg",
   "first": "見到「求 C 點速率」→ 第一件事：C 點只係「比地面高 1.6 m 嘅一點」，唔係最高點，所以 v_y ≠ 0，唔可以用 v = u cosθ。最直接係能量守恆：½mu² = ½mv² + mgh，一個未知數。",
   "kw": "「speed at C」→ 合速率 v（唔係水平分量）；「block of height 1.6 m」→ h = 1.6 m 嘅勢能增益；「10 m s⁻¹、40°」→ 能量法只需要 u = 10，唔需要拆分量。",
   "rs": [
@@ -11711,7 +12281,8 @@ const BANK = [
    "½(10)² = ½v² + (9.81)(1.6) ⇒ 50 = ½v² + 15.696",
    "v² = 68.61 ⇒ v = 8.28 m s⁻¹",
    "Answer: v = 8.28 m s⁻¹"
-  ]
+  ],
+  "img": "FM7-p10-right.jpg"
  },
  {
   "id": "PM-L3c",
@@ -11733,7 +12304,6 @@ const BANK = [
   "stem": "一個球以 10 m s⁻¹ 的初速度、與水平成 40° 踢出，經過高 1.6 m 的磚塊後到達最高點 D，最後落於 E。取 g = 9.81 m s⁻²，忽略空氣阻力及球的大小。",
   "q": "(c) 計算球在 D 點的高度。(2 分)",
   "fig": "示意圖：球由地面 A 點以 40° 踢出，沿拋物線向右飛行，經過一個高 1.6 m 的磚塊（B 為磚塊底部，C 為球剛掠過磚頂的位置），到達最高點 D，最後在地面 E 點落地；E 點右方繪有一個球門（標示 F 及 goal）。(a) 的作答處另有一個圓圈標示 C 點的位置。",
-  "img": "bank-img/FM6-p10-left.jpg",
   "first": "見到「最高點 D 嘅高度」→ 第一件事：最高點 ⇒ v_y = 0，所以直接用豎直方向 v_y² = u_y² + 2ay，未知數只有 h，一條式就搞定，唔需要理水平方向。",
   "kw": "「height of the ball at D」→ 由地面量起嘅最大高度 h；「highest point」→ v_y = 0；「40°」→ u_y = 10 sin40°。",
   "rs": [
@@ -11780,7 +12350,8 @@ const BANK = [
    "0 = 41.32 − 19.62h",
    "h = 2.106 ≈ 2.11 m",
    "Answer: h = 2.11 m (measured from the ground)"
-  ]
+  ],
+  "img": "FM7-p10-right.jpg"
  },
  {
   "id": "PM-L3d",
@@ -11802,7 +12373,6 @@ const BANK = [
   "stem": "一個球以 10 m s⁻¹ 的初速度、與水平成 40° 由地面 A 點踢出，經過高 1.6 m 的磚塊後到達最高點 D，最後在地面 E 點落地。取 g = 9.81 m s⁻²，忽略空氣阻力及球的大小。",
   "q": "(d) 球最後到達 E 點。計算 A 與 E 之間的距離。(3 分)",
   "fig": "示意圖：球由地面 A 點以 40° 踢出，沿拋物線向右飛行，經過一個高 1.6 m 的磚塊（B 為磚塊底部，C 為球剛掠過磚頂的位置），到達最高點 D，最後在地面 E 點落地；E 點右方繪有一個球門（標示 F 及 goal）。(a) 的作答處另有一個圓圈標示 C 點的位置。",
-  "img": "bank-img/FM6-p10-left.jpg",
   "first": "見到「求射程 AE」→ 第一件事：E 點在地面，同 A 點同高 ⇒ 豎直位移 y = 0。所以一定要用豎直方程 y = u_y t + ½at² 解出飛行時間 t（一元二次方程，其中一個根係 t = 0），再用水平方向等速 x = u_x t。",
   "kw": "「finally reaches the point E」→ E 在地面 ⇒ y = 0（起點 A 亦在地面）；「distance between A and E」→ 水平射程 x；「neglect the size of the ball」→ 唔需要考慮球半徑。",
   "rs": [
@@ -11853,9 +12423,11 @@ const BANK = [
    "t[(10 sin 40°) − 4.905t] = 0 ⇒ t = 1.310 s (rejecting t = 0)",
    "x = u_x t = (10 cos 40°)(1.310) = 10.04 m",
    "Answer: AE = 10.0 m"
-  ]
+  ],
+  "img": "FM7-p10-right.jpg"
  }
 ];
+if (typeof window !== "undefined") window.BANK = BANK;
 
 /* ══════════════════════════════════════════════════════════════════════
    Exam Bank v3 — 四層分類 + 中英雙語 + 互動答題 + 搜索 + 原題圖
@@ -11902,6 +12474,14 @@ const BANK = [
       right: '✓ 答對！', wrong: '✗ 答錯，正確答案已標綠。',
       scoreRight: '答對', scoreDone: '已答', freq: '頻率',
       cross: '跨章：',
+      reportTitle: '個人化事實圖表報告',
+      reportDesc: '作答記錄以「題號 + 你實際揀嘅選項 ID」儲存（唔止對／錯），用嚟統計錯題中出現嘅思考模式佔比。',
+      reportBtn: '查看個人化事實圖表報告',
+      reportEmpty: '完成一題 MC 之後，就可以生成迷思分佈圖。',
+      reportCount: '已記錄 {n} 題（錯題 {w} 題）',
+      reportClear: '清除本機作答記錄',
+      reportCleared: '已清除本機作答記錄。',
+      reportStudent: '學生代號',
       empty: '目前篩選條件下冇題目。試下減少篩選，或者清除搜索字。'
     },
     en: {
@@ -11918,6 +12498,14 @@ const BANK = [
       right: '✓ Correct!', wrong: '✗ Wrong — the correct answer is highlighted.',
       scoreRight: 'Correct', scoreDone: 'answered', freq: 'Frequency',
       cross: 'Cross-topic: ',
+      reportTitle: 'Personalized Fact-Chart Report',
+      reportDesc: 'Answers are logged as “question ID + the option ID you actually chose” (not just right/wrong) so that the pattern distribution across your wrong answers can be computed.',
+      reportBtn: 'Open the Personalized Fact-Chart Report',
+      reportEmpty: 'Answer one MC question to generate your misconception distribution chart.',
+      reportCount: '{n} answers logged ({w} wrong)',
+      reportClear: 'Clear local answer log',
+      reportCleared: 'Local answer log cleared.',
+      reportStudent: 'Student ID',
       empty: 'No questions match the current filters. Try relaxing them or clearing the search.'
     }
   };
@@ -12488,6 +13076,63 @@ const BANK = [
   }
 
   /* ── 作答 ── */
+  function misconReportUrl() { return 'misconception-report.html'; }
+
+  /* 作答記錄：一定要存「選項 ID」而唔止對／錯（個人化事實圖表報告的硬性前提）。
+     option_choosed_id 用原卷選項字母（A/B/C/D），與畫面洗牌次序無關。 */
+  function misconLogRead() {
+    try {
+      var raw = window.localStorage.getItem(MisconEngine.ANS_KEY);
+      var log = raw ? JSON.parse(raw) : null;
+      if (!log || !Array.isArray(log.records)) log = MisconEngine.makeLog();
+      return log;
+    } catch (e) { return MisconEngine.makeLog(); }
+  }
+  function misconLogWrite(log) {
+    try { window.localStorage.setItem(MisconEngine.ANS_KEY, JSON.stringify(log)); } catch (e) {}
+  }
+  function misconStudentId() {
+    try {
+      var v = window.localStorage.getItem(MisconEngine.SID_KEY);
+      if (v) return v;
+    } catch (e) {}
+    var gen = 'S-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' +
+      Math.random().toString(36).slice(2, 6).toUpperCase();
+    try { window.localStorage.setItem(MisconEngine.SID_KEY, gen); } catch (e) {}
+    return gen;
+  }
+  function misconLogAnswer(id, letter, right) {
+    var log = misconLogRead();
+    log.student_id = misconStudentId();
+    MisconEngine.pushAnswer(log, id, letter, {
+      topic: (BANK.filter(function (x) { return x.id === id; })[0] || {}).t || '',
+      correct: !!right
+    });
+    misconLogWrite(log);
+    updateReportBar();
+  }
+  function updateReportBar() {
+    var bar = document.getElementById('misconBar');
+    if (!bar) return;
+    var log = misconLogRead();
+    var n = log.records.length;
+    var w = log.records.filter(function (r) { return r.correct === false; }).length;
+    var cnt = document.getElementById('misconCount');
+    var link = document.getElementById('misconLink');
+    if (cnt) {
+      cnt.textContent = n
+        ? T('reportCount').replace('{n}', n).replace('{w}', w)
+        : T('reportEmpty');
+      cnt.className = 'miscon-count' + (n ? ' on' : '');
+    }
+    if (link) {
+      link.setAttribute('href', misconReportUrl());
+      link.textContent = T('reportBtn') + (n ? '（' + n + '）' : '');
+    }
+    var sid = document.getElementById('misconSid');
+    if (sid && !sid.value) sid.value = misconStudentId();
+  }
+
   function answer(i, oi) {
     var card = state.cards[i];
     if (!card || card.src.kind !== 'mc' || !card.perm) return;
@@ -12497,6 +13142,8 @@ const BANK = [
     state.answered[id] = { picked: oi, right: right };
     state.openReveal[id] = true;
     if (right) state.right++; else state.wrong++;
+    /* 存回原卷選項字母（card.perm[oi] 係洗牌後指向的原選項索引） */
+    misconLogAnswer(id, LETTERS[card.perm[oi]], right);
     render();
   }
 
@@ -12544,6 +13191,7 @@ const BANK = [
   buildControls();
   elPool.textContent = filtered().length;
   updateScore();
+  updateReportBar();
   newSet();
 })();
 </script>
