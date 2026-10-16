@@ -71,7 +71,7 @@ h1.title .lt{display:block;font-size:.5em;letter-spacing:.10em;font-weight:500;m
   font-family:inherit}
 
 canvas{display:block;width:100%;height:auto;max-width:100%;border-radius:12px;
-  background:#fff;border:1px solid var(--line);touch-action:none;
+  background:#fff;border:1px solid var(--line);touch-action:manipulation;
   box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05)}
 
 /* 模型選擇 */
@@ -1881,6 +1881,32 @@ function hudRelease(e){
 }
 cv.addEventListener('pointerup', hudRelease);
 cv.addEventListener('pointercancel', hudRelease);
+
+/* ═════ 觸控規則（移動端）═════
+   1. 只有點中「物理物件」（圖內卡 HUD）才 preventDefault。
+   2. 空白區一律放行，交還瀏覽器做原生頁面捲動（iOS Safari 亦正常）。
+   3. touchmove 用 {passive:false} 並檢查 e.cancelable；垂直手勢讓給頁面捲動。
+   配合 CSS touch-action:manipulation，空白區唔需要 JS 都捲得動。 */
+function objHit(px, py){ return hudHit(px, py); }
+let touchClaim = false, touchStart = null;
+cv.addEventListener('touchstart', e => {
+  if (e.touches.length !== 1){ touchClaim = false; return; }
+  const t0 = e.touches[0], r = cv.getBoundingClientRect();
+  const px = (t0.clientX - r.left) * (W / r.width), py = (t0.clientY - r.top) * (H / r.height);
+  touchClaim = objHit(px, py);
+  touchStart = { x:t0.clientX, y:t0.clientY };
+}, { passive:true });
+cv.addEventListener('touchmove', e => {
+  if (!touchClaim || !touchStart || e.touches.length !== 1) return;   /* 空白區 ⇒ 完全放行 */
+  const t0 = e.touches[0];
+  const dx = t0.clientX - touchStart.x, dy = t0.clientY - touchStart.y;
+  if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 10){              /* 垂直手勢 ⇒ 頁面捲動 */
+    touchClaim = false; return;
+  }
+  if (e.cancelable) e.preventDefault();                               /* 只攔截真正拖動物件的手勢 */
+}, { passive:false });
+cv.addEventListener('touchend', () => { touchClaim = false; touchStart = null; }, { passive:true });
+cv.addEventListener('touchcancel', () => { touchClaim = false; touchStart = null; }, { passive:true });
 
 /* ═════════ 嵌入模式 / URL 參數 ═════════ */
 const QS = new URLSearchParams(location.search);

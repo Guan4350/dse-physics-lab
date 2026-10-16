@@ -87,7 +87,7 @@
   .card:not(.folded) > .cardbody[data-disp="grid"]{display:grid}
 
   canvas{display:block;width:100%;height:auto;max-width:100%;border-radius:12px;
-    background:#fff;border:1px solid var(--line);touch-action:none;cursor:default;
+    background:#fff;border:1px solid var(--line);touch-action:manipulation;cursor:default;
     box-shadow:0 1px 2px rgba(60,60,67,.05),0 8px 22px rgba(60,60,67,.05)}
   #cv{aspect-ratio:1020 / 672}
   #cv2{aspect-ratio:1020 / 440}
@@ -3077,6 +3077,37 @@ function bind(){
     cv.addEventListener('pointermove', move);
     cv.addEventListener('pointerup', up);
     cv.addEventListener('pointerleave', up);
+
+    /* ═════ 觸控規則（移動端）═════
+       1. 只有點中「物理物件」（圖內卡 HUD、HUD 開關、衛星把手）才 preventDefault。
+       2. 空白區一律放行，交還瀏覽器做原生頁面捲動（iOS Safari 亦正常）。
+       3. touchmove 用 {passive:false} 並檢查 e.cancelable；垂直手勢讓給頁面捲動。
+       配合 CSS touch-action:manipulation，空白區唔需要 JS 都捲得動。 */
+    function objHit(px, py){
+      const p = { x:px, y:py };
+      if (hitHUD(p) || hitHudToggle(p)) return true;
+      const g = geom();
+      return Math.hypot(px - g.cx, py - g.cy) < g.P(g.rMax) + 40;
+    }
+    let touchClaim = false, touchStart = null;
+    cv.addEventListener('touchstart', e => {
+      if (e.touches.length !== 1){ touchClaim = false; return; }
+      const t0 = e.touches[0], r = cv.getBoundingClientRect();
+      const px = (t0.clientX - r.left) * (CW / r.width), py = (t0.clientY - r.top) * (CH / r.height);
+      touchClaim = objHit(px, py);
+      touchStart = { x:t0.clientX, y:t0.clientY };
+    }, { passive:true });
+    cv.addEventListener('touchmove', e => {
+      if (!touchClaim || !touchStart || e.touches.length !== 1) return;  /* 空白區 ⇒ 完全放行 */
+      const t0 = e.touches[0];
+      const dx = t0.clientX - touchStart.x, dy = t0.clientY - touchStart.y;
+      if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 10){             /* 垂直手勢 ⇒ 頁面捲動 */
+        touchClaim = false; return;
+      }
+      if (e.cancelable) e.preventDefault();                              /* 只攔截真正拖動物件的手勢 */
+    }, { passive:false });
+    cv.addEventListener('touchend', () => { touchClaim = false; touchStart = null; }, { passive:true });
+    cv.addEventListener('touchcancel', () => { touchClaim = false; touchStart = null; }, { passive:true });
     cv.addEventListener('wheel', e => {
       const p = toCanvas(e);
       if (!hitHUD(p)) return;
