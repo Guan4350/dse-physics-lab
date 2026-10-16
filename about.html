@@ -198,6 +198,74 @@
   footer .mark{display:inline-block;margin-bottom:11px;font-size:11px;letter-spacing:.3em;
     text-transform:uppercase;color:var(--gold-deep)}
   footer p{margin:0;font-size:12.5px;color:#7d7d85}
+
+  /* ══ 9. 獎項與證書書架（新增 · 可折疊）══
+     純新增：只加 .shelf-* 新 class，上面 1–8 節嘅任何既有規則都無改動。
+     沿用同一套 token：金漸層頂條、12px 圓角、L1 陰影、襯線標題。 */
+  .shelf{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:8px 20px 12px;
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 10px 26px rgba(60,60,67,.06)}
+  .shelf::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;
+    border-radius:12px 12px 0 0;opacity:.9;
+    background:linear-gradient(90deg,var(--gold-bright),transparent 90%)}
+
+  /* ── 書脊列（<details> 摺合＝書脊，展開＝書架）── */
+  .shelf-item{border-bottom:1px solid var(--line)}
+  .shelf-item:last-of-type{border-bottom:0}
+  .shelf-head{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap;cursor:pointer;
+    list-style:none;position:relative;padding:15px 2px 14px}
+  .shelf-head::-webkit-details-marker{display:none}
+  .shelf-head::before{content:"";position:absolute;left:-9px;top:14px;bottom:14px;width:3px;
+    border-radius:2px;opacity:.75;
+    background:linear-gradient(180deg,var(--gold-bright),var(--gold-deep))}
+  .shelf-head:hover .shelf-title{color:var(--gold-deep)}
+  .shelf-head:focus-visible{outline:2px solid var(--gold-bright);outline-offset:2px;border-radius:6px}
+  .shelf-yr{flex:0 0 auto;font-family:ui-monospace,Menlo,monospace;font-size:12.2px;
+    font-weight:700;color:var(--gold-deep);letter-spacing:.01em}
+  .shelf-tag{flex:0 0 auto;font-size:10.6px;font-weight:800;letter-spacing:.14em;border-radius:6px;
+    color:var(--gold-deep);background:rgba(201,162,39,.13);border:1px solid rgba(184,134,11,.3);
+    padding:2px 8px}
+  .shelf-title{font-size:14.8px;font-weight:650;line-height:1.6;color:#2b2b30;
+    font-family:"Songti TC","Noto Serif TC",Georgia,serif;transition:color .16s ease}
+  .shelf-org{font-size:12.4px;color:var(--ink-soft)}
+  .shelf-chev{margin-left:auto;flex:0 0 auto;font-size:12px;color:var(--gold);
+    transition:transform .2s ease}
+  .shelf-item[open] .shelf-chev{transform:rotate(180deg)}
+
+  /* ── 展開後嘅證書格 ──
+     證書多為 A4 直度，所以用 3:4 直向框 + object-fit:contain（完整顯示、不裁切）；
+     載入成功後轉白底並收起灰色斜紋，信件式留白更整齊。 */
+  .shelf-body{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:14px;
+    padding:2px 2px 20px}
+  .shelf-cell{min-width:0}
+  .shelf-tile{margin:0;aspect-ratio:3/4;cursor:zoom-in}
+  .shelf-tile img{height:100%;object-fit:contain}
+  .shelf-tile:has(img.loaded){background:#fff}
+  .shelf-tile:has(img.loaded)::after{opacity:0}
+  .shelf-cap{margin:8px 0 0;font-size:11.8px;line-height:1.5;color:var(--ink-soft);text-align:center}
+  .shelf-cap b{color:var(--gold-deep);font-weight:800}
+  .shelf-pdf{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+    aspect-ratio:4/3;padding:12px;border-radius:14px;text-align:center;text-decoration:none;
+    background:linear-gradient(135deg,#f2f2f5 0%,#e9e9ee 100%);border:1px solid var(--line);
+    box-shadow:0 1px 2px rgba(60,60,67,.05),0 10px 24px rgba(60,60,67,.08);
+    transition:border-color .18s ease,background .18s ease,transform .18s ease}
+  .shelf-pdf:hover{border-color:var(--gold-bright);background:#fdfaf1;transform:translateY(-2px)}
+  .shelf-pdf .pdficon{width:38px;height:38px;border-radius:11px;border:1.6px solid var(--gold-bright);
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;
+    letter-spacing:.04em;color:var(--gold-deep);background:rgba(255,255,255,.72)}
+  .shelf-pdf .pdftxt{font-size:11.6px;line-height:1.55;color:#8c8c93}
+  .shelf-pdf .pdftxt code{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--gold-deep);
+    background:rgba(201,162,39,.12);border:1px solid rgba(184,134,11,.3);border-radius:5px;padding:1px 6px}
+  .shelf-hint{margin:14px 0 4px;font-size:11.8px;color:#8c8c93;text-align:center;letter-spacing:.02em}
+
+  @media(max-width:600px){
+    .shelf{padding:6px 16px 10px}
+    .shelf-body{grid-template-columns:repeat(auto-fill,minmax(136px,1fr));gap:11px}
+    .shelf-head{padding:13px 2px 12px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .shelf-title,.shelf-chev,.shelf-pdf{transition:none}
+  }
 </style>
 </head>
 <body data-nav="about">
@@ -293,23 +361,191 @@
     </article>
   </section>
 
-  <!-- ══════════ 4. 個人專長與興趣 + 網站截圖 ══════════ -->
+  <!-- ══════════ 3B. 獎項與證書書架（新增 · 可折疊 · 倒序：最新優先） ══════════
+       資料來源：使用者提供之獎項素材，逐條照錄，未新增任何未提供嘅成就、時間或機構。
+       每張證書圖有專屬編號（1–7）＝ 檔名 images/1.jpg … images/7.jpg。 -->
+  <section class="sec reveal">
+    <div class="sec-head"><h2>獎項與證書</h2><span>Awards &amp; Certificates</span></div>
+    <div class="sec-line"></div>
+    <div class="shelf">
+
+      <!-- ① 2025–2026 -->
+      <details class="shelf-item">
+        <summary class="shelf-head">
+          <span class="shelf-yr">2025–2026</span>
+          <span class="shelf-tag">校內</span>
+          <span class="shelf-title">陳永安獎學金（中四級）</span>
+          <span class="shelf-org">彩虹邨天主教英文中學</span>
+          <span class="shelf-chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="shelf-body">
+          <div class="shelf-cell">
+            <figure class="shelf-tile figure">
+              <img id="img1" src="images/1.jpg" alt="陳永安獎學金（中四級）證書" data-zoom>
+              <figcaption class="ph">
+                <span class="icon">1</span>
+                <span class="txt">證書圖<br><code>images/1.jpg</code></span>
+              </figcaption>
+            </figure>
+            <p class="shelf-cap"><b>1</b> 陳永安獎學金（中四級）</p>
+          </div>
+          <!-- ── PDF 附件範本：要放 PDF 就複製以下一段、改 href 同檔名（PDF 另開新頁，唔經燈箱）
+          <a class="shelf-pdf" href="images/1.pdf" target="_blank" rel="noopener">
+            <span class="pdficon">PDF</span>
+            <span class="pdftxt">陳永安獎學金通知書<br><code>images/1.pdf</code></span>
+          </a>
+          ── -->
+        </div>
+      </details>
+
+      <!-- ② 2026-05 -->
+      <details class="shelf-item">
+        <summary class="shelf-head">
+          <span class="shelf-yr">2026-05</span>
+          <span class="shelf-tag">校外</span>
+          <span class="shelf-title">科學實驗室工作坊 參與證書（理學院）</span>
+          <span class="shelf-org">香港科技大學（HKUST）</span>
+          <span class="shelf-chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="shelf-body">
+          <div class="shelf-cell">
+            <figure class="shelf-tile figure">
+              <img id="img2" src="images/2.jpg" alt="香港科技大學理學院科學實驗室工作坊參與證書" data-zoom>
+              <figcaption class="ph">
+                <span class="icon">2</span>
+                <span class="txt">證書圖<br><code>images/2.jpg</code></span>
+              </figcaption>
+            </figure>
+            <p class="shelf-cap"><b>2</b> HKUST 理學院科學實驗室工作坊</p>
+          </div>
+        </div>
+      </details>
+
+      <!-- ③ 2025-12 -->
+      <details class="shelf-item">
+        <summary class="shelf-head">
+          <span class="shelf-yr">2025-12</span>
+          <span class="shelf-tag">校外</span>
+          <span class="shelf-title">粵港澳大灣區數學競賽選拔賽 2026（香港賽區）三等獎</span>
+          <span class="shelf-org">奧冠教育中心 · 參賽人數超過 1000 人</span>
+          <span class="shelf-chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="shelf-body">
+          <div class="shelf-cell">
+            <figure class="shelf-tile figure">
+              <img id="img3" src="images/3.jpg" alt="粵港澳大灣區數學競賽選拔賽2026（香港賽區）三等獎證書" data-zoom>
+              <figcaption class="ph">
+                <span class="icon">3</span>
+                <span class="txt">證書圖<br><code>images/3.jpg</code></span>
+              </figcaption>
+            </figure>
+            <p class="shelf-cap"><b>3</b> 大灣區數學競賽選拔賽 三等獎</p>
+          </div>
+        </div>
+      </details>
+
+      <!-- ④ 2024–2025 -->
+      <details class="shelf-item">
+        <summary class="shelf-head">
+          <span class="shelf-yr">2024–2025</span>
+          <span class="shelf-tag">校內</span>
+          <span class="shelf-title">中三全級學業第二名</span>
+          <span class="shelf-org">彩虹邨天主教英文中學</span>
+          <span class="shelf-chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="shelf-body">
+          <div class="shelf-cell">
+            <figure class="shelf-tile figure">
+              <img id="img4" src="images/4.jpg" alt="中三全級學業第二名證書" data-zoom>
+              <figcaption class="ph">
+                <span class="icon">4</span>
+                <span class="txt">證書圖<br><code>images/4.jpg</code></span>
+              </figcaption>
+            </figure>
+            <p class="shelf-cap"><b>4</b> 中三全級學業第二名</p>
+          </div>
+        </div>
+      </details>
+
+      <!-- ⑤ 2024–2025 -->
+      <details class="shelf-item">
+        <summary class="shelf-head">
+          <span class="shelf-yr">2024–2025</span>
+          <span class="shelf-tag">校內</span>
+          <span class="shelf-title">彩虹獎學金（中三組別）</span>
+          <span class="shelf-org">彩虹邨天主教英文中學</span>
+          <span class="shelf-chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="shelf-body">
+          <div class="shelf-cell">
+            <figure class="shelf-tile figure">
+              <img id="img5" src="images/5.jpg" alt="彩虹獎學金（中三組別）證書" data-zoom>
+              <figcaption class="ph">
+                <span class="icon">5</span>
+                <span class="txt">證書圖<br><code>images/5.jpg</code></span>
+              </figcaption>
+            </figure>
+            <p class="shelf-cap"><b>5</b> 彩虹獎學金（中三組別）</p>
+          </div>
+        </div>
+      </details>
+
+      <!-- ⑥ 2024–2025 -->
+      <details class="shelf-item">
+        <summary class="shelf-head">
+          <span class="shelf-yr">2024–2025</span>
+          <span class="shelf-tag">校內</span>
+          <span class="shelf-title">劉朱水英女士學業優異獎學金（歷史科）</span>
+          <span class="shelf-org">彩虹邨天主教英文中學</span>
+          <span class="shelf-chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="shelf-body">
+          <div class="shelf-cell">
+            <figure class="shelf-tile figure">
+              <img id="img6" src="images/6.jpg" alt="劉朱水英女士學業優異獎學金（歷史科）證書" data-zoom>
+              <figcaption class="ph">
+                <span class="icon">6</span>
+                <span class="txt">證書圖<br><code>images/6.jpg</code></span>
+              </figcaption>
+            </figure>
+            <p class="shelf-cap"><b>6</b> 劉朱水英女士學業優異獎學金（歷史科）</p>
+          </div>
+        </div>
+      </details>
+
+      <!-- ⑦ 2024-07（體育 · 如不需要，整段 <details> 刪除即可） -->
+      <details class="shelf-item">
+        <summary class="shelf-head">
+          <span class="shelf-yr">2024-07</span>
+          <span class="shelf-tag">體育</span>
+          <span class="shelf-title">鶴山市青少年足球 U 系列賽 男子 U15 組 亞軍</span>
+          <span class="shelf-org">鶴山超越少年足球俱樂部</span>
+          <span class="shelf-chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="shelf-body">
+          <div class="shelf-cell">
+            <figure class="shelf-tile figure">
+              <img id="img7" src="images/7.jpg" alt="鶴山市青少年足球U系列賽男子U15組亞軍" data-zoom>
+              <figcaption class="ph">
+                <span class="icon">7</span>
+                <span class="txt">證書圖<br><code>images/7.jpg</code></span>
+              </figcaption>
+            </figure>
+            <p class="shelf-cap"><b>7</b> 鶴山市青少年足球 U 系列賽 男子 U15 組 亞軍</p>
+          </div>
+        </div>
+      </details>
+
+      <p class="shelf-hint">點擊標題列展開／收起證書；已上載嘅證書圖片可再點擊放大檢視。</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 4. 個人專長與興趣 ══════════ -->
   <section class="sec reveal">
     <div class="sec-head"><h2>個人專長與興趣</h2><span>Expertise &amp; Interests</span></div>
     <div class="sec-line"></div>
     <div class="card">
       <p class="skill-text">熱衷物理建模、數理推導、工程思維與跨學科整合研究，擅長自主搭建科學模擬系統、前端交互設計與物理可視化實驗。<br>現自主搭建DSE Physics Lab 物理互動教學實驗網站，致力於將抽象物理概念轉化為直觀、可操作、可視化的互動教學資源。</p>
-      <div class="shot" id="shotWrap">
-        <figure class="figure">
-          <img id="imgWebsite" src="images/website-screenshot.jpg" alt="DSE Physics Lab 網站截圖">
-          <figcaption class="ph">
-            <span class="icon">圖</span>
-            <span class="txt">網站截圖<br><code>images/website-screenshot.jpg</code></span>
-          </figcaption>
-        </figure>
-        <span class="zoom">點擊放大</span>
-      </div>
-      <p class="shotcap">DSE Physics Lab · 互動模擬實驗室（點擊圖片可放大檢視）</p>
     </div>
   </section>
 
@@ -399,12 +635,10 @@
     if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'center' });
   })();
 
-  /* ── 圖片載入偵測：成功才淡入，未上載則保留灰色佔位符 ── */
+  /* ── 圖片載入偵測：成功才淡入，未上載則保留灰色佔位符 ──
+       改為自動掃描 .figure 內所有圖（連書架證書），日後新增圖片毋須再改呢段。 */
   (function () {
-    var ids = ['imgProfile', 'imgHkimo', 'imgScholarship', 'imgWebsite', 'imgHkust'];
-    ids.forEach(function (id) {
-      var img = document.getElementById(id);
-      if (!img) return;
+    document.querySelectorAll('.figure > img').forEach(function (img) {
       var mark = function (ok) {
         if (ok) { img.classList.add('loaded'); }
         else { img.style.display = 'none'; }   /* 隱藏破圖，露出佔位符 */
@@ -417,16 +651,15 @@
     });
   })();
 
-  /* ── 網站截圖點擊放大 ── */
+  /* ── 證書圖片點擊放大（事件委派：任何帶 data-zoom 且已載入嘅圖） ──
+       舊版綁死 #shotWrap（網站截圖）已隨該區塊刪除，改為委派寫法；
+       日後書架新增證書圖，只要照樣加 data-zoom 就自動可以放大，唔需要再改 JS。 */
   (function () {
-    var wrap = document.getElementById('shotWrap');
     var lb = document.getElementById('lightbox');
     var lbImg = document.getElementById('lbImg');
-    var img = document.getElementById('imgWebsite');
-    if (!wrap || !lb || !img) return;
-    function openLb() {
-      if (!img.classList.contains('loaded')) return;   /* 未上載時不開啟 */
-      lbImg.src = img.src;
+    if (!lb || !lbImg) return;
+    function openLb(src) {
+      lbImg.src = src;
       lb.classList.add('open');
       lb.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
@@ -437,7 +670,12 @@
       lbImg.src = '';
       document.body.style.overflow = '';
     }
-    wrap.addEventListener('click', openLb);
+    document.addEventListener('click', function (e) {
+      var img = e.target && e.target.closest ? e.target.closest('img[data-zoom]') : null;
+      if (!img) return;
+      if (!img.classList.contains('loaded')) return;   /* 未上載時不開啟 */
+      openLb(img.currentSrc || img.src);
+    });
     lb.addEventListener('click', closeLb);
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && lb.classList.contains('open')) closeLb();
